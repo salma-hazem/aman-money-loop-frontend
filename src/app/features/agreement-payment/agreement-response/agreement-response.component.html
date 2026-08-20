@@ -1,0 +1,122 @@
+<div class="agreement-page">
+
+  @if (isLoading) {
+    <div class="agreement-card">
+      <p>Loading agreement...</p>
+    </div>
+  }
+
+  @else if (errorMessage) {
+    <div class="agreement-card">
+      <h2>Unable to load agreement</h2>
+      <p>{{ errorMessage }}</p>
+    </div>
+  }
+
+  @else if (agreement) {
+    <div class="agreement-card">
+
+      <div class="agreement-header">
+        <div>
+          <h1>Membership Agreement</h1>
+          <p>Please review the agreement details below.</p>
+        </div>
+
+        <span class="status-badge">
+          {{ agreement.status }}
+        </span>
+      </div>
+
+      <div class="agreement-section">
+        <h2>Agreement Preview Summary</h2>
+
+        <div class="agreement-details">
+
+          <div class="detail-row">
+            <span class="label">Member Name</span>
+            <span class="value">
+              {{ agreement.memberName }}
+            </span>
+          </div>
+
+          <div class="detail-row">
+            <span class="label">Circle</span>
+            <span class="value">
+              {{ agreement.circleTitle }}
+            </span>
+          </div>
+
+          <div class="detail-row">
+            <span class="label">Contribution Schedule</span>
+            <span class="value">
+              {{ agreement.contributionSchedule }}
+            </span>
+          </div>
+
+          <div class="detail-row">
+            <span class="label">Payout Slot</span>
+            <span class="value">
+              {{ agreement.payoutSlot }}
+            </span>
+          </div>
+
+          <div class="detail-row">
+            <span class="label">Start Date</span>
+            <span class="value">
+              {{ agreement.startDate }}
+            </span>
+          </div>
+
+          <div class="detail-row">
+            <span class="label">Expiry Date</span>
+            <span class="value">
+              {{ agreement.expiryDate }}
+            </span>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="review-section">
+        <label>
+          <input
+            type="checkbox"
+            [checked]="hasReviewed"
+            (change)="hasReviewed = !hasReviewed"
+            />
+          I have reviewed the agreement
+        </label>
+      </div>
+      @if (successMessage) {
+        <div class="success-message">
+            {{ successMessage }}
+        </div>
+        }
+
+        @if (errorMessage) {
+        <div class="error-message">
+            {{ errorMessage }}
+        </div>
+        }
+      <div class="actions">
+        <button
+        class="accept-button"
+        [disabled]="!hasReviewed || isSubmitting"
+        (click)="acceptAgreement()"
+        >
+        {{ isSubmitting ? 'Please wait...' : 'Accept Agreement' }}
+        </button>
+
+        <button
+        class="decline-button"
+        [disabled]="isSubmitting"
+        (click)="declineAgreement()"
+        >
+        Decline
+        </button>
+      </div>
+
+    </div>
+  }
+
+</div>
