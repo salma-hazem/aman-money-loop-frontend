@@ -1,0 +1,221 @@
+<div class="payments-page">
+
+  @if (isLoading) {
+    <div class="payments-card">
+      <p>Loading payment transactions...</p>
+    </div>
+  }
+
+  @else {
+
+    <div class="payments-card">
+
+      <div class="payments-header">
+        <div>
+          <h1>Payments & Receipts</h1>
+          <p>
+            View contribution payments, payouts, and download digital receipts.
+          </p>
+        </div>
+      </div>
+
+      @if (errorMessage) {
+        <div class="error-message">
+          {{ errorMessage }}
+        </div>
+      }
+
+      @if (memberLedgerId) {
+
+        <!-- Summary -->
+        <div class="summary-grid">
+
+          <div class="summary-card">
+            <span class="summary-label">
+              Total Paid
+            </span>
+
+            <span class="summary-value">
+              {{ totalPaid | number:'1.2-2' }}
+            </span>
+          </div>
+
+          <div class="summary-card">
+            <span class="summary-label">
+              Successful Payments
+            </span>
+
+            <span class="summary-value">
+              {{ successfulPaymentCount }}
+            </span>
+          </div>
+
+          <div class="summary-card">
+            <span class="summary-label">
+              Total Transactions
+            </span>
+
+            <span class="summary-value">
+              {{ transactions.length }}
+            </span>
+          </div>
+
+          <div class="summary-card">
+            <span class="summary-label">
+              Latest Transaction
+            </span>
+
+            <span class="summary-value small-value">
+              @if (latestTransaction) {
+                {{
+                  latestTransaction.transactionDate
+                    | date:'dd MMM yyyy'
+                }}
+              }
+              @else {
+                No transactions
+              }
+            </span>
+          </div>
+
+        </div>
+
+        <!-- Transactions -->
+        <div class="transactions-section">
+
+          <h2>Transaction History</h2>
+
+          @if (transactions.length === 0) {
+
+            <div class="empty-state">
+              <h3>No payment transactions found</h3>
+              <p>
+                There are currently no payment records for this member.
+              </p>
+            </div>
+
+          }
+
+          @else {
+
+            <div class="table-container">
+
+              <table class="transactions-table">
+
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Payment Method</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Reference</th>
+                    <th>Receipt</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+
+                  @for (
+                    transaction of transactions;
+                    track transaction.paymentTransactionId
+                  ) {
+
+                    <tr>
+
+                      <td>
+                        {{
+                          transaction.transactionDate
+                            | date:'dd MMM yyyy'
+                        }}
+                      </td>
+
+                      <td>
+                        {{
+                          getTransactionTypeLabel(
+                            transaction
+                          )
+                        }}
+                      </td>
+
+                      <td>
+                        {{
+                          getPaymentMethodLabel(
+                            transaction
+                          )
+                        }}
+                      </td>
+
+                      <td class="amount-cell">
+                        {{
+                          transaction.amount
+                            | number:'1.2-2'
+                        }}
+                      </td>
+
+                      <td>
+                        <span
+                          class="status-badge"
+                          [class.success-status]="
+                            getStatusLabel(transaction) === 'Successful'
+                          "
+                          [class.pending-status]="
+                            getStatusLabel(transaction) === 'Pending'
+                          "
+                          [class.failed-status]="
+                            getStatusLabel(transaction) === 'Failed'
+                          "
+                        >
+                          {{
+                            getStatusLabel(
+                              transaction
+                            )
+                          }}
+                        </span>
+                      </td>
+
+                      <td>
+                        {{
+                          transaction.transactionReference
+                            || '—'
+                        }}
+                      </td>
+
+                      <td>
+
+                        <button
+                          type="button"
+                          class="receipt-button"
+                          [disabled]="isDownloading(transaction)"
+                          (click)="downloadReceipt(transaction)"
+                        >
+                          {{
+                            isDownloading(transaction)
+                              ? 'Downloading...'
+                              : 'Download PDF'
+                          }}
+                        </button>
+
+                      </td>
+
+                    </tr>
+
+                  }
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+          }
+
+        </div>
+
+      }
+
+    </div>
+
+  }
+
+</div>

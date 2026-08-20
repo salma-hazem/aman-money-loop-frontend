@@ -20,6 +20,18 @@ export const routes: Routes = [
             .then((m) => m.AgreementResponseComponent),
       },
       {
+        path: 'agreement-generator',
+        loadComponent: () =>
+          import('./features/agreement-payment/agreement-generator/agreement-generator.component')
+            .then((m) => m.AgreementGeneratorComponent),
+      },
+      {
+        path: 'payments-receipts',
+        loadComponent: () =>
+          import('./features/agreement-payment/payments-receipts/payments-receipts.component')
+            .then((m) => m.PaymentsReceiptsComponent),
+      },
+      {
         path: 'login',
         canActivate: [guestRedirectGuard],
         loadComponent: () => import('./features/auth/login/login.component').then((m) => m.LoginComponent),

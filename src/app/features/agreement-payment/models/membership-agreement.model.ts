@@ -16,3 +16,10 @@ export interface MembershipAgreement {
   createdAt: string;
   respondedAt: string | null;
 }
+export interface CreateMembershipAgreementRequest {
+  membershipApplicationId: string;
+  contributionSchedule: string;
+  payoutSlot: number;
+  startDate: string;
+  expiryDate: string;
+}

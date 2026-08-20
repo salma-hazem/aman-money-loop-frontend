@@ -9,7 +9,7 @@ import { RouterOutlet, RouterLink } from '@angular/router';
     <header class="public-header">
       <a routerLink="/" class="brand">
         <img src="/assets/logo.svg" alt="Aman" />
-        <span>Aman Talent Hunt</span>
+        <span>Aman Money Loop</span>
       </a>
       <a routerLink="/login" class="sign-in">Sign In</a>
     </header>

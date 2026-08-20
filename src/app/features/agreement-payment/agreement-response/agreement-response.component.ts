@@ -48,6 +48,9 @@ export class AgreementResponseComponent implements OnInit {
   }
 
   private loadAgreement(): void {
+    this.isLoading = true;
+    this.errorMessage = '';
+
     this.membershipAgreementService
       .getAgreementForResponse(
         this.agreementId,
@@ -58,6 +61,7 @@ export class AgreementResponseComponent implements OnInit {
           this.agreement = agreement;
           this.isLoading = false;
         },
+
         error: (error) => {
           this.isLoading = false;
 
@@ -80,7 +84,11 @@ export class AgreementResponseComponent implements OnInit {
   }
 
   acceptAgreement(): void {
-    if (!this.hasReviewed || this.isSubmitting) {
+    if (
+      !this.hasReviewed ||
+      this.isSubmitting ||
+      !this.agreement
+    ) {
       return;
     }
 
@@ -96,10 +104,13 @@ export class AgreementResponseComponent implements OnInit {
       .subscribe({
         next: (agreement) => {
           this.agreement = agreement;
+
           this.successMessage =
             'The agreement has been accepted successfully.';
+
           this.isSubmitting = false;
         },
+
         error: (error) => {
           this.handleResponseError(error);
         },
@@ -107,7 +118,10 @@ export class AgreementResponseComponent implements OnInit {
   }
 
   declineAgreement(): void {
-    if (this.isSubmitting) {
+    if (
+      this.isSubmitting ||
+      !this.agreement
+    ) {
       return;
     }
 
@@ -123,14 +137,55 @@ export class AgreementResponseComponent implements OnInit {
       .subscribe({
         next: (agreement) => {
           this.agreement = agreement;
+
           this.successMessage =
             'The agreement has been declined.';
+
           this.isSubmitting = false;
         },
+
         error: (error) => {
           this.handleResponseError(error);
         },
       });
+  }
+
+  getAgreementStatusLabel(
+    status: string | number
+  ): string {
+    if (typeof status === 'string') {
+      return status;
+    }
+
+    switch (status) {
+      case 0:
+        return 'Pending';
+
+      case 1:
+        return 'Accepted';
+
+      case 2:
+        return 'Declined';
+
+      case 3:
+        return 'Expired';
+
+      default:
+        return 'Unknown';
+    }
+  }
+
+  isAgreementPending(): boolean {
+    if (!this.agreement) {
+      return false;
+    }
+
+    const status =
+      this.getAgreementStatusLabel(
+        this.agreement.status
+      );
+
+    return status === 'Pending';
   }
 
   private handleResponseError(error: any): void {
