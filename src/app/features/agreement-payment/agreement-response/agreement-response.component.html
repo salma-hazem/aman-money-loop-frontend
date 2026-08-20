@@ -1,21 +1,25 @@
 <div class="agreement-page">
 
+  <!-- Loading -->
   @if (isLoading) {
     <div class="agreement-card">
       <p>Loading agreement...</p>
     </div>
   }
 
-  @else if (errorMessage) {
+  <!-- Error while initially loading the agreement -->
+  @else if (errorMessage && !agreement) {
     <div class="agreement-card">
       <h2>Unable to load agreement</h2>
       <p>{{ errorMessage }}</p>
     </div>
   }
 
+  <!-- Agreement successfully loaded -->
   @else if (agreement) {
     <div class="agreement-card">
 
+      <!-- Header -->
       <div class="agreement-header">
         <div>
           <h1>Membership Agreement</h1>
@@ -23,10 +27,11 @@
         </div>
 
         <span class="status-badge">
-          {{ agreement.status }}
+          {{ getAgreementStatusLabel(agreement.status) }}
         </span>
       </div>
 
+      <!-- Agreement Details -->
       <div class="agreement-section">
         <h2>Agreement Preview Summary</h2>
 
@@ -63,58 +68,68 @@
           <div class="detail-row">
             <span class="label">Start Date</span>
             <span class="value">
-              {{ agreement.startDate }}
+              {{ agreement.startDate | date:'dd MMM yyyy' }}
             </span>
           </div>
 
           <div class="detail-row">
             <span class="label">Expiry Date</span>
             <span class="value">
-              {{ agreement.expiryDate }}
+              {{ agreement.expiryDate | date:'dd MMM yyyy' }}
             </span>
           </div>
 
         </div>
       </div>
 
-      <div class="review-section">
-        <label>
-          <input
-            type="checkbox"
-            [checked]="hasReviewed"
-            (change)="hasReviewed = !hasReviewed"
-            />
-          I have reviewed the agreement
-        </label>
-      </div>
+      <!-- Messages -->
       @if (successMessage) {
         <div class="success-message">
-            {{ successMessage }}
+          {{ successMessage }}
         </div>
-        }
+      }
 
-        @if (errorMessage) {
+      @if (errorMessage) {
         <div class="error-message">
-            {{ errorMessage }}
+          {{ errorMessage }}
         </div>
-        }
-      <div class="actions">
-        <button
-        class="accept-button"
-        [disabled]="!hasReviewed || isSubmitting"
-        (click)="acceptAgreement()"
-        >
-        {{ isSubmitting ? 'Please wait...' : 'Accept Agreement' }}
-        </button>
+      }
 
-        <button
-        class="decline-button"
-        [disabled]="isSubmitting"
-        (click)="declineAgreement()"
-        >
-        Decline
-        </button>
-      </div>
+      <!-- Only allow response while Pending -->
+      @if (isAgreementPending()) {
+
+        <div class="review-section">
+          <label>
+            <input
+              type="checkbox"
+              [checked]="hasReviewed"
+              (change)="hasReviewed = !hasReviewed"
+            />
+
+            I have reviewed the agreement
+          </label>
+        </div>
+
+        <div class="actions">
+
+          <button
+            class="accept-button"
+            [disabled]="!hasReviewed || isSubmitting"
+            (click)="acceptAgreement()"
+          >
+            {{ isSubmitting ? 'Please wait...' : 'Accept Agreement' }}
+          </button>
+
+          <button
+            class="decline-button"
+            [disabled]="isSubmitting"
+            (click)="declineAgreement()"
+          >
+            Decline
+          </button>
+
+        </div>
+      }
 
     </div>
   }

@@ -3,7 +3,10 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
-import { MembershipAgreement } from '../models/membership-agreement.model';
+import {
+  CreateMembershipAgreementRequest,
+  MembershipAgreement
+} from '../models/membership-agreement.model';
 
 @Injectable({
   providedIn: 'root',
@@ -25,6 +28,15 @@ export class MembershipAgreementService {
           token,
         },
       }
+    );
+  }
+
+  createAgreement(
+    request: CreateMembershipAgreementRequest
+  ): Observable<MembershipAgreement> {
+    return this.http.post<MembershipAgreement>(
+      this.baseUrl,
+      request
     );
   }
 
