@@ -1,0 +1,60 @@
+<div class="otp-wrap">
+  <form
+    class="otp-card"
+    [formGroup]="form"
+    (ngSubmit)="submit()"
+  >
+    <h1>Confirm Email</h1>
+
+    <p class="subtitle">
+      Enter the 6-digit verification code sent to your email.
+    </p>
+
+    @if (error()) {
+      <p-message
+        severity="error"
+        [text]="error()!"
+        styleClass="w-full"
+      />
+    }
+
+    @if (success()) {
+      <p-message
+        severity="success"
+        [text]="success()!"
+        styleClass="w-full"
+      />
+    }
+
+    <div class="field">
+      <label for="otp">
+        Verification Code
+      </label>
+
+      <input
+        pInputText
+        id="otp"
+        formControlName="otp"
+        maxlength="6"
+        inputmode="numeric"
+      />
+
+      @if (
+        form.controls.otp.invalid &&
+        form.controls.otp.touched
+      ) {
+        <small class="field-error">
+          Enter the 6-digit verification code.
+        </small>
+      }
+    </div>
+
+    <button
+      pButton
+      type="submit"
+      label="Confirm Email"
+      [loading]="loading()"
+      class="w-full"
+    ></button>
+  </form>
+</div>

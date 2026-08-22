@@ -1,0 +1,97 @@
+<div class="register-wrap">
+  <form
+    class="register-card"
+    [formGroup]="form"
+    (ngSubmit)="submit()"
+  >
+    <h1>Create Account</h1>
+
+    <p class="subtitle">
+      Register as a member of Aman Money Loop.
+    </p>
+
+    @if (error()) {
+      <p-message
+        severity="error"
+        [text]="error()!"
+        styleClass="w-full"
+      />
+    }
+
+    <div class="row">
+      <div class="field">
+        <label for="firstName">
+          First Name
+        </label>
+
+        <input
+          pInputText
+          id="firstName"
+          formControlName="firstName"
+        />
+      </div>
+
+      <div class="field">
+        <label for="lastName">
+          Last Name
+        </label>
+
+        <input
+          pInputText
+          id="lastName"
+          formControlName="lastName"
+        />
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="nationalId">
+        National ID
+      </label>
+
+      <input
+        pInputText
+        id="nationalId"
+        formControlName="nationalId"
+      />
+    </div>
+
+    <div class="field">
+      <label for="email">
+        Email
+      </label>
+
+      <input
+        pInputText
+        id="email"
+        type="email"
+        formControlName="email"
+      />
+    </div>
+
+    <div class="field">
+      <label for="phoneNumber">
+        Phone Number
+      </label>
+
+      <input
+        pInputText
+        id="phoneNumber"
+        formControlName="phoneNumber"
+      />
+    </div>
+
+    <button
+      pButton
+      type="submit"
+      label="Register"
+      [loading]="loading()"
+      class="w-full"
+    ></button>
+
+    <p class="login-link">
+      Already have an account?
+      <a href="/login">Sign In</a>
+    </p>
+  </form>
+</div>

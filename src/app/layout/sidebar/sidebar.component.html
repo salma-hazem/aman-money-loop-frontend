@@ -1,10 +1,14 @@
 <aside class="sidebar" [class.collapsed]="collapsed()">
   <div class="brand">
-    <img src="/assets/logo.svg" alt="" class="brand-logo" />
-    @if (!collapsed()) {
+    <img
+      class="brand-logo"
+      src="/images/aman-money-loop-logo.png"
+      alt="Aman Money Loop"
+    />   
+     @if (!collapsed()) {
       <div class="brand-text">
         <span class="brand-name">Aman</span>
-        <span class="brand-sub">Talent Hunt</span>
+        <span class="brand-sub">Money Loop</span>
       </div>
     }
   </div>
@@ -39,7 +43,7 @@
       @if (!collapsed()) {
         <div class="user-chip-text">
           <span class="name">{{ currentUser()?.fullName }}</span>
-          <span class="role">{{ currentUser()?.role }}</span>
+          <span class="role">{{ currentUser()?.roles?.[0] }}</span>
         </div>
       }
     </div>

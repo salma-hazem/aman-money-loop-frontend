@@ -1,128 +1,164 @@
 import { Routes } from '@angular/router';
-import { authGuard, guestRedirectGuard, roleGuard } from './core/guards/auth.guard';
-import { Role } from './core/models/role.model';
+import {
+  authGuard,
+  guestRedirectGuard,
+} from './core/guards/auth.guard';
 
 export const routes: Routes = [
+
+  // =====================================================
+  // Public pages
+  // =====================================================
   {
     path: '',
     loadComponent: () =>
-      import('./layout/public-shell/public-shell.component').then((m) => m.PublicShellComponent),
+      import('./layout/public-shell/public-shell.component')
+        .then((m) => m.PublicShellComponent),
+
     children: [
+
+      // Public landing page
       {
         path: '',
+        pathMatch: 'full',
         loadComponent: () =>
-          import('./features/job-postings/job-board.component').then((m) => m.JobBoardComponent),
+          import('./features/landing/landing.component')
+            .then((m) => m.LandingComponent),
       },
-      {
-        path: 'agreement-response',
-        loadComponent: () =>
-          import('./features/agreement-payment/agreement-response/agreement-response.component')
-            .then((m) => m.AgreementResponseComponent),
-      },
-      {
-        path: 'agreement-generator',
-        loadComponent: () =>
-          import('./features/agreement-payment/agreement-generator/agreement-generator.component')
-            .then((m) => m.AgreementGeneratorComponent),
-      },
-      {
-        path: 'payments-receipts',
-        loadComponent: () =>
-          import('./features/agreement-payment/payments-receipts/payments-receipts.component')
-            .then((m) => m.PaymentsReceiptsComponent),
-      },
+
+      // Login
       {
         path: 'login',
         canActivate: [guestRedirectGuard],
-        loadComponent: () => import('./features/auth/login/login.component').then((m) => m.LoginComponent),
+        loadComponent: () =>
+          import('./features/auth/login/login.component')
+            .then((m) => m.LoginComponent),
+      },
+
+      {
+        path: 'change-password',
+        loadComponent: () =>
+          import(
+            './features/auth/change-password/change-password.component'
+          ).then((m) => m.ChangePasswordComponent),
+      },
+      {
+        path: 'register',
+        canActivate: [guestRedirectGuard],
+        loadComponent: () =>
+          import(
+            './features/auth/register/register.component'
+          ).then((m) => m.RegisterComponent),
+      },
+
+      {
+        path: 'confirm-otp',
+        loadComponent: () =>
+          import(
+            './features/auth/confirm-otp/confirm-otp.component'
+          ).then((m) => m.ConfirmOtpComponent),
+      },
+      // Member opens this from the secure agreement email link.
+      // Must remain public because the token in the URL authenticates
+      // the agreement response.
+      {
+        path: 'agreement-response',
+        loadComponent: () =>
+          import(
+            './features/agreement-payment/agreement-response/agreement-response.component'
+          ).then((m) => m.AgreementResponseComponent),
       },
     ],
   },
 
+  // =====================================================
+  // Authenticated application
+  // =====================================================
   {
     path: 'console',
     canActivate: [authGuard],
+
     loadComponent: () =>
-      import('./layout/console-shell/console-shell.component').then((m) => m.ConsoleShellComponent),
+      import('./layout/console-shell/console-shell.component')
+        .then((m) => m.ConsoleShellComponent),
+
     children: [
+
+      // Main Aman Money Loop dashboard
       {
         path: '',
-        loadComponent: () => import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent),
+        loadComponent: () =>
+          import('./features/dashboard/dashboard.component')
+            .then((m) => m.DashboardComponent),
+      },
+
+      // =================================================
+      // Module 5 - Agreement & Payment
+      // =================================================
+
+      {
+        path: 'agreement-generator',
+        loadComponent: () =>
+          import(
+            './features/agreement-payment/agreement-generator/agreement-generator.component'
+          ).then((m) => m.AgreementGeneratorComponent),
       },
 
       {
-        path: 'requisitions',
+        path: 'payments-receipts',
         loadComponent: () =>
-          import('./features/requisitions/list/requisition-list.component').then((m) => m.RequisitionListComponent),
+          import(
+            './features/agreement-payment/payments-receipts/payments-receipts.component'
+          ).then((m) => m.PaymentsReceiptsComponent),
       },
-      {
-        path: 'requisitions/new',
-        canActivate: [roleGuard([Role.HiringManager])],
-        loadComponent: () =>
-          import('./features/requisitions/detail/requisition-detail.component').then(
-            (m) => m.RequisitionDetailComponent,
-          ),
-      },
-      {
-        path: 'requisitions/:id',
-        loadComponent: () =>
-          import('./features/requisitions/detail/requisition-detail.component').then(
-            (m) => m.RequisitionDetailComponent,
-          ),
-      },
-      {
-        path: 'approvals',
-        canActivate: [roleGuard([Role.DepartmentHead, Role.FinanceApprover, Role.HRManager])],
-        loadComponent: () =>
-          import('./features/requisitions/approvals/approvals.component').then((m) => m.ApprovalsComponent),
-      },
-      {
-        path: 'manpower-plan',
-        canActivate: [roleGuard([Role.HRManager, Role.Admin])],
-        loadComponent: () =>
-          import('./features/manpower-plan/manpower-plan.component').then((m) => m.ManpowerPlanComponent),
-      },
-      {
-        path: 'postings',
-        canActivate: [roleGuard([Role.Recruiter, Role.HRManager])],
-        loadComponent: () =>
-          import('./features/job-postings/job-postings-manage.component').then(
-            (m) => m.JobPostingsManageComponent,
-          ),
-      },
-      {
-        path: 'pipeline/:jobId',
-        loadComponent: () => import('./features/pipeline/pipeline.component').then((m) => m.PipelineComponent),
-      },
-      {
-        path: 'interviews',
-        loadComponent: () =>
-          import('./features/interviews/interviews.component').then((m) => m.InterviewsComponent),
-      },
-      {
-        path: 'offers',
-        canActivate: [roleGuard([Role.Recruiter, Role.HRManager])],
-        loadComponent: () => import('./features/offers/offers.component').then((m) => m.OffersComponent),
-      },
+
+      // =================================================
+      // Module 6 - Onboarding
+      // =================================================
+
       {
         path: 'onboarding',
-        canActivate: [roleGuard([Role.OnboardingCoordinator, Role.HRManager])],
         loadComponent: () =>
-          import('./features/onboarding/onboarding.component').then((m) => m.OnboardingComponent),
+          import('./features/onboarding/onboarding.component')
+            .then((m) => m.OnboardingComponent),
       },
-      {
-        path: 'reports',
-        canActivate: [roleGuard([Role.HRManager, Role.Admin])],
-        loadComponent: () => import('./features/reports/reports.component').then((m) => m.ReportsComponent),
-      },
+
+      // =================================================
+      // Module 1 - Admin User Management
+      // =================================================
+
       {
         path: 'admin/users',
-        canActivate: [roleGuard([Role.Admin])],
         loadComponent: () =>
-          import('./features/admin/users/user-management.component').then((m) => m.UserManagementComponent),
+          import('./features/admin/users/user-management.component')
+            .then((m) => m.UserManagementComponent),
       },
     ],
   },
 
-  { path: '**', redirectTo: '' },
+  // =====================================================
+  // Temporary compatibility redirects
+  // Preserve your old Module 5 URLs
+  // =====================================================
+
+  {
+    path: 'agreement-generator',
+    redirectTo: 'console/agreement-generator',
+    pathMatch: 'full',
+  },
+
+  {
+    path: 'payments-receipts',
+    redirectTo: 'console/payments-receipts',
+    pathMatch: 'full',
+  },
+
+  // =====================================================
+  // Unknown routes
+  // =====================================================
+
+  {
+    path: '**',
+    redirectTo: '',
+  },
 ];

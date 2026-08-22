@@ -28,9 +28,8 @@ export const roleGuard = (allowed: Role[]): CanActivateFn => {
 export const guestRedirectGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
   const router = inject(Router);
-  if (auth.isLoggedIn()) {
-    router.navigate(['/']);
-    return false;
-  }
-  return true;
+
+  return auth.isLoggedIn()
+    ? router.createUrlTree(['/console'])
+    : true;
 };

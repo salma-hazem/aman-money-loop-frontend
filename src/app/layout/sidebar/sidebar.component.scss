@@ -125,4 +125,10 @@
     font-size: 0.7rem;
     color: var(--p-surface-500);
   }
+  .brand-logo {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
 }
