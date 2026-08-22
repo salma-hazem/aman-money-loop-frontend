@@ -1,0 +1,99 @@
+<div class="dashboard-page">
+
+  <section class="welcome-section">
+    <div>
+      <span class="eyebrow">
+        AMAN MONEY LOOP
+      </span>
+
+      <h1>
+        Welcome back,
+        {{ auth.currentUser()?.fullName }}
+      </h1>
+
+      <p>
+        Manage your account and access the Money Loop
+        features available for your role.
+      </p>
+    </div>
+
+    <div class="welcome-logo">
+      <img
+        src="/images/aman-money-loop-logo.png"
+        alt="Aman Money Loop"
+      />
+    </div>
+  </section>
+
+  <section class="account-grid">
+
+    <p-card styleClass="account-card">
+      <div class="card-content">
+        <span class="card-label">
+          Account
+        </span>
+
+        <span class="card-value email">
+          {{ auth.currentUser()?.email }}
+        </span>
+      </div>
+    </p-card>
+
+    <p-card styleClass="account-card">
+      <div class="card-content">
+        <span class="card-label">
+          Role
+        </span>
+
+        <span class="card-value">
+          {{ auth.role() }}
+        </span>
+      </div>
+    </p-card>
+
+    <p-card styleClass="account-card">
+        <div class="card-content">
+            <span class="card-label">
+            Email Address
+            </span>
+
+            <span
+            class="card-value email"
+            [title]="auth.currentUser()?.email"
+            >
+            {{ auth.currentUser()?.email }}
+            </span>
+        </div>
+        </p-card>
+
+  </section>
+
+  <section class="quick-access">
+
+    <div class="section-heading">
+      <h2>Quick Access</h2>
+
+      <p>
+        Use the navigation menu to access the features
+        available for your account.
+      </p>
+    </div>
+
+    <div class="info-panel">
+      <div class="info-icon">
+        $
+      </div>
+
+      <div>
+        <h3>Your Money Loop</h3>
+
+        <p>
+          Your available features depend on your assigned
+          role and current membership status.
+        </p>
+      </div>
+    </div>
+
+  </section>
+
+</div>

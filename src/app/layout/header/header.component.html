@@ -11,7 +11,7 @@
       <i [class]="isDark() ? 'pi pi-sun' : 'pi pi-moon'"></i>
     </button>
 
-    <button class="icon-btn" routerLink="/console/approvals" aria-label="Pending approvals">
+    <button class="icon-btn"  aria-label="Pending approvals">
       @if (pendingApprovals() > 0) {
       <i class="pi pi-bell" pBadge [value]="pendingApprovals()" severity="danger"></i>
       } @else {
@@ -23,7 +23,7 @@
       <p-avatar [label]="initials()" shape="circle" styleClass="user-avatar" />
       <div class="user-info">
         <span class="user-name">{{ currentUser()?.fullName }}</span>
-        <span class="user-role">{{ currentUser()?.role }}</span>
+        <span class="user-role">{{ currentUser()?.roles?.[0] }}</span>
       </div>
       <i class="pi pi-chevron-down"></i>
     </button>
