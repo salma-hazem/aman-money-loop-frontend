@@ -2,98 +2,206 @@
 
   <div class="pipeline-header">
     <h1>Applicant Pipeline</h1>
-    <p>Track and manage applicants as they move through review.</p>
+    <p>
+      Track and manage applicants as they move through review.
+    </p>
   </div>
 
   @if (isLoading()) {
-    <div class="state-message">Loading applicants...</div>
+    <div class="state-message">
+      Loading applicants...
+    </div>
   }
 
   @else if (errorMessage()) {
-    <div class="state-message error">{{ errorMessage() }}</div>
+    <div class="state-message error">
+      {{ errorMessage() }}
+    </div>
   }
 
   @else {
 
     <div class="board">
+
       @for (column of columns; track column.stage) {
+
         <div class="board-column">
 
           <div class="column-header">
-            <span class="column-title">{{ column.label }}</span>
+            <span class="column-title">
+              {{ column.label }}
+            </span>
+
             <span class="column-count">
               {{ applicantsForStage(column.stage).length }}
             </span>
           </div>
 
           <div class="column-cards">
-            @for (applicant of applicantsForStage(column.stage); track applicant.membershipApplicationId) {
+
+            @for (
+              applicant of applicantsForStage(column.stage);
+              track applicant.membershipApplicationId
+            ) {
+
               <div class="applicant-card">
 
-                <div class="card-name" (click)="viewDetails(applicant.membershipApplicationId)">
+                <div
+                  class="card-name"
+                  (click)="
+                    viewDetails(
+                      applicant.membershipApplicationId
+                    )
+                  "
+                >
                   {{ applicant.name }}
                 </div>
+
                 <div class="card-date">
-                  Applied {{ applicant.createdAt | date: 'dd MMM' }}
+                  Applied
+                  {{ applicant.createdAt | date: 'dd MMM' }}
                 </div>
 
+                <!-- Submitted -->
                 @if (column.stage === 'Submitted') {
+
                   <div class="card-actions">
+
                     <button
                       class="shortlist-button"
-                      [disabled]="actionInFlightId() === applicant.membershipApplicationId"
-                      (click)="shortlist(applicant.membershipApplicationId)"
-                      >
+                      [disabled]="
+                        actionInFlightId() ===
+                        applicant.membershipApplicationId
+                      "
+                      (click)="
+                        shortlist(
+                          applicant.membershipApplicationId
+                        )
+                      "
+                    >
                       Shortlist
                     </button>
+
                     <button
                       class="reject-button"
-                      [disabled]="actionInFlightId() === applicant.membershipApplicationId"
-                      (click)="reject(applicant.membershipApplicationId)"
-                      >
+                      [disabled]="
+                        actionInFlightId() ===
+                        applicant.membershipApplicationId
+                      "
+                      (click)="
+                        reject(
+                          applicant.membershipApplicationId
+                        )
+                      "
+                    >
                       Reject
                     </button>
+
                   </div>
+
                 }
 
-                @else if (column.stage === 'Shortlisted') {
+                <!-- Shortlisted -->
+                @else if (
+                  column.stage === 'Shortlisted'
+                ) {
+
                   <div class="card-actions">
+
                     <button
                       class="reject-button"
-                      [disabled]="actionInFlightId() === applicant.membershipApplicationId"
-                      (click)="reject(applicant.membershipApplicationId)"
-                      >
+                      [disabled]="
+                        actionInFlightId() ===
+                        applicant.membershipApplicationId
+                      "
+                      (click)="
+                        reject(
+                          applicant.membershipApplicationId
+                        )
+                      "
+                    >
                       Reject
                     </button>
+
                   </div>
+
+                }
+
+                <!-- Verification Completed -->
+                @else if (
+                  column.stage === 'VerificationCompleted'
+                ) {
+
+                  <div class="card-actions">
+
+                    <button
+                      class="shortlist-button"
+                      (click)="
+                        generateAgreement(
+                          applicant.membershipApplicationId
+                        )
+                      "
+                    >
+                      Generate Agreement
+                    </button>
+
+                  </div>
+
                 }
 
               </div>
+
             }
 
             @empty {
-              <div class="column-empty">No applicants</div>
+
+              <div class="column-empty">
+                No applicants
+              </div>
+
             }
+
           </div>
 
         </div>
+
       }
+
     </div>
 
     @if (rejectedApplicants().length > 0) {
+
       <div class="rejected-panel">
-        <h2>Rejected ({{ rejectedApplicants().length }})</h2>
+
+        <h2>
+          Rejected
+          ({{ rejectedApplicants().length }})
+        </h2>
+
         <div class="rejected-list">
-          @for (applicant of rejectedApplicants(); track applicant.membershipApplicationId) {
+
+          @for (
+            applicant of rejectedApplicants();
+            track applicant.membershipApplicationId
+          ) {
+
             <div
               class="rejected-item"
-              (click)="viewDetails(applicant.membershipApplicationId)"
-              >
+              (click)="
+                viewDetails(
+                  applicant.membershipApplicationId
+                )
+              "
+            >
               {{ applicant.name }}
             </div>
+
           }
+
         </div>
+
       </div>
+
     }
 
   }

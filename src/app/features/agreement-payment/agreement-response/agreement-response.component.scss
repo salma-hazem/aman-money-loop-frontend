@@ -1,70 +1,144 @@
 .agreement-page {
   min-height: 100vh;
-  background: #f5f7f9;
-  padding: 48px 24px;
+  padding: 3rem 1.5rem;
+  background:
+    linear-gradient(
+      135deg,
+      #f7faf9 0%,
+      #edf8f6 100%
+    );
 }
 
 .agreement-card {
   max-width: 900px;
   margin: 0 auto;
-  background: white;
-  border: 1px solid #e2e6ea;
-  border-radius: 12px;
-  padding: 32px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: 2rem;
+  border: 1px solid #dfeae8;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow:
+    0 12px 35px rgba(20, 80, 74, 0.07);
+}
+
+.state-card {
+  max-width: 600px;
+  text-align: center;
+
+  h2 {
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    color: #667b79;
+  }
+}
+
+.loader {
+  width: 42px;
+  height: 42px;
+  margin: 0 auto 1rem;
+  border: 4px solid #dceceb;
+  border-top-color: #08a99f;
+  border-radius: 50%;
+}
+
+.state-icon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.error-icon {
+  background: #feeceb;
+  color: #b42318;
 }
 
 .agreement-header {
   display: flex;
-  justify-content: space-between;
   align-items: flex-start;
-  gap: 20px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid #e5e7eb;
+  justify-content: space-between;
+  gap: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #e5eeee;
 
   h1 {
-    margin: 0 0 8px;
-    font-size: 28px;
-    font-weight: 700;
+    margin: 0;
+    color: #112f2c;
+    font-size: 2rem;
   }
 
   p {
-    margin: 0;
-    color: #6b7280;
+    margin: 0.6rem 0 0;
+    color: #667b79;
+    line-height: 1.6;
   }
 }
 
+.eyebrow {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  color: #079c92;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
 .status-badge {
-  background: #fff7ed;
-  color: #c2410c;
-  border: 1px solid #fed7aa;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 600;
+  flex-shrink: 0;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.status-badge.pending {
+  background: #fff4d9;
+  color: #9a6700;
+}
+
+.status-badge.accepted {
+  background: #daf7ef;
+  color: #087a5b;
+}
+
+.status-badge.declined {
+  background: #feeceb;
+  color: #b42318;
+}
+
+.status-badge.expired {
+  background: #eceff1;
+  color: #53605f;
 }
 
 .agreement-section {
-  margin-top: 30px;
+  margin-top: 2rem;
 
   h2 {
-    margin-bottom: 20px;
-    font-size: 20px;
+    margin: 0 0 1rem;
+    color: #173431;
+    font-size: 1.25rem;
   }
 }
 
 .agreement-details {
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
   overflow: hidden;
+  border: 1px solid #dce8e7;
+  border-radius: 12px;
 }
 
 .detail-row {
   display: flex;
   justify-content: space-between;
-  gap: 20px;
-  padding: 16px 20px;
-  border-bottom: 1px solid #e5e7eb;
+  gap: 2rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #e5eeee;
 
   &:last-child {
     border-bottom: none;
@@ -72,33 +146,35 @@
 }
 
 .label {
-  color: #6b7280;
-  font-weight: 500;
+  color: #6c807e;
 }
 
 .value {
-  color: #111827;
+  color: #183633;
   font-weight: 600;
   text-align: right;
 }
 
 .review-section {
-  margin-top: 28px;
-  padding: 18px;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
+  margin-top: 1.75rem;
+  padding: 1rem;
+  border: 1px solid #dce8e7;
+  border-radius: 10px;
+  background: #f7fbfa;
 
   label {
     display: flex;
-    align-items: center;
-    gap: 10px;
+    align-items: flex-start;
+    gap: 0.75rem;
+    color: #314c49;
     cursor: pointer;
   }
 
   input {
     width: 18px;
     height: 18px;
+    margin-top: 2px;
+    accent-color: #08a99f;
     cursor: pointer;
   }
 }
@@ -106,45 +182,98 @@
 .actions {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
-  margin-top: 28px;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
 }
 
 button {
+  min-height: 44px;
+  padding: 0.7rem 1.25rem;
   border-radius: 8px;
-  padding: 11px 20px;
-  font-size: 15px;
+  font: inherit;
   font-weight: 600;
   cursor: pointer;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
 
 .accept-button {
   border: none;
-  background: #087f73;
-  color: white;
+  background: #08a99f;
+  color: #ffffff;
 
-  &:hover {
-    background: #066b61;
+  &:hover:not(:disabled) {
+    background: #078f87;
   }
 }
 
 .decline-button {
-  background: white;
-  border: 1px solid #d1d5db;
-  color: #374151;
+  border: 1px solid #d8a9a5;
+  background: #ffffff;
+  color: #a52b22;
 
-  &:hover {
-    background: #f3f4f6;
+  &:hover:not(:disabled) {
+    background: #fff6f5;
   }
 }
 
-@media (max-width: 600px) {
+.success-message,
+.error-message {
+  margin-top: 1.5rem;
+  padding: 0.9rem 1rem;
+  border-radius: 9px;
+  font-size: 0.9rem;
+}
+
+.success-message {
+  border: 1px solid #bce8da;
+  background: #ecfbf5;
+  color: #087a5b;
+}
+
+.error-message {
+  border: 1px solid #f0c8c4;
+  background: #fff3f2;
+  color: #b42318;
+}
+
+.response-state {
+  margin-top: 1.5rem;
+  padding: 1rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  border-radius: 10px;
+}
+
+.accepted-state {
+  border: 1px solid #bce8da;
+  background: #ecfbf5;
+  color: #087a5b;
+}
+
+.declined-state {
+  border: 1px solid #f0c8c4;
+  background: #fff3f2;
+  color: #9f2d24;
+}
+
+.expired-state {
+  border: 1px solid #d9dfdf;
+  background: #f4f6f6;
+  color: #53605f;
+}
+
+@media (max-width: 650px) {
   .agreement-page {
-    padding: 20px 12px;
+    padding: 1.25rem 0.75rem;
   }
 
   .agreement-card {
-    padding: 20px;
+    padding: 1.25rem;
   }
 
   .agreement-header {
@@ -153,7 +282,7 @@ button {
 
   .detail-row {
     flex-direction: column;
-    gap: 6px;
+    gap: 0.35rem;
   }
 
   .value {
@@ -161,32 +290,10 @@ button {
   }
 
   .actions {
-    flex-direction: column;
+    flex-direction: column-reverse;
   }
 
   button {
     width: 100%;
   }
-  .success-message {
-    margin-top: 20px;
-    padding: 14px 16px;
-    background: #ecfdf5;
-    border: 1px solid #a7f3d0;
-    color: #065f46;
-    border-radius: 8px;
-    }
-
-    .error-message {
-    margin-top: 20px;
-    padding: 14px 16px;
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-    color: #991b1b;
-    border-radius: 8px;
-    }
-
-    button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    }
 }

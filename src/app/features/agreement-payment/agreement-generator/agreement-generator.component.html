@@ -2,209 +2,373 @@
 
   <div class="agreement-card">
 
-    <!-- Header -->
     <div class="agreement-header">
+
       <div>
-        <h1>Membership Agreement Generator</h1>
+        <span class="eyebrow">
+          AGREEMENT & PAYMENT
+        </span>
+
+        <h1>
+          Membership Agreement
+        </h1>
+
         <p>
-          Create and send a membership agreement to the selected member.
+          Review the selected applicant and complete
+          the agreement details before sending it.
         </p>
       </div>
-    </div>
 
-    <!-- Agreement Form -->
-    <form
-      [formGroup]="agreementForm"
-      (ngSubmit)="generateAgreement()"
-    >
-
-      <div class="agreement-section">
-
-        <h2>Agreement Details</h2>
-
-        <div class="form-grid">
-
-          <!-- Membership Application -->
-          <div class="form-group full-width">
-            <label for="membershipApplicationId">
-              Membership Application ID
-            </label>
-
-            <input
-              id="membershipApplicationId"
-              type="text"
-              formControlName="membershipApplicationId"
-              placeholder="Enter membership application ID"
-            />
-
-            @if (
-              agreementForm.get('membershipApplicationId')?.touched &&
-              agreementForm.get('membershipApplicationId')?.invalid
-            ) {
-              <span class="validation-message">
-                Membership Application ID is required.
-              </span>
-            }
-          </div>
-
-          <!-- Contribution Schedule -->
-          <div class="form-group">
-            <label for="contributionSchedule">
-              Contribution Schedule
-            </label>
-
-            <select
-              id="contributionSchedule"
-              formControlName="contributionSchedule"
-            >
-              <option value="">
-                Select contribution schedule
-              </option>
-
-              <option value="Monthly">
-                Monthly
-              </option>
-
-              <option value="Biweekly">
-                Biweekly
-              </option>
-
-              <option value="Weekly">
-                Weekly
-              </option>
-            </select>
-
-            @if (
-              agreementForm.get('contributionSchedule')?.touched &&
-              agreementForm.get('contributionSchedule')?.invalid
-            ) {
-              <span class="validation-message">
-                Contribution schedule is required.
-              </span>
-            }
-          </div>
-
-          <!-- Payout Slot -->
-          <div class="form-group">
-            <label for="payoutSlot">
-              Payout Slot
-            </label>
-
-            <input
-              id="payoutSlot"
-              type="number"
-              min="1"
-              formControlName="payoutSlot"
-              placeholder="Enter payout slot"
-            />
-
-            @if (
-              agreementForm.get('payoutSlot')?.touched &&
-              agreementForm.get('payoutSlot')?.invalid
-            ) {
-              <span class="validation-message">
-                A valid payout slot is required.
-              </span>
-            }
-          </div>
-
-          <!-- Start Date -->
-          <div class="form-group">
-            <label for="startDate">
-              Start Date
-            </label>
-
-            <input
-              id="startDate"
-              type="date"
-              formControlName="startDate"
-            />
-
-            @if (
-              agreementForm.get('startDate')?.touched &&
-              agreementForm.get('startDate')?.invalid
-            ) {
-              <span class="validation-message">
-                Start date is required.
-              </span>
-            }
-          </div>
-
-          <!-- Expiry Date -->
-          <div class="form-group">
-            <label for="expiryDate">
-              Expiry Date
-            </label>
-
-            <input
-              id="expiryDate"
-              type="date"
-              formControlName="expiryDate"
-            />
-
-            @if (
-              agreementForm.get('expiryDate')?.touched &&
-              agreementForm.get('expiryDate')?.invalid
-            ) {
-              <span class="validation-message">
-                Expiry date is required.
-              </span>
-            }
-          </div>
-
-        </div>
-      </div>
-
-      <!-- Error -->
-      @if (errorMessage) {
-        <div class="error-message">
-          {{ errorMessage }}
-        </div>
-      }
-
-      <!-- Actions -->
-      <div class="actions">
-
-        <button
-          type="submit"
-          class="primary-button"
-          [disabled]="isSubmitting"
-        >
-          {{
-            isSubmitting
-              ? 'Generating...'
-              : 'Generate & Send Agreement'
-          }}
-        </button>
-
+      @if (membershipApplication) {
         <button
           type="button"
-          class="secondary-button"
-          [disabled]="isSubmitting"
-          (click)="resetForm()"
+          class="back-button"
+          (click)="backToPipeline()"
         >
-          Clear
+          Back to Pipeline
         </button>
+      }
 
+    </div>
+
+
+    <!-- Loading applicant -->
+    @if (isLoadingApplication) {
+
+      <div class="state-panel">
+        Loading selected applicant...
       </div>
 
-    </form>
+    }
 
 
-    <!-- Successfully Generated Agreement -->
+    <!-- Selected applicant -->
+    @if (
+      membershipApplication &&
+      !isLoadingApplication
+    ) {
+
+      <section class="selected-member">
+
+        <div class="section-heading">
+
+          <div>
+            <span class="section-kicker">
+              SELECTED APPLICANT
+            </span>
+
+            <h2>
+              {{ membershipApplication.name }}
+            </h2>
+          </div>
+
+          <span class="stage-badge">
+            Verification Completed
+          </span>
+
+        </div>
+
+        <div class="member-grid">
+
+          <div class="member-detail">
+            <span class="detail-label">
+              Email
+            </span>
+
+            <span class="detail-value">
+              {{ membershipApplication.email }}
+            </span>
+          </div>
+
+          <div class="member-detail">
+            <span class="detail-label">
+              Phone
+            </span>
+
+            <span class="detail-value">
+              {{ membershipApplication.phone }}
+            </span>
+          </div>
+
+          <div class="member-detail">
+            <span class="detail-label">
+              National ID
+            </span>
+
+            <span class="detail-value">
+              {{ membershipApplication.nationalId }}
+            </span>
+          </div>
+
+          <div class="member-detail">
+            <span class="detail-label">
+              Application ID
+            </span>
+
+            <span
+              class="detail-value application-id"
+              [title]="
+                membershipApplication.membershipApplicationId
+              "
+            >
+              {{
+                membershipApplication
+                  .membershipApplicationId
+              }}
+            </span>
+          </div>
+
+        </div>
+
+      </section>
+
+    }
+
+
+    <!-- Agreement form -->
+    @if (membershipApplication) {
+
+      <form
+        [formGroup]="agreementForm"
+        (ngSubmit)="generateAgreement()"
+      >
+
+        <section class="agreement-section">
+
+          <div class="section-heading">
+
+            <div>
+              <span class="section-kicker">
+                AGREEMENT DETAILS
+              </span>
+
+              <h2>
+                Membership Terms
+              </h2>
+            </div>
+
+          </div>
+
+          <div class="form-grid">
+
+            <!-- Contribution Schedule -->
+            <div class="form-group">
+
+              <label for="contributionSchedule">
+                Contribution Schedule
+              </label>
+
+              <select
+                id="contributionSchedule"
+                formControlName="contributionSchedule"
+              >
+                <option value="">
+                  Select contribution schedule
+                </option>
+
+                <option value="Monthly">
+                  Monthly
+                </option>
+
+                <option value="Biweekly">
+                  Biweekly
+                </option>
+
+                <option value="Weekly">
+                  Weekly
+                </option>
+              </select>
+
+              @if (
+                agreementForm
+                  .get('contributionSchedule')
+                  ?.touched &&
+                agreementForm
+                  .get('contributionSchedule')
+                  ?.invalid
+              ) {
+                <span class="validation-message">
+                  Contribution schedule is required.
+                </span>
+              }
+
+            </div>
+
+
+            <!-- Payout Slot -->
+            <div class="form-group">
+
+              <label for="payoutSlot">
+                Payout Slot
+              </label>
+
+              <input
+                id="payoutSlot"
+                type="number"
+                min="1"
+                formControlName="payoutSlot"
+                placeholder="Enter payout slot"
+              />
+
+              @if (
+                agreementForm
+                  .get('payoutSlot')
+                  ?.touched &&
+                agreementForm
+                  .get('payoutSlot')
+                  ?.invalid
+              ) {
+                <span class="validation-message">
+                  Enter a valid payout slot greater
+                  than zero.
+                </span>
+              }
+
+            </div>
+
+
+            <!-- Start Date -->
+            <div class="form-group">
+
+              <label for="startDate">
+                Start Date
+              </label>
+
+              <input
+                id="startDate"
+                type="date"
+                formControlName="startDate"
+              />
+
+              @if (
+                agreementForm
+                  .get('startDate')
+                  ?.touched &&
+                agreementForm
+                  .get('startDate')
+                  ?.invalid
+              ) {
+                <span class="validation-message">
+                  Start date is required.
+                </span>
+              }
+
+            </div>
+
+
+            <!-- Expiry Date -->
+            <div class="form-group">
+
+              <label for="expiryDate">
+                Expiry Date
+              </label>
+
+              <input
+                id="expiryDate"
+                type="date"
+                formControlName="expiryDate"
+              />
+
+              @if (
+                agreementForm
+                  .get('expiryDate')
+                  ?.touched &&
+                agreementForm
+                  .get('expiryDate')
+                  ?.invalid
+              ) {
+                <span class="validation-message">
+                  Expiry date is required.
+                </span>
+              }
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        @if (errorMessage) {
+
+          <div class="error-message">
+            {{ errorMessage }}
+          </div>
+
+        }
+
+
+        <div class="actions">
+
+          <button
+            type="submit"
+            class="primary-button"
+            [disabled]="
+              isSubmitting ||
+              membershipApplication.stage !==
+                'VerificationCompleted'
+            "
+          >
+            {{
+              isSubmitting
+                ? 'Generating & Sending...'
+                : 'Generate & Send Agreement'
+            }}
+          </button>
+
+          <button
+            type="button"
+            class="secondary-button"
+            [disabled]="isSubmitting"
+            (click)="resetForm()"
+          >
+            Clear Agreement Details
+          </button>
+
+        </div>
+
+      </form>
+
+    }
+
+
+    <!-- Error when application cannot load -->
+    @if (
+      errorMessage &&
+      !membershipApplication
+    ) {
+
+      <div class="error-message standalone-error">
+        {{ errorMessage }}
+      </div>
+
+    }
+
+
+    <!-- Generated agreement -->
     @if (generatedAgreement) {
 
-      <div class="generated-section">
+      <section class="generated-section">
 
         @if (successMessage) {
+
           <div class="success-message">
             {{ successMessage }}
           </div>
+
         }
 
         <div class="generated-header">
 
-          <h2>Generated Agreement</h2>
+          <div>
+            <span class="section-kicker">
+              AGREEMENT CREATED
+            </span>
+
+            <h2>
+              Generated Agreement
+            </h2>
+          </div>
 
           <span class="status-badge">
             {{
@@ -216,9 +380,11 @@
 
         </div>
 
+
         <div class="agreement-details">
 
           <div class="detail-row">
+
             <span class="label">
               Member Name
             </span>
@@ -226,9 +392,11 @@
             <span class="value">
               {{ generatedAgreement.memberName }}
             </span>
+
           </div>
 
           <div class="detail-row">
+
             <span class="label">
               Circle
             </span>
@@ -236,19 +404,26 @@
             <span class="value">
               {{ generatedAgreement.circleTitle }}
             </span>
+
           </div>
 
           <div class="detail-row">
+
             <span class="label">
               Contribution Schedule
             </span>
 
             <span class="value">
-              {{ generatedAgreement.contributionSchedule }}
+              {{
+                generatedAgreement
+                  .contributionSchedule
+              }}
             </span>
+
           </div>
 
           <div class="detail-row">
+
             <span class="label">
               Payout Slot
             </span>
@@ -256,9 +431,11 @@
             <span class="value">
               {{ generatedAgreement.payoutSlot }}
             </span>
+
           </div>
 
           <div class="detail-row">
+
             <span class="label">
               Start Date
             </span>
@@ -269,9 +446,11 @@
                   | date:'dd MMM yyyy'
               }}
             </span>
+
           </div>
 
           <div class="detail-row">
+
             <span class="label">
               Expiry Date
             </span>
@@ -282,11 +461,12 @@
                   | date:'dd MMM yyyy'
               }}
             </span>
+
           </div>
 
         </div>
 
-      </div>
+      </section>
 
     }
 

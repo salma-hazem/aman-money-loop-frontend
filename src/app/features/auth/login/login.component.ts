@@ -44,7 +44,7 @@ export class LoginComponent {
         if (res.mustChangePassword) {
           this.router.navigate(['/change-password']);
         } else {
-          this.router.navigate(['/dashboard']); 
+          this.router.navigate(['/console']);
         }
       },
       error: () => {

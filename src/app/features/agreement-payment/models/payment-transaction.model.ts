@@ -7,23 +7,19 @@ export interface PaymentTransaction {
 
   paymentMethod: string | number;
 
+  transactionReference?: string | null;
+
   transactionStatus: string | number;
 
   transactionDate: string;
 
   receiptNumber: string | null;
-
-  // Currently not returned by the backend,
-  // so keep it optional for future support.
-  transactionReference?: string | null;
 }
 
 export interface PaymentOverview {
   memberLedgerId: string;
 
   nextContributionAmount: number | null;
-
-  nextContributionDueDate: string | null;
 
   totalPaid: number;
 
@@ -34,4 +30,17 @@ export interface PaymentOverview {
   payoutStatus: string | number | null;
 
   transactions: PaymentTransaction[];
+}
+
+export interface RecordPaymentRequest {
+  memberLedgerId: string;
+
+  amount: number;
+
+  // Backend PaymentMethod enum:
+  // 0 = BankTransfer
+  // 1 = EWallet
+  paymentMethod: number;
+
+  transactionReference?: string | null;
 }
