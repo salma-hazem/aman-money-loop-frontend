@@ -27,12 +27,7 @@ export const NAV_CONFIG: NavGroup[] = [
   {
     label: 'Agreement & Payment',
     items: [
-      {
-        label: 'Agreement Generator',
-        icon: 'pi pi-file-edit',
-        route: '/console/agreement-generator',
-        roles: [Role.Organizer],
-      },
+     
       {
         label: 'Payments & Receipts',
         icon: 'pi pi-wallet',

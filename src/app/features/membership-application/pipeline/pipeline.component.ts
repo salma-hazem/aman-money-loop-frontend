@@ -151,4 +151,17 @@ export class PipelineComponent {
       )
     );
   }
+
+  generateAgreement(
+    membershipApplicationId: string
+  ): void {
+    this.router.navigate(
+      ['/console/agreement-generator'],
+      {
+        queryParams: {
+          membershipApplicationId,
+        },
+      }
+    );
+  }
 }

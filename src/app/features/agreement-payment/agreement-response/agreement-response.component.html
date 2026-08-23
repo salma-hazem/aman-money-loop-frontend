@@ -1,88 +1,150 @@
 <div class="agreement-page">
 
-  <!-- Loading -->
   @if (isLoading) {
-    <div class="agreement-card">
-      <p>Loading agreement...</p>
+
+    <div class="agreement-card state-card">
+      <div class="loader"></div>
+
+      <h2>Loading Agreement</h2>
+
+      <p>
+        Please wait while we retrieve your
+        membership agreement.
+      </p>
     </div>
+
   }
 
-  <!-- Error while initially loading the agreement -->
   @else if (errorMessage && !agreement) {
-    <div class="agreement-card">
-      <h2>Unable to load agreement</h2>
-      <p>{{ errorMessage }}</p>
-    </div>
-  }
 
-  <!-- Agreement successfully loaded -->
-  @else if (agreement) {
-    <div class="agreement-card">
+    <div class="agreement-card state-card">
 
-      <!-- Header -->
-      <div class="agreement-header">
-        <div>
-          <h1>Membership Agreement</h1>
-          <p>Please review the agreement details below.</p>
-        </div>
-
-        <span class="status-badge">
-          {{ getAgreementStatusLabel(agreement.status) }}
-        </span>
+      <div class="state-icon error-icon">
+        !
       </div>
 
-      <!-- Agreement Details -->
-      <div class="agreement-section">
-        <h2>Agreement Preview Summary</h2>
+      <h2>Unable to Load Agreement</h2>
+
+      <p>
+        {{ errorMessage }}
+      </p>
+
+    </div>
+
+  }
+
+  @else if (agreement) {
+
+    <div class="agreement-card">
+
+      <div class="agreement-header">
+
+        <div>
+          <span class="eyebrow">
+            AMAN MONEY LOOP
+          </span>
+
+          <h1>Membership Agreement</h1>
+
+          <p>
+            Please review your membership terms
+            carefully before responding.
+          </p>
+        </div>
+
+        <span
+          class="status-badge"
+          [ngClass]="getStatusClass()"
+        >
+          {{
+            getAgreementStatusLabel(
+              agreement.status
+            )
+          }}
+        </span>
+
+      </div>
+
+
+      <section class="agreement-section">
+
+        <h2>Agreement Summary</h2>
 
         <div class="agreement-details">
 
           <div class="detail-row">
-            <span class="label">Member Name</span>
+            <span class="label">
+              Member Name
+            </span>
+
             <span class="value">
               {{ agreement.memberName }}
             </span>
           </div>
 
           <div class="detail-row">
-            <span class="label">Circle</span>
+            <span class="label">
+              Circle
+            </span>
+
             <span class="value">
               {{ agreement.circleTitle }}
             </span>
           </div>
 
           <div class="detail-row">
-            <span class="label">Contribution Schedule</span>
+            <span class="label">
+              Contribution Schedule
+            </span>
+
             <span class="value">
-              {{ agreement.contributionSchedule }}
+              {{
+                agreement.contributionSchedule
+              }}
             </span>
           </div>
 
           <div class="detail-row">
-            <span class="label">Payout Slot</span>
+            <span class="label">
+              Payout Slot
+            </span>
+
             <span class="value">
               {{ agreement.payoutSlot }}
             </span>
           </div>
 
           <div class="detail-row">
-            <span class="label">Start Date</span>
+            <span class="label">
+              Start Date
+            </span>
+
             <span class="value">
-              {{ agreement.startDate | date:'dd MMM yyyy' }}
+              {{
+                agreement.startDate
+                  | date:'dd MMM yyyy'
+              }}
             </span>
           </div>
 
           <div class="detail-row">
-            <span class="label">Expiry Date</span>
+            <span class="label">
+              Expiry Date
+            </span>
+
             <span class="value">
-              {{ agreement.expiryDate | date:'dd MMM yyyy' }}
+              {{
+                agreement.expiryDate
+                  | date:'dd MMM yyyy'
+              }}
             </span>
           </div>
 
         </div>
-      </div>
 
-      <!-- Messages -->
+      </section>
+
+
       @if (successMessage) {
         <div class="success-message">
           {{ successMessage }}
@@ -95,43 +157,111 @@
         </div>
       }
 
-      <!-- Only allow response while Pending -->
+
+      @if (isAgreementAccepted()) {
+
+        <div class="response-state accepted-state">
+          <strong>
+            Agreement Accepted
+          </strong>
+
+          <span>
+            Your response has been recorded and
+            onboarding can now proceed.
+          </span>
+        </div>
+
+      }
+
+      @else if (isAgreementDeclined()) {
+
+        <div class="response-state declined-state">
+          <strong>
+            Agreement Declined
+          </strong>
+
+          <span>
+            Your response has been recorded.
+          </span>
+        </div>
+
+      }
+
+      @else if (isAgreementExpired()) {
+
+        <div class="response-state expired-state">
+          <strong>
+            Agreement Expired
+          </strong>
+
+          <span>
+            This agreement can no longer be
+            accepted or declined. Please contact
+            Operations for assistance.
+          </span>
+        </div>
+
+      }
+
+
       @if (isAgreementPending()) {
 
         <div class="review-section">
+
           <label>
+
             <input
               type="checkbox"
               [checked]="hasReviewed"
-              (change)="hasReviewed = !hasReviewed"
+              (change)="
+                hasReviewed = !hasReviewed
+              "
             />
 
-            I have reviewed the agreement
+            <span>
+              I confirm that I have reviewed
+              and understood the agreement
+              details above.
+            </span>
+
           </label>
+
         </div>
+
 
         <div class="actions">
 
           <button
-            class="accept-button"
-            [disabled]="!hasReviewed || isSubmitting"
-            (click)="acceptAgreement()"
-          >
-            {{ isSubmitting ? 'Please wait...' : 'Accept Agreement' }}
-          </button>
-
-          <button
+            type="button"
             class="decline-button"
             [disabled]="isSubmitting"
             (click)="declineAgreement()"
           >
-            Decline
+            Decline Agreement
+          </button>
+
+          <button
+            type="button"
+            class="accept-button"
+            [disabled]="
+              !hasReviewed ||
+              isSubmitting
+            "
+            (click)="acceptAgreement()"
+          >
+            {{
+              isSubmitting
+                ? 'Please wait...'
+                : 'Accept Agreement'
+            }}
           </button>
 
         </div>
+
       }
 
     </div>
+
   }
 
 </div>

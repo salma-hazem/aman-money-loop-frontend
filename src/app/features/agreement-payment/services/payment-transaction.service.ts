@@ -5,18 +5,22 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 
 import {
-  PaymentOverview
+  PaymentOverview,
+  PaymentTransaction,
+  RecordPaymentRequest,
 } from '../models/payment-transaction.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PaymentTransactionService {
 
   private readonly baseUrl =
     `${environment.apiBase}/api/payment-transactions`;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient
+  ) {}
 
   getPaymentsByMemberLedger(
     memberLedgerId: string
@@ -27,6 +31,26 @@ export class PaymentTransactionService {
     );
   }
 
+  recordPayIn(
+    request: RecordPaymentRequest
+  ): Observable<PaymentTransaction> {
+
+    return this.http.post<PaymentTransaction>(
+      `${this.baseUrl}/pay-ins`,
+      request
+    );
+  }
+
+  recordPayOut(
+    request: RecordPaymentRequest
+  ): Observable<PaymentTransaction> {
+
+    return this.http.post<PaymentTransaction>(
+      `${this.baseUrl}/pay-outs`,
+      request
+    );
+  }
+
   downloadReceipt(
     transactionId: string
   ): Observable<Blob> {
@@ -34,7 +58,7 @@ export class PaymentTransactionService {
     return this.http.get(
       `${this.baseUrl}/${transactionId}/receipt`,
       {
-        responseType: 'blob'
+        responseType: 'blob',
       }
     );
   }

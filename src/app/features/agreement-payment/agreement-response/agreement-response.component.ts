@@ -1,5 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { MembershipAgreement } from '../models/membership-agreement.model';
@@ -12,7 +15,9 @@ import { MembershipAgreementService } from '../services/membership-agreement.ser
   templateUrl: './agreement-response.component.html',
   styleUrl: './agreement-response.component.scss',
 })
-export class AgreementResponseComponent implements OnInit {
+export class AgreementResponseComponent
+  implements OnInit {
+
   agreement: MembershipAgreement | null = null;
 
   agreementId = '';
@@ -28,18 +33,25 @@ export class AgreementResponseComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private membershipAgreementService: MembershipAgreementService
+    private membershipAgreementService:
+      MembershipAgreementService
   ) {}
 
   ngOnInit(): void {
     this.agreementId =
-      this.route.snapshot.queryParamMap.get('agreementId') ?? '';
+      this.route.snapshot.queryParamMap.get(
+        'agreementId'
+      ) ?? '';
 
     this.token =
-      this.route.snapshot.queryParamMap.get('token') ?? '';
+      this.route.snapshot.queryParamMap.get(
+        'token'
+      ) ?? '';
 
     if (!this.agreementId || !this.token) {
-      this.errorMessage = 'The agreement link is invalid.';
+      this.errorMessage =
+        'The agreement link is invalid.';
+
       this.isLoading = false;
       return;
     }
@@ -65,20 +77,11 @@ export class AgreementResponseComponent implements OnInit {
         error: (error) => {
           this.isLoading = false;
 
-          if (error.status === 401) {
-            this.errorMessage =
-              'The agreement link is invalid.';
-          } else if (error.status === 409) {
-            this.errorMessage =
-              error.error?.message ??
-              'This agreement can no longer be accessed.';
-          } else if (error.status === 404) {
-            this.errorMessage =
-              'The membership agreement was not found.';
-          } else {
-            this.errorMessage =
-              'An unexpected error occurred while loading the agreement.';
-          }
+          this.errorMessage =
+            this.getBackendErrorMessage(
+              error,
+              'Unable to load the membership agreement.'
+            );
         },
       });
   }
@@ -87,7 +90,8 @@ export class AgreementResponseComponent implements OnInit {
     if (
       !this.hasReviewed ||
       this.isSubmitting ||
-      !this.agreement
+      !this.agreement ||
+      !this.isAgreementPending()
     ) {
       return;
     }
@@ -106,7 +110,7 @@ export class AgreementResponseComponent implements OnInit {
           this.agreement = agreement;
 
           this.successMessage =
-            'The agreement has been accepted successfully.';
+            'Agreement accepted successfully. Your onboarding process has now started.';
 
           this.isSubmitting = false;
         },
@@ -120,8 +124,18 @@ export class AgreementResponseComponent implements OnInit {
   declineAgreement(): void {
     if (
       this.isSubmitting ||
-      !this.agreement
+      !this.agreement ||
+      !this.isAgreementPending()
     ) {
+      return;
+    }
+
+    const confirmed =
+      window.confirm(
+        'Are you sure you want to decline this membership agreement?'
+      );
+
+    if (!confirmed) {
       return;
     }
 
@@ -139,7 +153,7 @@ export class AgreementResponseComponent implements OnInit {
           this.agreement = agreement;
 
           this.successMessage =
-            'The agreement has been declined.';
+            'The membership agreement has been declined.';
 
           this.isSubmitting = false;
         },
@@ -175,35 +189,106 @@ export class AgreementResponseComponent implements OnInit {
     }
   }
 
+  getStatusClass(): string {
+    if (!this.agreement) {
+      return '';
+    }
+
+    return this
+      .getAgreementStatusLabel(
+        this.agreement.status
+      )
+      .toLowerCase();
+  }
+
   isAgreementPending(): boolean {
     if (!this.agreement) {
       return false;
     }
 
-    const status =
+    return (
       this.getAgreementStatusLabel(
         this.agreement.status
-      );
-
-    return status === 'Pending';
+      ) === 'Pending'
+    );
   }
 
-  private handleResponseError(error: any): void {
+  isAgreementAccepted(): boolean {
+    return (
+      this.agreement !== null &&
+      this.getAgreementStatusLabel(
+        this.agreement.status
+      ) === 'Accepted'
+    );
+  }
+
+  isAgreementDeclined(): boolean {
+    return (
+      this.agreement !== null &&
+      this.getAgreementStatusLabel(
+        this.agreement.status
+      ) === 'Declined'
+    );
+  }
+
+  isAgreementExpired(): boolean {
+    return (
+      this.agreement !== null &&
+      this.getAgreementStatusLabel(
+        this.agreement.status
+      ) === 'Expired'
+    );
+  }
+
+  private handleResponseError(
+    error: any
+  ): void {
     this.isSubmitting = false;
 
-    if (error.status === 401) {
-      this.errorMessage =
-        'The agreement link is invalid.';
-    } else if (error.status === 404) {
-      this.errorMessage =
-        'The membership agreement was not found.';
-    } else if (error.status === 409) {
-      this.errorMessage =
-        error.error?.message ??
-        'The agreement can no longer be changed.';
-    } else {
-      this.errorMessage =
-        'An unexpected error occurred. Please try again.';
+    this.errorMessage =
+      this.getBackendErrorMessage(
+        error,
+        'The agreement could not be updated. Please try again.'
+      );
+  }
+
+  private getBackendErrorMessage(
+    error: any,
+    fallback: string
+  ): string {
+    const errors =
+      error?.error?.errors;
+
+    if (errors) {
+      const messages =
+        Object.values(errors)
+          .flat() as string[];
+
+      if (messages.length > 0) {
+        return messages.join(' ');
+      }
     }
+
+    if (error?.error?.detail) {
+      return error.error.detail;
+    }
+
+    if (error?.error?.message) {
+      return error.error.message;
+    }
+
+    if (error.status === 401) {
+      return 'The agreement link is invalid or no longer authorized.';
+    }
+
+    if (error.status === 404) {
+      return 'The membership agreement was not found.';
+    }
+
+    if (error.status === 409) {
+      return 'This agreement can no longer be changed.';
+    }
+
+    return fallback;
   }
 }

@@ -109,6 +109,9 @@ export const routes: Routes = [
 
       {
         path: 'agreement-generator',
+        canActivate: [
+          roleGuard([Role.Organizer])
+        ],
         loadComponent: () =>
           import(
             './features/agreement-payment/agreement-generator/agreement-generator.component'

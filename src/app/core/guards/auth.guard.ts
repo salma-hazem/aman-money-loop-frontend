@@ -30,6 +30,6 @@ export const guestRedirectGuard: CanActivateFn = () => {
   const router = inject(Router);
 
   return auth.isLoggedIn()
-    ? router.createUrlTree(['/dashboard'])     
-    : true;
+  ? router.createUrlTree(['/console'])
+  : true;
 };
