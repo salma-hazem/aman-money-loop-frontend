@@ -1,0 +1,113 @@
+import { CommonModule } from '@angular/common';
+import { Component, inject, signal } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+
+import { AuthService } from '../../../core/services/auth.service';
+import { MembershipApplicationService } from '../services/membership-application.service';
+import { ListingSummary } from '../models/membership-application.model';
+
+@Component({
+  selector: 'app-apply',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
+  templateUrl: './apply.component.html',
+  styleUrl: './apply.component.scss',
+})
+export class ApplyComponent {
+  private fb = inject(FormBuilder);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private auth = inject(AuthService);
+  private membershipApplicationService = inject(MembershipApplicationService);
+
+  listingId = '';
+
+  // Only present if the previous page (marketplace / circle details) passed
+  // it via router state — there's no listings endpoint yet to fetch this.
+  listingSummary: ListingSummary | null = null;
+
+  isLoggedIn = this.auth.isLoggedIn;
+
+  isSubmitting = signal(false);
+  errorMessage = signal<string | null>(null);
+  submitted = signal(false);
+
+  form = this.fb.nonNullable.group({
+    name: ['', [Validators.required, Validators.minLength(2)]],
+    email: ['', [Validators.required, Validators.email]],
+    phone: ['', [Validators.required, Validators.pattern(/^01\d{9}$/)]],
+    nationalId: ['', [Validators.required, Validators.pattern(/^\d{14}$/)]],
+    confirmAccurate: [false, [Validators.requiredTrue]],
+  });
+
+  constructor() {
+    this.listingId = this.route.snapshot.paramMap.get('listingId') ?? '';
+
+    const state = this.router.getCurrentNavigation()?.extras.state
+      ?? history.state;
+
+    if (state?.['listingSummary']) {
+      this.listingSummary = state['listingSummary'] as ListingSummary;
+    }
+
+    const currentUser = this.auth.currentUser();
+    if (currentUser) {
+      this.form.patchValue({
+        name: currentUser.fullName,
+        email: currentUser.email,
+      });
+      this.form.controls.name.disable();
+      this.form.controls.email.disable();
+    }
+  }
+
+  submit(): void {
+    if (!this.listingId) {
+      this.errorMessage.set('This application link is missing a circle reference.');
+      return;
+    }
+
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    this.isSubmitting.set(true);
+    this.errorMessage.set(null);
+
+    const currentUser = this.auth.currentUser();
+    const raw = this.form.getRawValue();
+
+    this.membershipApplicationService
+      .create({
+        listingId: this.listingId,
+        userId: currentUser?.id ?? null,
+        name: raw.name,
+        email: raw.email,
+        phone: raw.phone,
+        nationalId: raw.nationalId,
+      })
+      .subscribe({
+        next: () => {
+          this.isSubmitting.set(false);
+          this.submitted.set(true);
+        },
+        error: (error) => {
+          this.isSubmitting.set(false);
+
+          if (error.status === 400) {
+            this.errorMessage.set(
+              error.error?.message ?? 'Please check the details you entered.'
+            );
+          } else if (error.status === 404) {
+            this.errorMessage.set('This circle listing could not be found.');
+          } else {
+            this.errorMessage.set(
+              'An unexpected error occurred. Please try again.'
+            );
+          }
+        },
+      });
+  }
+}

@@ -2,7 +2,9 @@ import { Routes } from '@angular/router';
 import {
   authGuard,
   guestRedirectGuard,
+  roleGuard,
 } from './core/guards/auth.guard';
+import { Role } from './core/models/role.model';
 
 export const routes: Routes = [
 
@@ -68,6 +70,15 @@ export const routes: Routes = [
             './features/agreement-payment/agreement-response/agreement-response.component'
           ).then((m) => m.AgreementResponseComponent),
       },
+
+      // Screen 9 - Circle Application Form. Public: guests and members can apply.
+      {
+        path: 'marketplace/:listingId/apply',
+        loadComponent: () =>
+          import(
+            './features/membership-application/apply/apply.component'
+          ).then((m) => m.ApplyComponent),
+      },
     ],
   },
 
@@ -132,6 +143,20 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/admin/users/user-management.component')
             .then((m) => m.UserManagementComponent),
+      },
+
+      // =================================================
+      // Module 3 - Circle Marketplace & Membership Applications
+      // =================================================
+
+      // Screen 17 - Applicant Pipeline. Organizer/Admin only.
+      {
+        path: 'listings/:listingId/pipeline',
+        canActivate: [roleGuard([Role.Organizer, Role.Admin])],
+        loadComponent: () =>
+          import(
+            './features/membership-application/pipeline/pipeline.component'
+          ).then((m) => m.PipelineComponent),
       },
     ],
   },
