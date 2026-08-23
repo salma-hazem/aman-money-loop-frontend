@@ -1,7 +1,7 @@
 export enum Role {
-  Member = 'Member',
-  Organizer = 'Organizer',
   Admin = 'Admin',
+  Organizer = 'Organizer',
+  Member = 'Member',
 }
 
 export interface CurrentUser {

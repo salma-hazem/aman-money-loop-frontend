@@ -13,7 +13,7 @@ import { AuthService } from '../../../core/services/auth.service';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, InputTextModule, PasswordModule, ButtonModule, MessageModule,   RouterLink,],
+  imports: [ReactiveFormsModule, InputTextModule, PasswordModule, ButtonModule, MessageModule, RouterLink],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
@@ -44,7 +44,7 @@ export class LoginComponent {
         if (res.mustChangePassword) {
           this.router.navigate(['/change-password']);
         } else {
-          this.router.navigate(['/console']);
+          this.router.navigate(['/dashboard']); 
         }
       },
       error: () => {

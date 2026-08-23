@@ -81,6 +81,21 @@
       />
     </div>
 
+    <!-- حقل الباسورد المضاف حديثاً -->
+    <div class="field">
+      <label for="password">Password</label>
+      <p-password
+        id="password"
+        formControlName="password"
+        [toggleMask]="true"
+        styleClass="w-full"
+        inputStyleClass="w-full"
+      />
+      @if (form.controls.password.invalid && form.controls.password.touched) {
+        <small class="field-error">Password must be at least 8 characters.</small>
+      }
+    </div>
+
     <button
       pButton
       type="submit"

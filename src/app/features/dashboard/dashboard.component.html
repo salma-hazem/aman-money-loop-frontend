@@ -27,6 +27,7 @@
 
   <section class="account-grid">
 
+    <!-- Card 1: Account Email -->
     <p-card styleClass="account-card">
       <div class="card-content">
         <span class="card-label">
@@ -39,6 +40,7 @@
       </div>
     </p-card>
 
+    <!-- Card 2: User Role -->
     <p-card styleClass="account-card">
       <div class="card-content">
         <span class="card-label">
@@ -50,21 +52,6 @@
         </span>
       </div>
     </p-card>
-
-    <p-card styleClass="account-card">
-        <div class="card-content">
-            <span class="card-label">
-            Email Address
-            </span>
-
-            <span
-            class="card-value email"
-            [title]="auth.currentUser()?.email"
-            >
-            {{ auth.currentUser()?.email }}
-            </span>
-        </div>
-        </p-card>
 
   </section>
 

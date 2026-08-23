@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "aman-talent-hunt": {
+    "aman-money-loop": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/aman-talent-hunt",
+            "outputPath": "dist/aman-money-loop",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -64,10 +64,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "aman-talent-hunt:build:production"
+              "buildTarget": "aman-money-loop:build:production"
             },
             "development": {
-              "buildTarget": "aman-talent-hunt:build:development"
+              "buildTarget": "aman-money-loop:build:development"
             }
           },
           "defaultConfiguration": "development"

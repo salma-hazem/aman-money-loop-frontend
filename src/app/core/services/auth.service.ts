@@ -16,6 +16,7 @@ interface AuthResponse {
 }
 
 const TOKEN_KEY = 'aml_token';
+const REFRESH_TOKEN_KEY = 'aml_refresh_token';
 const USER_KEY = 'aml_user';
 
 @Injectable({ providedIn: 'root' })
@@ -51,10 +52,8 @@ export class AuthService {
             mustChangePassword: res.mustChangePassword,
           };
 
-          localStorage.setItem(
-            TOKEN_KEY,
-            res.accessToken
-          );
+          localStorage.setItem(TOKEN_KEY, res.accessToken);
+          localStorage.setItem(REFRESH_TOKEN_KEY, res.refreshToken);
 
           localStorage.setItem(
             USER_KEY,
@@ -68,6 +67,7 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(REFRESH_TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
     this._currentUser.set(null);
     this.router.navigate(['/login']);
@@ -75,6 +75,23 @@ export class AuthService {
 
   getToken(): string | null {
     return localStorage.getItem(TOKEN_KEY);
+  }
+
+  getRefreshToken(): string | null {
+    return localStorage.getItem(REFRESH_TOKEN_KEY);
+  }
+
+  refreshTokenRequest(): Observable<AuthResponse> {
+    const accessToken = this.getToken();
+    const refreshToken = this.getRefreshToken();
+    return this.http
+      .post<AuthResponse>(`${this.base}/api/auth/refresh-token`, { accessToken, refreshToken })
+      .pipe(
+        tap((res) => {
+          localStorage.setItem(TOKEN_KEY, res.accessToken);
+          localStorage.setItem(REFRESH_TOKEN_KEY, res.refreshToken);
+        }),
+      );
   }
 
   private loadUser(): CurrentUser | null {
@@ -121,12 +138,14 @@ export class AuthService {
     nationalId: string;
     email: string;
     phoneNumber: string;
+    password: string;
   }): Observable<string> {
     return this.http.post<string>(
       `${this.base}/api/auth/register`,
       request
     );
   }
+
   confirmOtp(
     userId: string,
     otp: string
@@ -138,5 +157,13 @@ export class AuthService {
         code: otp,
       }
     );
+  }
+
+  forgotPassword(email: string): Observable<void> {
+    return this.http.post<void>(`${this.base}/api/auth/forgot-password`, { email });
+  }
+
+  resetPassword(userId: string, code: string, newPassword: string): Observable<void> {
+    return this.http.post<void>(`${this.base}/api/auth/reset-password`, { userId, code, newPassword });
   }
 }

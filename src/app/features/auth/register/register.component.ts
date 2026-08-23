@@ -7,6 +7,7 @@ import {
 } from '@angular/forms';
 
 import { InputTextModule } from 'primeng/inputtext';
+import { PasswordModule } from 'primeng/password'; 
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
 
@@ -18,6 +19,7 @@ import { AuthService } from '../../../core/services/auth.service';
   imports: [
     ReactiveFormsModule,
     InputTextModule,
+    PasswordModule, 
     ButtonModule,
     MessageModule,
   ],
@@ -46,6 +48,7 @@ export class RegisterComponent {
     ],
 
     phoneNumber: ['', Validators.required],
+    password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(64)]], // ← أضف السطر ده
   });
 
   submit(): void {

@@ -75,7 +75,7 @@ export class ConfirmOtpComponent {
           );
 
           this.success.set(
-            'Email confirmed successfully. You can now sign in using the temporary password sent to your email.'
+            'Email confirmed successfully. You can now sign in using your password.'
           );
 
           this.loading.set(false);
