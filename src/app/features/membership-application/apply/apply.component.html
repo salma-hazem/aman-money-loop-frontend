@@ -1,0 +1,130 @@
+<div class="apply-page">
+
+  @if (submitted()) {
+  <div class="apply-card">
+    <div class="success-icon">✓</div>
+    <h1>Application Submitted</h1>
+    <p>
+      Thanks — your application has been received. You'll be notified
+      as it moves through review.
+    </p>
+  </div>
+  }
+
+  @else {
+  <div class="apply-card">
+
+    <div class="apply-header">
+      <h1>Apply to This Circle</h1>
+      <p>Fill in your details to submit your application.</p>
+    </div>
+
+    <div class="apply-body">
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="apply-form">
+
+        <div class="field">
+          <label for="name">Full Name</label>
+          <input id="name"
+                 type="text"
+                 formControlName="name"
+                 placeholder="Your name" />
+          @if (form.controls.name.touched && form.controls.name.invalid) {
+          <span class="field-error">Enter your full name.</span>
+          }
+        </div>
+
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email"
+                 type="email"
+                 formControlName="email"
+                 placeholder="name@example.com" />
+          @if (form.controls.email.touched && form.controls.email.invalid) {
+          <span class="field-error">Enter a valid email address.</span>
+          }
+        </div>
+
+        <div class="field">
+          <label for="phone">Phone</label>
+          <input id="phone"
+                 type="tel"
+                 formControlName="phone"
+                 placeholder="01xxxxxxxxx" />
+          @if (form.controls.phone.touched && form.controls.phone.invalid) {
+          <span class="field-error">Enter a valid Egyptian phone number.</span>
+          }
+        </div>
+
+        <div class="field">
+          <label for="nationalId">National ID</label>
+          <input id="nationalId"
+                 type="text"
+                 formControlName="nationalId"
+                 placeholder="14 digits"
+                 maxlength="14" />
+          @if (form.controls.nationalId.touched && form.controls.nationalId.invalid) {
+          <span class="field-error">Enter a valid 14-digit National ID.</span>
+          }
+        </div>
+
+        <div class="confirm-row">
+          <label>
+            <input type="checkbox" formControlName="confirmAccurate" />
+            I confirm the information is correct
+          </label>
+          @if (form.controls.confirmAccurate.touched && form.controls.confirmAccurate.invalid) {
+          <span class="field-error">Please confirm before submitting.</span>
+          }
+        </div>
+
+        @if (errorMessage()) {
+        <div class="error-message">{{ errorMessage() }}</div>
+        }
+
+        <button type="submit"
+                class="submit-button"
+                [disabled]="isSubmitting()">
+          {{ isSubmitting() ? 'Submitting...' : 'Submit Application' }}
+        </button>
+
+      </form>
+
+      @if (listingSummary) {
+      <div class="summary-panel">
+        <h2>Application Summary</h2>
+
+        <div class="summary-row">
+          <span class="label">Circle</span>
+          <span class="value">{{ listingSummary.title }}</span>
+        </div>
+
+        <div class="summary-row">
+          <span class="label">Contribution</span>
+          <span class="value">
+            EGP {{ listingSummary.monthlyContribution }}/month
+          </span>
+        </div>
+
+        <div class="summary-row">
+          <span class="label">Duration</span>
+          <span class="value">
+            {{ listingSummary.durationMonths }} months
+          </span>
+        </div>
+
+        <div class="summary-row">
+          <span class="label">Available Slots</span>
+          <span class="value">
+            {{ listingSummary.availableSlots }}
+          </span>
+        </div>
+      </div>
+      }
+
+    </div>
+
+  </div>
+  }
+
+</div>
