@@ -1,0 +1,191 @@
+<div class="details-page">
+
+  <button class="back-button" (click)="goBack()">&larr; All Pipelines</button>
+
+  @if (isLoading()) {
+  <div class="state-message">Loading applicant...</div>
+  }
+
+  @else if (errorMessage()) {
+  <div class="state-message error">{{ errorMessage() }}</div>
+  }
+
+  @else if (applicant(); as applicant) {
+
+  <div class="details-card">
+
+    <div class="details-header">
+      <div>
+        <h1>{{ applicant.name }}</h1>
+        <span class="stage-badge" [attr.data-stage]="applicant.stage">
+          {{ applicant.stage }}
+        </span>
+      </div>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-row">
+        <span class="label">Email</span>
+        <span class="value">{{ applicant.email }}</span>
+      </div>
+      <div class="info-row">
+        <span class="label">Phone</span>
+        <span class="value">{{ applicant.phone }}</span>
+      </div>
+      <div class="info-row">
+        <span class="label">National ID</span>
+        <span class="value">{{ applicant.nationalId }}</span>
+      </div>
+      <div class="info-row">
+        <span class="label">Applied</span>
+        <span class="value">{{ applicant.createdAt | date: 'dd MMM yyyy' }}</span>
+      </div>
+    </div>
+
+    @if (actionError()) {
+    <div class="error-message">{{ actionError() }}</div>
+    }
+
+    <div class="actions-row">
+
+      @if (applicant.stage === 'Submitted') {
+      <button class="primary-button"
+              [disabled]="actionInProgress()"
+              (click)="shortlist()">
+        Accept / Shortlist
+      </button>
+      <button class="secondary-button reject"
+              [disabled]="actionInProgress()"
+              (click)="reject()">
+        Reject Application
+      </button>
+      }
+
+      @else if (applicant.stage === 'Shortlisted') {
+      <button class="secondary-button reject"
+              [disabled]="actionInProgress()"
+              (click)="reject()">
+        Reject Application
+      </button>
+      }
+
+      <button class="secondary-button"
+              [disabled]="!!activeSchedule()"
+              (click)="openSchedulePanel()">
+        Schedule Verification
+      </button>
+
+      <button class="secondary-button" disabled title="Not available yet">
+        View History
+      </button>
+
+    </div>
+
+    @if (activeSchedule(); as schedule) {
+    <div class="schedule-summary">
+      <h2>Verification Scheduled</h2>
+      <div class="info-row">
+        <span class="label">Date</span>
+        <span class="value">{{ schedule.date }}</span>
+      </div>
+      <div class="info-row">
+        <span class="label">Time</span>
+        <span class="value">{{ schedule.time }}</span>
+      </div>
+      <div class="info-row">
+        <span class="label">Status</span>
+        <span class="value">{{ schedule.status }}</span>
+      </div>
+      @if (schedule.locationLink) {
+      <div class="info-row">
+        <span class="label">Location</span>
+        <span class="value">{{ schedule.locationLink }}</span>
+      </div>
+      }
+      @if (schedule.videoLink) {
+      <div class="info-row">
+        <span class="label">Video Link</span>
+        <span class="value">{{ schedule.videoLink }}</span>
+      </div>
+      }
+    </div>
+    }
+
+    @if (schedulePanelOpen()) {
+    <div class="schedule-panel">
+      <h2>Schedule Verification</h2>
+
+      @if (isLoadingRounds()) {
+      <div class="state-message">Loading verification rounds...</div>
+      }
+
+      @else if (availableRounds().length === 0) {
+      <div class="state-message">
+        No verification rounds have been set up for this circle yet.
+      </div>
+      }
+
+      @else {
+      <form [formGroup]="scheduleForm" (ngSubmit)="submitSchedule()">
+
+        <div class="field">
+          <label for="round">Verification Round</label>
+          <select id="round" formControlName="verificationRoundId">
+            <option value="" disabled>Select a round</option>
+            @for (round of availableRounds(); track round.verificationRoundId) {
+            <option [value]="round.verificationRoundId">
+              {{ round.roundName }} ({{ round.format }})
+            </option>
+            }
+          </select>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="date">Date</label>
+            <input id="date" type="date" formControlName="date" />
+          </div>
+          <div class="field">
+            <label for="time">Time</label>
+            <input id="time" type="time" formControlName="time" />
+          </div>
+        </div>
+
+        @if (selectedRoundFormat() === 'InPerson') {
+        <div class="field">
+          <label for="locationLink">Location / Address</label>
+          <input id="locationLink" type="text" formControlName="locationLink" placeholder="Meeting address" />
+        </div>
+        }
+
+        @else if (selectedRoundFormat() === 'Video') {
+        <div class="field">
+          <label for="videoLink">Video Link</label>
+          <input id="videoLink" type="text" formControlName="videoLink" placeholder="Meeting link" />
+        </div>
+        }
+
+        @if (scheduleError()) {
+        <div class="error-message">{{ scheduleError() }}</div>
+        }
+
+        <div class="panel-actions">
+          <button type="button" class="secondary-button" (click)="closeSchedulePanel()">
+            Cancel
+          </button>
+          <button type="submit" class="primary-button" [disabled]="isSubmittingSchedule()">
+            {{ isSubmittingSchedule() ? 'Scheduling...' : 'Confirm Schedule' }}
+          </button>
+        </div>
+
+      </form>
+      }
+
+    </div>
+    }
+
+  </div>
+
+  }
+
+</div>
