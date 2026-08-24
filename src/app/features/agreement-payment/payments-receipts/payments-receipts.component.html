@@ -1,187 +1,268 @@
 <div class="payments-page">
-
   <div class="payments-card">
 
+    <!-- Header -->
     <div class="payments-header">
-
       <div>
-        <span class="eyebrow">
-          AGREEMENT & PAYMENT
-        </span>
-
-        <h1>
-          Payments & Receipts
-        </h1>
-
-        <p>
-          View contribution payments,
-          payouts, and digital receipts.
-        </p>
+        <span class="eyebrow">AGREEMENT & PAYMENT</span>
+        <h1>Payments & Receipts</h1>
+        <p>View contribution payments, payouts, and digital receipts.</p>
       </div>
-
     </div>
 
-
+    <!-- Messages -->
     @if (errorMessage) {
-
-      <div class="error-message">
-        {{ errorMessage }}
-      </div>
-
+      <div class="error-message">{{ errorMessage }}</div>
     }
 
     @if (successMessage) {
-
-      <div class="success-message">
-        {{ successMessage }}
-      </div>
-
+      <div class="success-message">{{ successMessage }}</div>
     }
 
+    <!-- =====================================================
+         No Ledger Selected
+    ====================================================== -->
 
     @if (!memberLedgerId && !errorMessage) {
 
-      <div class="empty-state">
+      <!-- Loading Organizer/Admin ledgers -->
+      @if (isLoading) {
+        <div class="loading-state">
+          Loading available member ledgers...
+        </div>
+      }
 
-        <h3>
-          No Member Ledger Available
-        </h3>
+      @else if (isMember) {
+        <div class="empty-state">
+          <h3>No Member Ledger Available</h3>
+          <p>
+            Payment information will become available after your onboarding
+            is completed.
+          </p>
+        </div>
+      }
 
-        <p>
-          Payment information will become available
-          after your onboarding is completed.
-        </p>
+      @else if (canRecordPayments) {
 
-      </div>
+        @if (availableLedgers.length === 0) {
+          <div class="empty-state">
+            <h3>No Active Member Ledgers</h3>
+            <p>
+              There are currently no active members available for payment
+              management.
+            </p>
+          </div>
+        }
 
+        @else {
+          <section class="ledger-selection-section">
+
+            <div class="section-heading">
+              <span class="section-kicker">
+                PAYMENT MANAGEMENT
+              </span>
+
+              <h2>Select Member</h2>
+
+              <p>
+                Select a member to view transactions, record payments,
+                and download receipts.
+              </p>
+            </div>
+
+            <div class="ledger-grid">
+
+              @for (
+                ledger of availableLedgers;
+                track ledger.memberLedgerId
+              ) {
+                <button
+                  type="button"
+                  class="ledger-card"
+                  (click)="selectLedger(ledger)"
+                >
+
+                  <div class="ledger-card-header">
+                    <div>
+                      <span class="ledger-circle-label">
+                        Circle
+                      </span>
+
+                      <h3>
+                        {{ ledger.circleTitle || 'Circle' }}
+                      </h3>
+                    </div>
+
+                    <span class="slot-badge">
+                      Slot {{ ledger.slotNumber ?? '—' }}
+                    </span>
+                  </div>
+
+                  <div class="ledger-member">
+                    <span class="member-icon">
+                      <i class="pi pi-user"></i>
+                    </span>
+
+                    <div>
+                      <span class="ledger-member-label">
+                        Member
+                      </span>
+
+                      <strong>
+                        {{ ledger.memberName || 'Member' }}
+                      </strong>
+                    </div>
+                  </div>
+
+                  @if (ledger.activatedAt) {
+                    <div class="ledger-activated">
+                      Activated
+                      {{ ledger.activatedAt | date:'dd MMM yyyy' }}
+                    </div>
+                  }
+
+                  <div class="ledger-card-action">
+                    <span>Manage Payments</span>
+                    <i class="pi pi-arrow-right"></i>
+                  </div>
+
+                </button>
+              }
+
+            </div>
+          </section>
+        }
+      }
     }
 
-    @else {
+    <!-- =====================================================
+         Ledger Selected
+    ====================================================== -->
 
+    @if (memberLedgerId) {
+
+      <!-- Selected Member Banner -->
+      @if (canRecordPayments && selectedLedger) {
+        <div class="selected-ledger-banner">
+
+          <div class="selected-ledger-info">
+            <span class="selected-ledger-label">
+              Managing Payments For
+            </span>
+
+            <strong>
+              {{ selectedLedger.memberName }}
+            </strong>
+
+            <span>
+              {{ selectedLedger.circleTitle }}
+              · Slot {{ selectedLedger.slotNumber ?? '—' }}
+            </span>
+          </div>
+
+          <button
+            type="button"
+            class="change-member-button"
+            (click)="backToLedgerSelection()"
+          >
+            <i class="pi pi-arrow-left"></i>
+            Change Member
+          </button>
+
+        </div>
+      }
+
+      <!-- Loading Transactions -->
       @if (isLoading) {
-
         <div class="loading-state">
           Loading payment transactions...
         </div>
-
       }
 
-      @else {
+      @else if (paymentOverview) {
 
-        <!-- Summary -->
+        <!-- =====================================================
+             Summary
+        ====================================================== -->
 
         <section class="summary-grid">
 
           <div class="summary-card">
-
             <span class="summary-label">
               Total Paid
             </span>
 
             <span class="summary-value">
-              {{
-                totalPaid
-                  | number:'1.2-2'
-              }}
+              {{ totalPaid | number:'1.2-2' }}
             </span>
-
           </div>
 
-
           <div class="summary-card">
-
             <span class="summary-label">
               Successful Payments
             </span>
 
             <span class="summary-value">
-              {{
-                successfulPaymentCount
-              }}
+              {{ successfulPaymentCount }}
             </span>
-
           </div>
 
-
           <div class="summary-card">
-
             <span class="summary-label">
               Payout Slot
             </span>
 
             <span class="summary-value">
-
-              {{
-                paymentOverview
-                  ?.payoutSlot
-                  ?? '—'
-              }}
-
+              {{ paymentOverview.payoutSlot ?? '—' }}
             </span>
-
           </div>
 
-
           <div class="summary-card">
-
             <span class="summary-label">
               Payout Status
             </span>
 
             <span class="summary-value small-value">
-
-              {{
-                paymentOverview
-                  ?.payoutStatus
-                  ?? 'Not Paid'
-              }}
-
+              {{ paymentOverview.payoutStatus ?? 'Not Paid' }}
             </span>
-
           </div>
 
         </section>
 
-
-        <!-- Record transaction -->
+        <!-- =====================================================
+             Organizer / Admin Record Transaction
+        ====================================================== -->
 
         @if (canRecordPayments) {
-
           <section class="record-section">
 
             <div class="section-heading">
-
               <span class="section-kicker">
                 ORGANIZER / ADMIN
               </span>
 
-              <h2>
-                Record Transaction
-              </h2>
+              <h2>Record Transaction</h2>
 
               <p>
-                Record a simulated bank
-                transfer or e-wallet
-                transaction for this member.
+                Record a simulated bank transfer or e-wallet transaction
+                for this member.
               </p>
-
             </div>
-
 
             <form
               [formGroup]="paymentForm"
               (ngSubmit)="recordPayment()"
             >
-
               <div class="form-grid">
 
+                <!-- Transaction Type -->
                 <div class="form-group">
-
-                  <label>
+                  <label for="transactionType">
                     Transaction Type
                   </label>
 
                   <select
+                    id="transactionType"
                     formControlName="transactionType"
                   >
                     <option value="PayIn">
@@ -192,17 +273,16 @@
                       Payout
                     </option>
                   </select>
-
                 </div>
 
-
+                <!-- Amount -->
                 <div class="form-group">
-
-                  <label>
+                  <label for="amount">
                     Amount
                   </label>
 
                   <input
+                    id="amount"
                     type="number"
                     min="0.01"
                     step="0.01"
@@ -211,171 +291,112 @@
                   />
 
                   @if (
-                    paymentForm
-                      .controls
-                      .amount
-                      .touched &&
-                    paymentForm
-                      .controls
-                      .amount
-                      .invalid
+                    paymentForm.controls.amount.touched &&
+                    paymentForm.controls.amount.invalid
                   ) {
-
                     <span class="validation-message">
-                      Amount must be greater
-                      than zero.
+                      Amount must be greater than zero.
                     </span>
-
                   }
-
                 </div>
 
-
+                <!-- Payment Method -->
                 <div class="form-group">
-
-                  <label>
+                  <label for="paymentMethod">
                     Payment Method
                   </label>
 
                   <select
+                    id="paymentMethod"
                     formControlName="paymentMethod"
                   >
-
-                    <option
-                      [ngValue]="null"
-                    >
+                    <option [ngValue]="null">
                       Select payment method
                     </option>
 
-                    <option
-                      [ngValue]="0"
-                    >
+                    <option [ngValue]="0">
                       Bank Transfer
                     </option>
 
-                    <option
-                      [ngValue]="1"
-                    >
+                    <option [ngValue]="1">
                       E-Wallet
                     </option>
-
                   </select>
 
                   @if (
-                    paymentForm
-                      .controls
-                      .paymentMethod
-                      .touched &&
-                    paymentForm
-                      .controls
-                      .paymentMethod
-                      .invalid
+                    paymentForm.controls.paymentMethod.touched &&
+                    paymentForm.controls.paymentMethod.invalid
                   ) {
-
                     <span class="validation-message">
                       Payment method is required.
                     </span>
-
                   }
-
                 </div>
 
-
+                <!-- Reference -->
                 <div class="form-group">
-
-                  <label>
+                  <label for="transactionReference">
                     Transaction Reference
                   </label>
 
                   <input
+                    id="transactionReference"
                     type="text"
                     placeholder="Optional reference"
                     formControlName="transactionReference"
                   />
 
                   <span class="field-hint">
-                    Optional, but must be unique
-                    when provided.
+                    Optional, but must be unique when provided.
                   </span>
-
                 </div>
 
               </div>
 
-
               <div class="form-actions">
-
                 <button
                   type="submit"
                   class="record-button"
                   [disabled]="isSubmitting"
                 >
-
                   {{
                     isSubmitting
                       ? 'Recording...'
-                      : paymentForm.controls
-                          .transactionType
-                          .value === 'PayOut'
+                      : paymentForm.controls.transactionType.value === 'PayOut'
                         ? 'Record Payout'
                         : 'Record Pay-In'
                   }}
-
                 </button>
-
               </div>
 
             </form>
-
           </section>
-
         }
 
-
-        <!-- Transaction history -->
+        <!-- =====================================================
+             Transaction History
+        ====================================================== -->
 
         <section class="transactions-section">
 
           <div class="section-heading">
-
-            <h2>
-              Transaction History
-            </h2>
-
-            <p>
-              {{ transactions.length }}
-              transaction(s)
-            </p>
-
+            <h2>Transaction History</h2>
+            <p>{{ transactions.length }} transaction(s)</p>
           </div>
 
-
-          @if (
-            transactions.length === 0
-          ) {
-
+          @if (transactions.length === 0) {
             <div class="empty-state">
-
-              <h3>
-                No payment transactions found
-              </h3>
+              <h3>No payment transactions found</h3>
 
               <p>
-                There are currently no
-                payment records for this member.
+                There are currently no payment records for this member.
               </p>
-
             </div>
-
           }
 
           @else {
-
             <div class="table-container">
-
-              <table
-                class="transactions-table"
-              >
+              <table class="transactions-table">
 
                 <thead>
                   <tr>
@@ -389,28 +410,20 @@
                   </tr>
                 </thead>
 
-
                 <tbody>
 
                   @for (
-                    transaction
-                    of transactions;
-                    track
-                    transaction
-                      .paymentTransactionId
+                    transaction of transactions;
+                    track transaction.paymentTransactionId
                   ) {
-
                     <tr>
 
                       <td>
                         {{
-                          transaction
-                            .transactionDate
-                            | date:
-                              'dd MMM yyyy'
+                          transaction.transactionDate
+                            | date:'dd MMM yyyy'
                         }}
                       </td>
-
 
                       <td>
                         {{
@@ -420,7 +433,6 @@
                         }}
                       </td>
 
-
                       <td>
                         {{
                           getPaymentMethodLabel(
@@ -429,7 +441,6 @@
                         }}
                       </td>
 
-
                       <td class="amount-cell">
                         {{
                           transaction.amount
@@ -437,100 +448,60 @@
                         }}
                       </td>
 
-
                       <td>
-
                         <span
                           class="status-badge"
                           [class.success-status]="
-                            getStatusLabel(
-                              transaction
-                            ) ===
-                            'Successful'
+                            getStatusLabel(transaction) === 'Successful'
                           "
                           [class.pending-status]="
-                            getStatusLabel(
-                              transaction
-                            ) ===
-                            'Pending'
+                            getStatusLabel(transaction) === 'Pending'
                           "
                           [class.failed-status]="
-                            getStatusLabel(
-                              transaction
-                            ) ===
-                            'Failed'
+                            getStatusLabel(transaction) === 'Failed'
                           "
                         >
-
                           {{
                             getStatusLabel(
                               transaction
                             )
                           }}
-
                         </span>
-
                       </td>
 
-
-                      <td
-                        class="reference-cell"
-                      >
+                      <td class="reference-cell">
                         {{
-                          transaction
-                            .transactionReference
+                          transaction.transactionReference
                             || '—'
                         }}
                       </td>
 
-
                       <td>
-
                         <button
                           type="button"
                           class="receipt-button"
-                          [disabled]="
-                            isDownloading(
-                              transaction
-                            )
-                          "
-                          (click)="
-                            downloadReceipt(
-                              transaction
-                            )
-                          "
+                          [disabled]="isDownloading(transaction)"
+                          (click)="downloadReceipt(transaction)"
                         >
-
                           {{
-                            isDownloading(
-                              transaction
-                            )
+                            isDownloading(transaction)
                               ? 'Downloading...'
                               : 'Download PDF'
                           }}
-
                         </button>
-
                       </td>
 
                     </tr>
-
                   }
 
                 </tbody>
-
               </table>
-
             </div>
-
           }
 
         </section>
-
       }
-
     }
 
   </div>
-
 </div>

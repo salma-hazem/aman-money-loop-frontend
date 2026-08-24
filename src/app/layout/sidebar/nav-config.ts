@@ -20,6 +20,19 @@ export const NAV_CONFIG: NavGroup[] = [
         label: 'Dashboard',
         icon: 'pi pi-home',
         route: '/console',
+        roles: [Role.Member, Role.Organizer, Role.Admin],
+      },
+    ],
+  },
+
+  {
+    label: 'Membership',
+    items: [
+      {
+        label: 'Applicant Pipeline',
+        icon: 'pi pi-list',
+        route: '/console/pipeline',
+        roles: [Role.Organizer, Role.Admin],
       },
     ],
   },
@@ -27,7 +40,6 @@ export const NAV_CONFIG: NavGroup[] = [
   {
     label: 'Agreement & Payment',
     items: [
-     
       {
         label: 'Payments & Receipts',
         icon: 'pi pi-wallet',
