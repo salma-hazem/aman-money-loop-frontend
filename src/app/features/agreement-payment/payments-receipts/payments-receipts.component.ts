@@ -1,233 +1,242 @@
 import { CommonModule } from '@angular/common';
-
-import {
-  Component,
-  OnInit,
-  inject,
-} from '@angular/core';
-
-import {
-  FormBuilder,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
-
+import { Component, OnInit, inject } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import {
-  MemberLedgerService,
-} from '../services/member-ledger.service';
+
+import { AuthService } from '../../../core/services/auth.service';
+import { Role } from '../../../core/models/role.model';
+
+import { MemberLedger } from '../models/member-ledger.model';
+import { MemberLedgerService } from '../services/member-ledger.service';
+
 import {
   PaymentOverview,
   PaymentTransaction,
   RecordPaymentRequest,
 } from '../models/payment-transaction.model';
 
-import {
-  PaymentTransactionService,
-} from '../services/payment-transaction.service';
-
-import {
-  AuthService,
-} from '../../../core/services/auth.service';
-
-import {
-  Role,
-} from '../../../core/models/role.model';
+import { PaymentTransactionService } from '../services/payment-transaction.service';
 
 @Component({
   selector: 'app-payments-receipts',
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-  ],
-  templateUrl:
-    './payments-receipts.component.html',
-  styleUrl:
-    './payments-receipts.component.scss',
+  imports: [CommonModule, ReactiveFormsModule],
+  templateUrl: './payments-receipts.component.html',
+  styleUrl: './payments-receipts.component.scss',
 })
-export class PaymentsReceiptsComponent
-  implements OnInit {
+export class PaymentsReceiptsComponent implements OnInit {
   private formBuilder = inject(FormBuilder);
 
   memberLedgerId = '';
+  availableLedgers: MemberLedger[] = [];
+  selectedLedger: MemberLedger | null = null;
 
-  paymentOverview:
-    PaymentOverview | null = null;
-
-  transactions:
-    PaymentTransaction[] = [];
+  paymentOverview: PaymentOverview | null = null;
+  transactions: PaymentTransaction[] = [];
 
   isLoading = true;
-
   isSubmitting = false;
-
-  downloadingTransactionId:
-    string | null = null;
+  downloadingTransactionId: string | null = null;
 
   errorMessage = '';
   successMessage = '';
 
-  paymentForm =
-    this.formBuilder.group({
-
-      transactionType: [
-        'PayIn',
-        Validators.required,
-      ],
-
-      amount: [
-        null as number | null,
-        [
-          Validators.required,
-          Validators.min(0.01),
-        ],
-      ],
-
-      paymentMethod: [
-        null as number | null,
-        Validators.required,
-      ],
-
-      transactionReference: [
-        '',
-      ],
-    });
+  paymentForm = this.formBuilder.group({
+    transactionType: ['PayIn', Validators.required],
+    amount: [
+      null as number | null,
+      [Validators.required, Validators.min(0.01)],
+    ],
+    paymentMethod: [
+      null as number | null,
+      Validators.required,
+    ],
+    transactionReference: [''],
+  });
 
   constructor(
-  private route: ActivatedRoute,
-  private paymentTransactionService:
-    PaymentTransactionService,
-  private memberLedgerService:
-    MemberLedgerService,
-  private auth: AuthService
-)  {}
+    private route: ActivatedRoute,
+    private paymentTransactionService: PaymentTransactionService,
+    private memberLedgerService: MemberLedgerService,
+    private auth: AuthService
+  ) {}
 
   ngOnInit(): void {
+    const ledgerFromUrl = this.route.snapshot.queryParamMap.get(
+      'memberLedgerId'
+    );
 
-  const ledgerFromUrl =
-    this.route.snapshot
-      .queryParamMap
-      .get('memberLedgerId');
+    // Organizer/Admin may open a specific ledger directly.
+    if (ledgerFromUrl) {
+      this.memberLedgerId = ledgerFromUrl;
+      this.loadTransactions();
+      return;
+    }
 
-  if (ledgerFromUrl) {
+    const currentUser = this.auth.currentUser();
 
-    this.memberLedgerId =
-      ledgerFromUrl;
+    if (!currentUser) {
+      this.errorMessage =
+        'The current user could not be determined.';
+      this.isLoading = false;
+      return;
+    }
 
-    this.loadTransactions();
+    // Member automatically loads their own ledger.
+    if (this.isMember) {
+      this.loadMemberLedger(currentUser.id);
+      return;
+    }
 
-    return;
-  }
-
-  const currentUser =
-    this.auth.currentUser();
-
-  if (!currentUser) {
+    // Organizer/Admin first select a member ledger.
+    if (this.canRecordPayments) {
+      this.loadAvailableLedgers();
+      return;
+    }
 
     this.errorMessage =
-      'The current user could not be determined.';
-
+      'You do not have permission to access payment information.';
     this.isLoading = false;
-
-    return;
   }
 
-  this.loadMemberLedger(
-    currentUser.id
-  );
-}
-private loadMemberLedger(
-  userId: string
-): void {
+  // =====================================================
+  // Role Helpers
+  // =====================================================
 
-  this.isLoading = true;
-  this.errorMessage = '';
-
-  this.memberLedgerService
-    .getByUserId(userId)
-    .subscribe({
-
-      next: (ledger) => {
-
-        this.memberLedgerId =
-          ledger.memberLedgerId;
-
-        this.loadTransactions();
-      },
-
-      error: (error) => {
-
-        this.isLoading = false;
-
-        if (error.status === 404) {
-
-          this.errorMessage =
-            'No active member ledger was found for your account. Your onboarding may not be completed yet.';
-
-        } else if (
-          error?.error?.detail
-        ) {
-
-          this.errorMessage =
-            error.error.detail;
-
-        } else {
-
-          this.errorMessage =
-            'Unable to load your member ledger.';
-        }
-      },
-    });
-}
+  get isMember(): boolean {
+    return this.auth.hasRole(Role.Member);
+  }
 
   get canRecordPayments(): boolean {
-
     return this.auth.hasRole(
       Role.Admin,
       Role.Organizer
     );
   }
 
-  get totalPaid(): number {
+  // =====================================================
+  // Member Ledger
+  // =====================================================
 
-    return (
-      this.paymentOverview?.totalPaid ?? 0
-    );
+  private loadMemberLedger(userId: string): void {
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.memberLedgerService
+      .getByUserId(userId)
+      .subscribe({
+        next: (ledger) => {
+          this.memberLedgerId =
+            ledger.memberLedgerId;
+
+          this.loadTransactions();
+        },
+        error: (error) => {
+          this.isLoading = false;
+
+          if (error.status === 404) {
+            this.errorMessage =
+              'No active member ledger was found for your account. Your onboarding may not be completed yet.';
+          } else if (error?.error?.detail) {
+            this.errorMessage =
+              error.error.detail;
+          } else {
+            this.errorMessage =
+              'Unable to load your member ledger.';
+          }
+        },
+      });
+  }
+
+  private loadAvailableLedgers(): void {
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.memberLedgerService
+      .getAvailableLedgers()
+      .subscribe({
+        next: (ledgers) => {
+          this.availableLedgers =
+            ledgers ?? [];
+
+          this.isLoading = false;
+        },
+        error: (error) => {
+          this.availableLedgers = [];
+          this.isLoading = false;
+
+          this.errorMessage =
+            this.getBackendErrorMessage(
+              error,
+              'Unable to load available member ledgers.'
+            );
+        },
+      });
+  }
+
+  selectLedger(ledger: MemberLedger): void {
+    this.selectedLedger = ledger;
+    this.memberLedgerId =
+      ledger.memberLedgerId;
+
+    this.paymentOverview = null;
+    this.transactions = [];
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    this.loadTransactions();
+  }
+
+  backToLedgerSelection(): void {
+    this.selectedLedger = null;
+    this.memberLedgerId = '';
+
+    this.paymentOverview = null;
+    this.transactions = [];
+
+    this.errorMessage = '';
+    this.successMessage = '';
+  }
+
+  // =====================================================
+  // Payment Overview
+  // =====================================================
+
+  get totalPaid(): number {
+    return this.paymentOverview
+      ?.totalPaid ?? 0;
   }
 
   get successfulPaymentCount(): number {
-
-    return (
-      this.paymentOverview
-        ?.paidContributionsCount ?? 0
-    );
+    return this.paymentOverview
+      ?.paidContributionsCount ?? 0;
   }
 
   get latestTransaction():
     PaymentTransaction | null {
 
-    if (
-      this.transactions.length === 0
-    ) {
+    if (this.transactions.length === 0) {
       return null;
     }
 
-    return [
-      ...this.transactions
-    ].sort(
-      (a, b) =>
-        new Date(
-          b.transactionDate
-        ).getTime() -
-        new Date(
-          a.transactionDate
-        ).getTime()
-    )[0];
+    return [...this.transactions]
+      .sort(
+        (a, b) =>
+          new Date(
+            b.transactionDate
+          ).getTime()
+          -
+          new Date(
+            a.transactionDate
+          ).getTime()
+      )[0];
   }
 
-  loadTransactions(): void {
+  // =====================================================
+  // Load Transactions
+  // =====================================================
 
+  loadTransactions(): void {
     if (!this.memberLedgerId) {
       return;
     }
@@ -240,9 +249,7 @@ private loadMemberLedger(
         this.memberLedgerId
       )
       .subscribe({
-
         next: (overview) => {
-
           this.paymentOverview =
             overview;
 
@@ -251,10 +258,10 @@ private loadMemberLedger(
 
           this.isLoading = false;
         },
-
         error: (error) => {
-
           this.isLoading = false;
+          this.paymentOverview = null;
+          this.transactions = [];
 
           this.errorMessage =
             this.getBackendErrorMessage(
@@ -265,80 +272,67 @@ private loadMemberLedger(
       });
   }
 
-  recordPayment(): void {
+  // =====================================================
+  // Record Payment
+  // =====================================================
 
+  recordPayment(): void {
     this.errorMessage = '';
     this.successMessage = '';
 
     if (!this.canRecordPayments) {
-
       this.errorMessage =
         'You do not have permission to record payments.';
-
       return;
     }
 
     if (!this.memberLedgerId) {
-
       this.errorMessage =
         'A member ledger must be selected first.';
-
       return;
     }
 
     if (this.paymentForm.invalid) {
-
-      this.paymentForm
-        .markAllAsTouched();
+      this.paymentForm.markAllAsTouched();
 
       this.errorMessage =
         'Please complete all required payment information.';
-
       return;
     }
 
     const value =
-      this.paymentForm
-        .getRawValue();
+      this.paymentForm.getRawValue();
 
-    const request:
-      RecordPaymentRequest = {
+    const request: RecordPaymentRequest = {
+      memberLedgerId:
+        this.memberLedgerId,
 
-        memberLedgerId:
-          this.memberLedgerId,
+      amount:
+        Number(value.amount),
 
-        amount:
-          Number(value.amount),
+      paymentMethod:
+        Number(value.paymentMethod),
 
-        paymentMethod:
-          Number(
-            value.paymentMethod
-          ),
-
-        transactionReference:
-          value.transactionReference
-            ?.trim() || null,
-      };
+      transactionReference:
+        value.transactionReference?.trim()
+        || null,
+    };
 
     this.isSubmitting = true;
 
     const request$ =
-      value.transactionType ===
-      'PayOut'
+      value.transactionType === 'PayOut'
         ? this.paymentTransactionService
             .recordPayOut(request)
         : this.paymentTransactionService
             .recordPayIn(request);
 
     request$.subscribe({
-
       next: () => {
-
         this.isSubmitting = false;
 
         this.successMessage =
-          value.transactionType ===
-          'PayOut'
+          value.transactionType === 'PayOut'
             ? 'Payout recorded successfully.'
             : 'Pay-in recorded successfully.';
 
@@ -351,9 +345,7 @@ private loadMemberLedger(
 
         this.loadTransactions();
       },
-
       error: (error) => {
-
         this.isSubmitting = false;
 
         this.errorMessage =
@@ -365,70 +357,60 @@ private loadMemberLedger(
     });
   }
 
+  // =====================================================
+  // Receipt Download
+  // =====================================================
+
   downloadReceipt(
     transaction: PaymentTransaction
   ): void {
-
     if (
-      !transaction
-        .paymentTransactionId ||
+      !transaction.paymentTransactionId ||
       this.downloadingTransactionId
     ) {
       return;
     }
 
     this.downloadingTransactionId =
-      transaction
-        .paymentTransactionId;
+      transaction.paymentTransactionId;
 
     this.errorMessage = '';
 
     this.paymentTransactionService
       .downloadReceipt(
-        transaction
-          .paymentTransactionId
+        transaction.paymentTransactionId
       )
       .subscribe({
-
         next: (pdfBlob) => {
-
           const blobUrl =
-            window.URL
-              .createObjectURL(
-                pdfBlob
-              );
+            window.URL.createObjectURL(
+              pdfBlob
+            );
 
           const link =
-            document
-              .createElement('a');
+            document.createElement('a');
 
           link.href = blobUrl;
 
           link.download =
             transaction.receiptNumber
               ? `${transaction.receiptNumber}.pdf`
-              :
-                `payment-receipt-${transaction.paymentTransactionId}.pdf`;
+              : `payment-receipt-${transaction.paymentTransactionId}.pdf`;
 
-          document.body
-            .appendChild(link);
-
+          document.body.appendChild(link);
           link.click();
+          document.body.removeChild(link);
 
-          document.body
-            .removeChild(link);
-
-          window.URL
-            .revokeObjectURL(
+          setTimeout(() => {
+            window.URL.revokeObjectURL(
               blobUrl
             );
+          }, 1000);
 
           this.downloadingTransactionId =
             null;
         },
-
         error: (error) => {
-
           this.downloadingTransactionId =
             null;
 
@@ -441,11 +423,13 @@ private loadMemberLedger(
       });
   }
 
-  getTransactionTypeLabel(
-    transaction:
-      PaymentTransaction
-  ): string {
+  // =====================================================
+  // Transaction Type
+  // =====================================================
 
+  getTransactionTypeLabel(
+    transaction: PaymentTransaction
+  ): string {
     const type =
       String(
         transaction.transactionType
@@ -472,11 +456,13 @@ private loadMemberLedger(
     );
   }
 
-  getStatusLabel(
-    transaction:
-      PaymentTransaction
-  ): string {
+  // =====================================================
+  // Transaction Status
+  // =====================================================
 
+  getStatusLabel(
+    transaction: PaymentTransaction
+  ): string {
     const status =
       String(
         transaction.transactionStatus
@@ -509,11 +495,13 @@ private loadMemberLedger(
     );
   }
 
-  getPaymentMethodLabel(
-    transaction:
-      PaymentTransaction
-  ): string {
+  // =====================================================
+  // Payment Method
+  // =====================================================
 
+  getPaymentMethodLabel(
+    transaction: PaymentTransaction
+  ): string {
     const method =
       String(
         transaction.paymentMethod
@@ -521,8 +509,7 @@ private loadMemberLedger(
 
     if (
       method === 'banktransfer' ||
-      method ===
-        'bank-transfer' ||
+      method === 'bank-transfer' ||
       method === '0'
     ) {
       return 'Bank Transfer';
@@ -541,28 +528,31 @@ private loadMemberLedger(
     );
   }
 
-  isDownloading(
-    transaction:
-      PaymentTransaction
-  ): boolean {
+  // =====================================================
+  // Receipt Loading State
+  // =====================================================
 
+  isDownloading(
+    transaction: PaymentTransaction
+  ): boolean {
     return (
       this.downloadingTransactionId ===
-      transaction
-        .paymentTransactionId
+      transaction.paymentTransactionId
     );
   }
+
+  // =====================================================
+  // Backend Error Handling
+  // =====================================================
 
   private getBackendErrorMessage(
     error: any,
     fallback: string
   ): string {
-
     const errors =
       error?.error?.errors;
 
     if (errors) {
-
       const messages =
         Object.values(errors)
           .flat() as string[];
