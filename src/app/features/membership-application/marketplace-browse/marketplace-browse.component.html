@@ -1,0 +1,48 @@
+<div class="browse-page">
+
+  <div class="browse-header">
+    <h1>Find a Money Circle</h1>
+    <p>Browse open circles without signing in.</p>
+  </div>
+
+  @if (isLoading()) {
+  <div class="state-message">Loading circles...</div>
+  }
+
+  @else if (errorMessage()) {
+  <div class="state-message error">{{ errorMessage() }}</div>
+  }
+
+  @else if (listings().length === 0) {
+  <div class="state-message">No circles are open right now. Check back soon.</div>
+  }
+
+  @else {
+  <div class="listing-grid">
+    @for (listing of listings(); track listing.listingId) {
+    <div class="listing-card">
+      <h2>{{ listing.title }}</h2>
+
+      <div class="listing-contribution">
+        EGP {{ listing.monthlyContribution }} / month
+      </div>
+
+      <div class="listing-meta">
+        {{ listing.durationMonths }} months
+        &middot;
+        {{ listing.availableSlots }} slot{{ listing.availableSlots === 1 ? '' : 's' }}
+      </div>
+
+      <span class="status-badge" [attr.data-status]="listing.listingStatus">
+        {{ listing.availableSlots > 0 ? 'Open' : 'Full' }}
+      </span>
+
+      <button class="view-details-button" (click)="viewDetails(listing.listingId)">
+        View Details
+      </button>
+    </div>
+    }
+  </div>
+  }
+
+</div>
