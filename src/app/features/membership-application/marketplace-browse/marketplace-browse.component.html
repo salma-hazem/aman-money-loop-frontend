@@ -5,6 +5,45 @@
     <p>Browse open circles without signing in.</p>
   </div>
 
+  <form class="filter-bar" [formGroup]="filterForm" (ngSubmit)="search()">
+
+    <div class="filter-field wide">
+      <label for="search">Circle title</label>
+      <input id="search" type="text" formControlName="search" placeholder="Search" />
+    </div>
+
+    <div class="filter-field">
+      <label for="minContribution">Min contribution</label>
+      <input id="minContribution" type="number" formControlName="minContribution" placeholder="EGP" />
+    </div>
+
+    <div class="filter-field">
+      <label for="maxContribution">Max contribution</label>
+      <input id="maxContribution" type="number" formControlName="maxContribution" placeholder="EGP" />
+    </div>
+
+    <div class="filter-field">
+      <label for="minDuration">Min duration</label>
+      <input id="minDuration" type="number" formControlName="minDuration" placeholder="months" />
+    </div>
+
+    <div class="filter-field">
+      <label for="maxDuration">Max duration</label>
+      <input id="maxDuration" type="number" formControlName="maxDuration" placeholder="months" />
+    </div>
+
+    <div class="filter-field">
+      <label for="minAvailableSlots">Min slots</label>
+      <input id="minAvailableSlots" type="number" formControlName="minAvailableSlots" placeholder="1+" />
+    </div>
+
+    <div class="filter-actions">
+      <button type="submit" class="search-button">Search</button>
+      <button type="button" class="clear-button" (click)="clearFilters()">Clear</button>
+    </div>
+
+  </form>
+
   @if (isLoading()) {
   <div class="state-message">Loading circles...</div>
   }
@@ -14,7 +53,7 @@
   }
 
   @else if (listings().length === 0) {
-  <div class="state-message">No circles are open right now. Check back soon.</div>
+  <div class="state-message">No circles match your search. Try adjusting the filters.</div>
   }
 
   @else {
