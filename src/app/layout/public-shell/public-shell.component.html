@@ -13,20 +13,12 @@
   </a>
 
   <nav class="public-actions">
-
-    <a
-      routerLink="/login"
-      class="sign-in"
-    >
-      Sign In
-    </a>
-
-    <a
-      routerLink="/register"
-      class="create-account"
-    >
-      Create Account
-    </a>
+    @if (auth.isLoggedIn()) {
+      <a routerLink="/console" class="create-account">Open Dashboard</a>
+    } @else {
+      <a routerLink="/login" class="sign-in">Sign In</a>
+      <a routerLink="/register" class="create-account">Create Account</a>
+    }
 
   </nav>
 

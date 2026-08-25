@@ -1,0 +1,87 @@
+<div class="management-page">
+  <header class="page-heading">
+    <div>
+      <span class="eyebrow">Approvals / Request review</span>
+      <h1>{{ request()?.circleTitle || 'Circle Request Review' }}</h1>
+      <p>Review the complete request before recording your decision.</p>
+    </div>
+    <a class="button button-secondary" routerLink="/console/admin/circle-requests"><i class="pi pi-arrow-left"></i> Back to Queue</a>
+  </header>
+
+  @if (isLoading()) {
+    <section class="panel state-card"><i class="pi pi-spin pi-spinner"></i><h2>Loading review</h2></section>
+  } @else if (!request()) {
+    <section class="panel state-card error"><i class="pi pi-exclamation-circle"></i><h2>Unable to load request</h2><p>{{ errorMessage() }}</p></section>
+  } @else {
+    @if (request(); as item) {
+    @if (errorMessage()) {
+      <div class="alert error"><i class="pi pi-exclamation-circle"></i><span>{{ errorMessage() }}</span></div>
+    }
+
+    <div class="review-layout">
+      <section class="panel">
+        <div class="panel-header"><h2>Request Information</h2><span class="status-badge submitted">Pending Approval</span></div>
+        <div class="panel-body details-grid">
+          <div class="detail-item"><span>Request ID</span><strong>{{ item.requestId }}</strong></div>
+          <div class="detail-item"><span>Circle Type</span><strong>{{ item.circleType === 'NewCircle' ? 'New Circle (Growth)' : 'Replacement Circle' }}</strong></div>
+          <div class="detail-item"><span>Contribution</span><strong>{{ item.contributionAmount | currency:'EGP':'symbol':'1.0-0' }} / month</strong></div>
+          <div class="detail-item"><span>Duration</span><strong>{{ item.duration }} months</strong></div>
+          <div class="detail-item"><span>Number of Slots</span><strong>{{ item.numberOfSlots }}</strong></div>
+          @if (item.vacantSlotNumber) { <div class="detail-item"><span>Vacant Slot</span><strong>Slot {{ item.vacantSlotNumber }}</strong></div> }
+          <div class="detail-item"><span>Submitted</span><strong>{{ item.submittedAt | date:'medium' }}</strong></div>
+          <div class="detail-item"><span>Organizer ID</span><strong>{{ item.createdByOrganizerId }}</strong></div>
+          <div class="detail-item full-width"><span>Justification / Notes</span><strong>{{ item.shortJustification || 'No additional notes.' }}</strong></div>
+        </div>
+      </section>
+
+      <aside class="panel decision-panel">
+        <div class="panel-header"><h2>Decision</h2></div>
+        <div class="panel-body decision-body">
+          <p>Approval creates or updates the circle registry and notifies the Organizer.</p>
+          <button type="button" class="button button-primary" [disabled]="actionInFlight() !== null" (click)="approve()">
+            <i [class]="actionInFlight() === 'approve' ? 'pi pi-spin pi-spinner' : 'pi pi-check'"></i> Approve Request
+          </button>
+          <button type="button" class="button button-secondary" [disabled]="actionInFlight() !== null" (click)="openDecision('modify')">
+            <i class="pi pi-pencil"></i> Request Modification
+          </button>
+          <button type="button" class="button button-danger" [disabled]="actionInFlight() !== null" (click)="openDecision('reject')">
+            <i class="pi pi-times"></i> Reject Request
+          </button>
+        </div>
+      </aside>
+    </div>
+
+    @if (activeDecision()) {
+      <section class="panel">
+        <div class="panel-header"><h2>{{ activeDecision() === 'reject' ? 'Rejection Reason' : 'Requested Changes' }}</h2></div>
+        <form class="panel-body" [formGroup]="reasonForm" (ngSubmit)="submitDecision()">
+          <div class="form-field">
+            <label for="reason">Decision comments</label>
+            <textarea id="reason" formControlName="reason" maxlength="1000" placeholder="Give the Organizer a clear and actionable explanation"></textarea>
+            @if (reasonForm.controls.reason.touched && reasonForm.controls.reason.invalid) { <small class="field-error">A reason is required.</small> }
+          </div>
+          <div class="form-actions">
+            <button type="button" class="button button-secondary" (click)="closeDecision()">Cancel</button>
+            <button type="submit" [class]="activeDecision() === 'reject' ? 'button button-danger' : 'button button-primary'" [disabled]="actionInFlight() !== null">
+              Confirm {{ activeDecision() === 'reject' ? 'Rejection' : 'Modification Request' }}
+            </button>
+          </div>
+        </form>
+      </section>
+    }
+
+    <section class="panel">
+      <div class="panel-header"><h2>Audit Trail</h2></div>
+      <div class="panel-body audit-list">
+        @if (audit().length === 0) { <p class="empty-audit">No audit events have been recorded yet.</p> }
+        @for (entry of audit(); track entry.auditLogId) {
+          <div class="audit-entry">
+            <span class="audit-icon"><i class="pi pi-history"></i></span>
+            <div><strong>{{ entry.actionType }}</strong><p>{{ entry.actionDescription || (entry.oldStatus + ' → ' + entry.newStatus) }}</p><small>{{ entry.createdAt | date:'medium' }}</small></div>
+          </div>
+        }
+      </div>
+    </section>
+    }
+  }
+</div>

@@ -29,6 +29,7 @@
       @if (form.controls.password.invalid && form.controls.password.touched) {
         <small class="field-error">Password is required.</small>
       }
+      <a class="forgot-link" routerLink="/forgot-password">Forgot password?</a>
     </div>
 
     <button pButton type="submit" label="Sign In" [loading]="loading()" class="w-full"></button>

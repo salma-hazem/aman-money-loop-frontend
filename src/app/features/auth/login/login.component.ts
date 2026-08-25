@@ -42,7 +42,7 @@ export class LoginComponent {
     this.auth.login(email, password).subscribe({
       next: (res) => {
         if (res.mustChangePassword) {
-          this.router.navigate(['/change-password']);
+          this.router.navigate(['/console/change-password']);
         } else {
           this.router.navigate(['/console']);
         }

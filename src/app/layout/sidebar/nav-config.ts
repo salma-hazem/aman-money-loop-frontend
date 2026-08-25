@@ -34,6 +34,35 @@ export const NAV_CONFIG: NavGroup[] = [
         route: '/console/pipeline',
         roles: [Role.Organizer, Role.Admin],
       },
+      {
+        label: 'My Profile',
+        icon: 'pi pi-user',
+        route: '/console/profile',
+      },
+    ],
+  },
+
+  {
+    label: 'Circle Management',
+    items: [
+      {
+        label: 'Circle Requests',
+        icon: 'pi pi-file-edit',
+        route: '/console/circle-requests',
+        roles: [Role.Organizer],
+      },
+      {
+        label: 'Approval Queue',
+        icon: 'pi pi-check-square',
+        route: '/console/admin/circle-requests',
+        roles: [Role.Admin],
+      },
+      {
+        label: 'Circle Registry',
+        icon: 'pi pi-sitemap',
+        route: '/console/circle-registry',
+        roles: [Role.Organizer, Role.Admin],
+      },
     ],
   },
 

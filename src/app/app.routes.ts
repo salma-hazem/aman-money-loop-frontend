@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import {
   authGuard,
   guestRedirectGuard,
+  passwordChangeGuard,
   roleGuard,
 } from './core/guards/auth.guard';
 import { Role } from './core/models/role.model';
@@ -39,10 +40,15 @@ export const routes: Routes = [
 
       {
         path: 'change-password',
+        redirectTo: '/console/change-password',
+        pathMatch: 'full',
+      },
+      {
+        path: 'forgot-password',
+        canActivate: [guestRedirectGuard],
         loadComponent: () =>
-          import(
-            './features/auth/change-password/change-password.component'
-          ).then((m) => m.ChangePasswordComponent),
+          import('./features/auth/forgot-password/forgot-password.component')
+            .then((m) => m.ForgotPasswordComponent),
       },
       {
         path: 'register',
@@ -88,6 +94,7 @@ export const routes: Routes = [
   {
     path: 'console',
     canActivate: [authGuard],
+    canActivateChild: [passwordChangeGuard],
 
     loadComponent: () =>
       import('./layout/console-shell/console-shell.component')
@@ -101,6 +108,84 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/dashboard/dashboard.component')
             .then((m) => m.DashboardComponent),
+      },
+
+      // =================================================
+      // Module 1 - Profile & Account Security
+      // =================================================
+
+      {
+        path: 'profile',
+        loadComponent: () =>
+          import('./features/auth/profile/profile.component')
+            .then((m) => m.ProfileComponent),
+      },
+      {
+        path: 'change-password',
+        loadComponent: () =>
+          import('./features/auth/change-password/change-password.component')
+            .then((m) => m.ChangePasswordComponent),
+      },
+
+      // =================================================
+      // Module 2 - Circle Request & Configuration Management
+      // =================================================
+
+      {
+        path: 'circle-requests',
+        canActivate: [roleGuard([Role.Organizer])],
+        loadComponent: () =>
+          import(
+            './features/circle-request-management/organizer/request-list/request-list.component'
+          ).then((m) => m.RequestListComponent),
+      },
+      {
+        path: 'circle-requests/new',
+        canActivate: [roleGuard([Role.Organizer])],
+        loadComponent: () =>
+          import(
+            './features/circle-request-management/organizer/request-form/request-form.component'
+          ).then((m) => m.RequestFormComponent),
+      },
+      {
+        path: 'circle-requests/:id/edit',
+        canActivate: [roleGuard([Role.Organizer])],
+        loadComponent: () =>
+          import(
+            './features/circle-request-management/organizer/request-form/request-form.component'
+          ).then((m) => m.RequestFormComponent),
+      },
+      {
+        path: 'circle-requests/:id',
+        canActivate: [roleGuard([Role.Organizer])],
+        loadComponent: () =>
+          import(
+            './features/circle-request-management/organizer/request-details/request-details.component'
+          ).then((m) => m.RequestDetailsComponent),
+      },
+      {
+        path: 'admin/circle-requests',
+        canActivate: [roleGuard([Role.Admin])],
+        loadComponent: () =>
+          import(
+            './features/circle-request-management/admin/approval-queue/approval-queue.component'
+          ).then((m) => m.ApprovalQueueComponent),
+      },
+      {
+        path: 'admin/circle-requests/:id',
+        canActivate: [roleGuard([Role.Admin])],
+        loadComponent: () =>
+          import(
+            './features/circle-request-management/admin/approval-details/approval-details.component'
+          ).then((m) => m.ApprovalDetailsComponent),
+      },
+      {
+        path: 'circle-registry',
+        canActivate: [roleGuard([Role.Organizer, Role.Admin])],
+        loadComponent: () =>
+          import(
+            './features/circle-request-management/registry/circle-registry/circle-registry.component'
+          ).then((m) => m.CircleRegistryComponent),
       },
 
       // =================================================
@@ -140,6 +225,7 @@ export const routes: Routes = [
 
       {
         path: 'admin/users',
+        canActivate: [roleGuard([Role.Admin])],
         loadComponent: () =>
           import('./features/admin/users/user-management.component')
             .then((m) => m.UserManagementComponent),
@@ -203,6 +289,8 @@ export const routes: Routes = [
 
   {
     path: '**',
-    redirectTo: '',
+    loadComponent: () =>
+      import('./features/not-found/not-found.component')
+        .then((m) => m.NotFoundComponent),
   },
 ];

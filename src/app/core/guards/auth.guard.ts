@@ -1,5 +1,5 @@
 import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
+import { CanActivateChildFn, CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { Role } from '../models/role.model';
 
@@ -7,8 +7,7 @@ export const authGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
   const router = inject(Router);
   if (!auth.isLoggedIn()) {
-    router.navigate(['/login']);
-    return false;
+    return router.createUrlTree(['/login']);
   }
   return true;
 };
@@ -18,8 +17,7 @@ export const roleGuard = (allowed: Role[]): CanActivateFn => {
     const auth = inject(AuthService);
     const router = inject(Router);
     if (!auth.hasRole(...allowed)) {
-      router.navigate(['/']);
-      return false;
+      return router.createUrlTree(['/console']);
     }
     return true;
   };
@@ -32,4 +30,15 @@ export const guestRedirectGuard: CanActivateFn = () => {
   return auth.isLoggedIn()
   ? router.createUrlTree(['/console'])
   : true;
+};
+
+export const passwordChangeGuard: CanActivateChildFn = (_route, state) => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+  const user = auth.currentUser();
+
+  if (user?.mustChangePassword && state.url !== '/console/change-password') {
+    return router.createUrlTree(['/console/change-password']);
+  }
+  return true;
 };
