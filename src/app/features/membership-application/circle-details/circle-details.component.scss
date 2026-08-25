@@ -1,0 +1,162 @@
+.details-page {
+  min-height: 100vh;
+  background: #f5f7f9;
+  padding: 48px 24px;
+}
+
+.back-button {
+  display: block;
+  max-width: 900px;
+  margin: 0 auto 20px;
+  background: none;
+  border: none;
+  color: #087f73;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.state-message {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px;
+  text-align: center;
+  color: #6b7280;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+
+  &.error {
+    color: #991b1b;
+    background: #fef2f2;
+    border-color: #fecaca;
+  }
+}
+
+.details-body {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.main-panel {
+  flex: 1;
+  min-width: 0;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 28px;
+
+  h1 {
+    margin: 0 0 10px;
+    font-size: 24px;
+    font-weight: 700;
+  }
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #ecfdf5;
+  color: #087f73;
+}
+
+.section {
+  margin-top: 24px;
+
+  h2 {
+    margin: 0 0 8px;
+    font-size: 15px;
+  }
+
+  p {
+    margin: 0;
+    color: #4b5563;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+}
+
+.summary-panel {
+  width: 280px;
+  flex-shrink: 0;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 22px;
+
+  h2 {
+    margin: 0 0 16px;
+    font-size: 16px;
+  }
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid #e5e7eb;
+
+  &:last-of-type {
+    border-bottom: none;
+  }
+}
+
+.label {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.value {
+  color: #111827;
+  font-weight: 600;
+  font-size: 13px;
+  text-align: right;
+}
+
+.apply-button {
+  width: 100%;
+  margin-top: 16px;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  background: #087f73;
+  color: white;
+
+  &:hover:not(:disabled) {
+    background: #066b61;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+@media (max-width: 700px) {
+  .details-page {
+    padding: 24px 16px;
+  }
+
+  .details-body {
+    flex-direction: column;
+  }
+
+  .summary-panel {
+    width: auto;
+  }
+}

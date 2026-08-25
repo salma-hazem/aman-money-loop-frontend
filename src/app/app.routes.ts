@@ -79,6 +79,24 @@ export const routes: Routes = [
 
       // Screen 9 - Circle Application Form. Public: guests and members can apply.
       {
+        path: 'marketplace',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import(
+            './features/membership-application/marketplace-browse/marketplace-browse.component'
+          ).then((m) => m.MarketplaceBrowseComponent),
+      },
+
+      {
+        path: 'marketplace/:listingId',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import(
+            './features/membership-application/circle-details/circle-details.component'
+          ).then((m) => m.CircleDetailsComponent),
+      },
+
+      {
         path: 'marketplace/:listingId/apply',
         loadComponent: () =>
           import(
