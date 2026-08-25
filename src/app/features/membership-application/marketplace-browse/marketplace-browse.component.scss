@@ -6,7 +6,7 @@
 
 .browse-header {
   max-width: 1100px;
-  margin: 0 auto 32px;
+  margin: 0 auto 24px;
 
   h1 {
     margin: 0 0 8px;
@@ -17,6 +17,84 @@
   p {
     margin: 0;
     color: #6b7280;
+  }
+}
+
+.filter-bar {
+  max-width: 1100px;
+  margin: 0 auto 32px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 18px 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: flex-end;
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 110px;
+
+  &.wide {
+    min-width: 200px;
+    flex: 1;
+  }
+
+  label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #6b7280;
+  }
+
+  input {
+    padding: 8px 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 13px;
+
+    &:focus {
+      outline: none;
+      border-color: #087f73;
+    }
+  }
+}
+
+.filter-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.search-button {
+  border: none;
+  background: #087f73;
+  color: white;
+  border-radius: 6px;
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    background: #066b61;
+  }
+}
+
+.clear-button {
+  border: 1px solid #d1d5db;
+  background: white;
+  color: #374151;
+  border-radius: 6px;
+  padding: 9px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    background: #f3f4f6;
   }
 }
 
@@ -101,5 +179,14 @@
 @media (max-width: 600px) {
   .browse-page {
     padding: 24px 16px;
+  }
+
+  .filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-field.wide {
+    min-width: 0;
   }
 }
