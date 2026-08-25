@@ -148,6 +148,15 @@ export const routes: Routes = [
       // =================================================
       // Module 3 - Circle Marketplace & Membership Applications
       // =================================================
+      // Applicant Pipeline selector (no listing specified). Organizer/Admin only.
+      {
+        path: 'pipeline',
+        canActivate: [roleGuard([Role.Organizer, Role.Admin])],
+        loadComponent: () =>
+          import(
+            './features/membership-application/pipeline/pipeline.component'
+          ).then((m) => m.PipelineComponent),
+      },
 
       // Screen 17 - Applicant Pipeline. Organizer/Admin only.
       {
@@ -157,6 +166,16 @@ export const routes: Routes = [
           import(
             './features/membership-application/pipeline/pipeline.component'
           ).then((m) => m.PipelineComponent),
+      },
+
+      // Screen 18 - Applicant Details. Organizer/Admin only.
+      {
+        path: 'applicants/:id',
+        canActivate: [roleGuard([Role.Organizer, Role.Admin])],
+        loadComponent: () =>
+          import(
+            './features/membership-application/applicant-details/applicant-details.component'
+          ).then((m) => m.ApplicantDetailsComponent),
       },
     ],
   },
