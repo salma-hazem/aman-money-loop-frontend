@@ -10,7 +10,8 @@
   <div class="state-message error">{{ errorMessage() }}</div>
   }
 
-  @else if (applicant(); as applicant) {
+  @else {
+  @if (applicant(); as applicant) {
 
   <div class="details-card">
 
@@ -186,6 +187,7 @@
 
   </div>
 
+  }
   }
 
 </div>
