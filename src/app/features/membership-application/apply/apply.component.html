@@ -1,5 +1,10 @@
 <div class="apply-page">
-
+  <button
+  type="button"
+  class="back-button"
+  (click)="goBack()">
+  ← Back to Circle Details
+</button>
   @if (submitted()) {
   <div class="apply-card">
     <div class="success-icon">✓</div>

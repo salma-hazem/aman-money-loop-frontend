@@ -8,25 +8,25 @@ import {
 import { Role } from './core/models/role.model';
 
 export const routes: Routes = [
-
   // =====================================================
   // Public pages
   // =====================================================
   {
     path: '',
     loadComponent: () =>
-      import('./layout/public-shell/public-shell.component')
-        .then((m) => m.PublicShellComponent),
+      import('./layout/public-shell/public-shell.component').then(
+        (m) => m.PublicShellComponent
+      ),
 
     children: [
-
       // Public landing page
       {
         path: '',
         pathMatch: 'full',
         loadComponent: () =>
-          import('./features/landing/landing.component')
-            .then((m) => m.LandingComponent),
+          import('./features/landing/landing.component').then(
+            (m) => m.LandingComponent
+          ),
       },
 
       // Login
@@ -34,8 +34,9 @@ export const routes: Routes = [
         path: 'login',
         canActivate: [guestRedirectGuard],
         loadComponent: () =>
-          import('./features/auth/login/login.component')
-            .then((m) => m.LoginComponent),
+          import('./features/auth/login/login.component').then(
+            (m) => m.LoginComponent
+          ),
       },
 
       {
@@ -43,29 +44,37 @@ export const routes: Routes = [
         redirectTo: '/console/change-password',
         pathMatch: 'full',
       },
+
       {
         path: 'forgot-password',
         canActivate: [guestRedirectGuard],
         loadComponent: () =>
-          import('./features/auth/forgot-password/forgot-password.component')
-            .then((m) => m.ForgotPasswordComponent),
+          import(
+            './features/auth/forgot-password/forgot-password.component'
+          ).then((m) => m.ForgotPasswordComponent),
       },
+
       {
         path: 'register',
         canActivate: [guestRedirectGuard],
         loadComponent: () =>
-          import(
-            './features/auth/register/register.component'
-          ).then((m) => m.RegisterComponent),
+          import('./features/auth/register/register.component').then(
+            (m) => m.RegisterComponent
+          ),
       },
 
       {
         path: 'confirm-otp',
         loadComponent: () =>
-          import(
-            './features/auth/confirm-otp/confirm-otp.component'
-          ).then((m) => m.ConfirmOtpComponent),
+          import('./features/auth/confirm-otp/confirm-otp.component').then(
+            (m) => m.ConfirmOtpComponent
+          ),
       },
+
+      // =================================================
+      // Module 5 - Public Agreement Response
+      // =================================================
+
       // Member opens this from the secure agreement email link.
       // Must remain public because the token in the URL authenticates
       // the agreement response.
@@ -77,7 +86,12 @@ export const routes: Routes = [
           ).then((m) => m.AgreementResponseComponent),
       },
 
-      // Screen 9 - Circle Application Form. Public: guests and members can apply.
+      // =================================================
+      // Module 3 - Public Marketplace
+      // =================================================
+
+      // Public marketplace browse.
+      // Guests/unregistered users can access this.
       {
         path: 'marketplace',
         pathMatch: 'full',
@@ -87,6 +101,7 @@ export const routes: Routes = [
           ).then((m) => m.MarketplaceBrowseComponent),
       },
 
+      // Public circle details.
       {
         path: 'marketplace/:listingId',
         pathMatch: 'full',
@@ -96,6 +111,7 @@ export const routes: Routes = [
           ).then((m) => m.CircleDetailsComponent),
       },
 
+      // Public application form.
       {
         path: 'marketplace/:listingId/apply',
         loadComponent: () =>
@@ -115,17 +131,18 @@ export const routes: Routes = [
     canActivateChild: [passwordChangeGuard],
 
     loadComponent: () =>
-      import('./layout/console-shell/console-shell.component')
-        .then((m) => m.ConsoleShellComponent),
+      import('./layout/console-shell/console-shell.component').then(
+        (m) => m.ConsoleShellComponent
+      ),
 
     children: [
-
       // Main Aman Money Loop dashboard
       {
         path: '',
         loadComponent: () =>
-          import('./features/dashboard/dashboard.component')
-            .then((m) => m.DashboardComponent),
+          import('./features/dashboard/dashboard.component').then(
+            (m) => m.DashboardComponent
+          ),
       },
 
       // =================================================
@@ -135,14 +152,17 @@ export const routes: Routes = [
       {
         path: 'profile',
         loadComponent: () =>
-          import('./features/auth/profile/profile.component')
-            .then((m) => m.ProfileComponent),
+          import('./features/auth/profile/profile.component').then(
+            (m) => m.ProfileComponent
+          ),
       },
+
       {
         path: 'change-password',
         loadComponent: () =>
-          import('./features/auth/change-password/change-password.component')
-            .then((m) => m.ChangePasswordComponent),
+          import(
+            './features/auth/change-password/change-password.component'
+          ).then((m) => m.ChangePasswordComponent),
       },
 
       // =================================================
@@ -157,6 +177,7 @@ export const routes: Routes = [
             './features/circle-request-management/organizer/request-list/request-list.component'
           ).then((m) => m.RequestListComponent),
       },
+
       {
         path: 'circle-requests/new',
         canActivate: [roleGuard([Role.Organizer])],
@@ -165,6 +186,7 @@ export const routes: Routes = [
             './features/circle-request-management/organizer/request-form/request-form.component'
           ).then((m) => m.RequestFormComponent),
       },
+
       {
         path: 'circle-requests/:id/edit',
         canActivate: [roleGuard([Role.Organizer])],
@@ -173,6 +195,7 @@ export const routes: Routes = [
             './features/circle-request-management/organizer/request-form/request-form.component'
           ).then((m) => m.RequestFormComponent),
       },
+
       {
         path: 'circle-requests/:id',
         canActivate: [roleGuard([Role.Organizer])],
@@ -181,6 +204,7 @@ export const routes: Routes = [
             './features/circle-request-management/organizer/request-details/request-details.component'
           ).then((m) => m.RequestDetailsComponent),
       },
+
       {
         path: 'admin/circle-requests',
         canActivate: [roleGuard([Role.Admin])],
@@ -189,6 +213,7 @@ export const routes: Routes = [
             './features/circle-request-management/admin/approval-queue/approval-queue.component'
           ).then((m) => m.ApprovalQueueComponent),
       },
+
       {
         path: 'admin/circle-requests/:id',
         canActivate: [roleGuard([Role.Admin])],
@@ -197,6 +222,7 @@ export const routes: Routes = [
             './features/circle-request-management/admin/approval-details/approval-details.component'
           ).then((m) => m.ApprovalDetailsComponent),
       },
+
       {
         path: 'circle-registry',
         canActivate: [roleGuard([Role.Organizer, Role.Admin])],
@@ -204,6 +230,73 @@ export const routes: Routes = [
           import(
             './features/circle-request-management/registry/circle-registry/circle-registry.component'
           ).then((m) => m.CircleRegistryComponent),
+      },
+
+      // =================================================
+      // Module 3 - Circle Marketplace & Membership Applications
+      // =================================================
+
+      // Logged-in Member marketplace.
+      // Uses ConsoleShell, therefore sidebar/header remain visible.
+      {
+        path: 'marketplace',
+        pathMatch: 'full',
+        canActivate: [roleGuard([Role.Member])],
+        loadComponent: () =>
+          import(
+            './features/membership-application/marketplace-browse/marketplace-browse.component'
+          ).then((m) => m.MarketplaceBrowseComponent),
+      },
+
+      // Logged-in Member circle details.
+      {
+        path: 'marketplace/:listingId',
+        pathMatch: 'full',
+        canActivate: [roleGuard([Role.Member])],
+        loadComponent: () =>
+          import(
+            './features/membership-application/circle-details/circle-details.component'
+          ).then((m) => m.CircleDetailsComponent),
+      },
+
+      // Logged-in Member application form.
+      {
+        path: 'marketplace/:listingId/apply',
+        canActivate: [roleGuard([Role.Member])],
+        loadComponent: () =>
+          import(
+            './features/membership-application/apply/apply.component'
+          ).then((m) => m.ApplyComponent),
+      },
+
+      // Applicant Pipeline selector.
+      {
+        path: 'pipeline',
+        canActivate: [roleGuard([Role.Organizer, Role.Admin])],
+        loadComponent: () =>
+          import(
+            './features/membership-application/pipeline/pipeline.component'
+          ).then((m) => m.PipelineComponent),
+      },
+
+      // Listing-specific Applicant Pipeline.
+      {
+        path: 'listings/:listingId/pipeline',
+        canActivate: [roleGuard([Role.Organizer, Role.Admin])],
+        loadComponent: () =>
+          import(
+            './features/membership-application/pipeline/pipeline.component'
+          ).then((m) => m.PipelineComponent),
+      },
+
+      // Applicant Details.
+      {
+        path: 'applicants/:id',
+        canActivate: [roleGuard([Role.Organizer, Role.Admin])],
+        loadComponent: () =>
+          import(
+            './features/membership-application/applicant-details/applicant-details.component'
+          ).then((m) => m.ApplicantDetailsComponent),
       },
 
       // =================================================
@@ -218,6 +311,7 @@ export const routes: Routes = [
             './features/Verification/Components/schedule/schedule.component'
           ).then((m) => m.ScheduleVerificationComponent),
       },
+
       {
         path: 'verification/checklist',
         canActivate: [roleGuard([Role.Organizer, Role.Admin])],
@@ -258,24 +352,29 @@ export const routes: Routes = [
             path: 'upload',
             canActivate: [roleGuard([Role.Member])],
             loadComponent: () =>
-              import('./features/onboarding-memberLedger/member-upload/upload.component')
-                .then((m) => m.OnboardingUploadComponent),
+              import(
+                './features/onboarding-memberLedger/member-upload/upload.component'
+              ).then((m) => m.OnboardingUploadComponent),
           },
+
           {
             path: 'review',
             canActivate: [roleGuard([Role.Organizer, Role.Admin])],
             loadComponent: () =>
-              import('./features/onboarding-memberLedger/organizer-review/onboarding-review.component')
-                .then((m) => m.OnboardingReviewComponent),
+              import(
+                './features/onboarding-memberLedger/organizer-review/onboarding-review.component'
+              ).then((m) => m.OnboardingReviewComponent),
           },
+
           {
             path: 'activation',
             canActivate: [roleGuard([Role.Admin])],
             loadComponent: () =>
-              import('./features/onboarding-memberLedger/admin-activation/member-ledger-activation.component')
-                .then((m) => m.MemberLedgerActivationComponent),
+              import(
+                './features/onboarding-memberLedger/admin-activation/member-ledger-activation.component'
+              ).then((m) => m.MemberLedgerActivationComponent),
           },
-        ]
+        ],
       },
 
       // =================================================
@@ -286,48 +385,16 @@ export const routes: Routes = [
         path: 'admin/users',
         canActivate: [roleGuard([Role.Admin])],
         loadComponent: () =>
-          import('./features/admin/users/user-management.component')
-            .then((m) => m.UserManagementComponent),
-      },
-
-      // =================================================
-      // Module 3 - Circle Marketplace & Membership Applications
-      // =================================================
-      // Applicant Pipeline selector (no listing specified). Organizer/Admin only.
-      {
-        path: 'pipeline',
-        canActivate: [roleGuard([Role.Organizer, Role.Admin])],
-        loadComponent: () =>
-          import(
-            './features/membership-application/pipeline/pipeline.component'
-          ).then((m) => m.PipelineComponent),
-      },
-
-      // Screen 17 - Applicant Pipeline. Organizer/Admin only.
-      {
-        path: 'listings/:listingId/pipeline',
-        canActivate: [roleGuard([Role.Organizer, Role.Admin])],
-        loadComponent: () =>
-          import(
-            './features/membership-application/pipeline/pipeline.component'
-          ).then((m) => m.PipelineComponent),
-      },
-
-      // Screen 18 - Applicant Details. Organizer/Admin only.
-      {
-        path: 'applicants/:id',
-        canActivate: [roleGuard([Role.Organizer, Role.Admin])],
-        loadComponent: () =>
-          import(
-            './features/membership-application/applicant-details/applicant-details.component'
-          ).then((m) => m.ApplicantDetailsComponent),
+          import('./features/admin/users/user-management.component').then(
+            (m) => m.UserManagementComponent
+          ),
       },
     ],
   },
 
   // =====================================================
   // Temporary compatibility redirects
-  // Preserve your old Module 5 URLs
+  // Preserve old Module 5 URLs
   // =====================================================
 
   {
@@ -349,7 +416,8 @@ export const routes: Routes = [
   {
     path: '**',
     loadComponent: () =>
-      import('./features/not-found/not-found.component')
-        .then((m) => m.NotFoundComponent),
+      import('./features/not-found/not-found.component').then(
+        (m) => m.NotFoundComponent
+      ),
   },
 ];
