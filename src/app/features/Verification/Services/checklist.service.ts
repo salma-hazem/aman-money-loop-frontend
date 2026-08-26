@@ -12,7 +12,6 @@ import {
   providedIn: 'root'
 })
 export class VerificationChecklistService {
-  // Corrected plural route to match C# controller [Route("api/verification-checklists")]
   private readonly apiUrl = `${environment.apiBase}/api/verification-checklists`;
 
   constructor(private http: HttpClient) { }
@@ -22,7 +21,7 @@ export class VerificationChecklistService {
     return this.http.post<VerificationChecklistSubmissionResponse>(`${this.apiUrl}/submit`, dto);
   }
 
-  // GET api/verification-checklists/schedule/{scheduleId} (This is your GetById endpoint)
+  // GET api/verification-checklists/schedule/{scheduleId}
   getSubmissionBySchedule(scheduleId: string): Observable<VerificationChecklistSubmissionResponse> {
     return this.http.get<VerificationChecklistSubmissionResponse>(`${this.apiUrl}/schedule/${scheduleId}`);
   }
