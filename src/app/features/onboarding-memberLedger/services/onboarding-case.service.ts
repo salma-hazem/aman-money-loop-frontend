@@ -22,6 +22,11 @@ export class OnboardingCaseService {
     return this.http.get<OnboardingCase>(`${this.base}/${id}/with-documents`);
   }
 
+  // الدالة الجديدة اللي هتجيب كيس الممبر الحالي بالتوكن
+  getMyCase(): Observable<OnboardingCase> {
+    return this.http.get<OnboardingCase>(`${this.base}/my-case`);
+  }
+
   getByOrganizer(organizerId: string, pageNumber = 1, pageSize = 20): Observable<PagedResult<OnboardingCase>> {
     const params = new HttpParams().set('pageNumber', pageNumber).set('pageSize', pageSize);
     return this.http.get<PagedResult<OnboardingCase>>(`${this.base}/by-organizer/${organizerId}`, { params });

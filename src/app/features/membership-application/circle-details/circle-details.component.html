@@ -1,6 +1,14 @@
 <div class="details-page">
 
-  <button class="back-button" (click)="goBack()">&larr; Marketplace</button>
+  @if (!isInsideConsole) {
+  <button
+    type="button"
+    class="back-button"
+    (click)="goBack()"
+  >
+    ← Marketplace
+  </button>
+}
 
   @if (isLoading()) {
   <div class="state-message">Loading circle...</div>

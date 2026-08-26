@@ -56,25 +56,41 @@ export class CircleDetailsComponent {
   }
 
   apply(): void {
-    const listing = this.listing();
-    if (!listing) {
-      return;
+  const listing = this.listing();
+
+  if (!listing) {
+    return;
+  }
+
+  const listingSummary: ListingSummary = {
+    listingId: listing.listingId,
+    title: listing.title,
+    monthlyContribution: listing.monthlyContribution,
+    durationMonths: listing.durationMonths,
+    availableSlots: listing.availableSlots,
+  };
+
+  const isInsideConsole = this.router.url.startsWith('/console/');
+
+  const route = isInsideConsole
+    ? ['/console/marketplace', listing.listingId, 'apply']
+    : ['/marketplace', listing.listingId, 'apply'];
+
+  this.router.navigate(route, {
+    state: { listingSummary },
+  });
+}
+
+goBack(): void {
+    const isInsideConsole = this.router.url.startsWith('/console/');
+
+    if (isInsideConsole) {
+      this.router.navigate(['/console/marketplace']);
+    } else {
+      this.router.navigate(['/marketplace']);
     }
-
-    const listingSummary: ListingSummary = {
-      listingId: listing.listingId,
-      title: listing.title,
-      monthlyContribution: listing.monthlyContribution,
-      durationMonths: listing.durationMonths,
-      availableSlots: listing.availableSlots,
-    };
-
-    this.router.navigate(['/marketplace', listing.listingId, 'apply'], {
-      state: { listingSummary },
-    });
   }
-
-  goBack(): void {
-    this.router.navigate(['/marketplace']);
-  }
+  get isInsideConsole(): boolean {
+  return this.router.url.startsWith('/console/');
+}
 }

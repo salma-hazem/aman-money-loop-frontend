@@ -18,6 +18,7 @@ export interface MembershipApplicationDetail {
   membershipApplicationId: string;
   listingId: string;
   circleId: string;
+  title: string | null;
   name: string;
   email: string;
   phone: string;

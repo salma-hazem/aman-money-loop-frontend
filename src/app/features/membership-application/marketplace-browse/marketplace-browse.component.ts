@@ -44,11 +44,21 @@ export class MarketplaceBrowseComponent {
     this.marketplaceListingService
       .getActive({
         search: raw.search || undefined,
-        minContribution: raw.minContribution ? Number(raw.minContribution) : undefined,
-        maxContribution: raw.maxContribution ? Number(raw.maxContribution) : undefined,
-        minDuration: raw.minDuration ? Number(raw.minDuration) : undefined,
-        maxDuration: raw.maxDuration ? Number(raw.maxDuration) : undefined,
-        minAvailableSlots: raw.minAvailableSlots ? Number(raw.minAvailableSlots) : undefined,
+        minContribution: raw.minContribution
+          ? Number(raw.minContribution)
+          : undefined,
+        maxContribution: raw.maxContribution
+          ? Number(raw.maxContribution)
+          : undefined,
+        minDuration: raw.minDuration
+          ? Number(raw.minDuration)
+          : undefined,
+        maxDuration: raw.maxDuration
+          ? Number(raw.maxDuration)
+          : undefined,
+        minAvailableSlots: raw.minAvailableSlots
+          ? Number(raw.minAvailableSlots)
+          : undefined,
       })
       .subscribe({
         next: (listings) => {
@@ -77,10 +87,17 @@ export class MarketplaceBrowseComponent {
       maxDuration: '',
       minAvailableSlots: '',
     });
+
     this.load();
   }
 
   viewDetails(listingId: string): void {
-    this.router.navigate(['/marketplace', listingId]);
+    const isInsideConsole = this.router.url.startsWith('/console/');
+
+    if (isInsideConsole) {
+      this.router.navigate(['/console/marketplace', listingId]);
+    } else {
+      this.router.navigate(['/marketplace', listingId]);
+    }
   }
 }

@@ -110,4 +110,13 @@ export class ApplyComponent {
         },
       });
   }
+  goBack(): void {
+      const isInsideConsole = this.router.url.startsWith('/console/');
+
+      if (isInsideConsole) {
+        this.router.navigate(['/console/marketplace', this.listingId]);
+      } else {
+        this.router.navigate(['/marketplace', this.listingId]);
+      }
+    }
 }

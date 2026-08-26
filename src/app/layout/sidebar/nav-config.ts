@@ -24,24 +24,40 @@ export const NAV_CONFIG: NavGroup[] = [
       },
     ],
   },
-
   {
-    label: 'Membership',
+    label: 'Marketplace & Membership',
     items: [
+      {
+        label: 'Marketplace',
+        icon: 'pi pi-shopping-bag',
+        route: '/console/marketplace',
+        roles: [Role.Member],
+      },
+      {
+        label: 'My Applications',
+        icon: 'pi pi-file',
+        route: '/console/my-applications',
+        roles: [Role.Member],
+      },
       {
         label: 'Applicant Pipeline',
         icon: 'pi pi-list',
         route: '/console/pipeline',
         roles: [Role.Organizer, Role.Admin],
       },
+    ],
+  },
+  {
+    label: 'Account',
+    items: [
       {
         label: 'My Profile',
         icon: 'pi pi-user',
         route: '/console/profile',
+        roles: [Role.Member, Role.Organizer, Role.Admin],
       },
     ],
   },
-
   {
     label: 'Circle Management',
     items: [
@@ -65,7 +81,6 @@ export const NAV_CONFIG: NavGroup[] = [
       },
     ],
   },
-
   {
     label: 'Verification',
     items: [
@@ -83,7 +98,6 @@ export const NAV_CONFIG: NavGroup[] = [
       },
     ],
   },
-
   {
     label: 'Agreement & Payment',
     items: [
@@ -95,7 +109,6 @@ export const NAV_CONFIG: NavGroup[] = [
       },
     ],
   },
-
   {
     label: 'Onboarding',
     items: [
@@ -119,7 +132,6 @@ export const NAV_CONFIG: NavGroup[] = [
       },
     ],
   },
-
   {
     label: 'Administration',
     items: [

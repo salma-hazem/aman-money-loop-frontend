@@ -25,9 +25,13 @@
       <div class="form-row">
         <div class="form-group">
           <label>Scheduled Date and Time</label>
-          <input type="datetime-local" [(ngModel)]="formData.scheduledDateTime" name="scheduledDateTime" required />
+          <input
+            type="datetime-local"
+            [(ngModel)]="formData.scheduledDateTime"
+            name="scheduledDateTime"
+            required
+          />
         </div>
-      </div>
 
       <!-- Row 3: Location or Video Link -->
       <div class="form-group">
@@ -35,14 +39,24 @@
         <input type="text" [(ngModel)]="formData.locationOrLink" name="locationOrLink" [placeholder]="placeholders.locationOrLink" required />
       </div>
 
-      <!-- Checkbox -->
       <div class="checkbox-group">
-        <input type="checkbox" id="invite" [(ngModel)]="formData.sendCalendarInvite" name="sendCalendarInvite" />
-        <label for="invite">Send calendar invite to member and reviewer</label>
+        <input
+          type="checkbox"
+          id="invite"
+          [(ngModel)]="formData.sendCalendarInvite"
+          name="sendCalendarInvite"
+        />
+
+        <label for="invite">
+          Send calendar invite to member and reviewer
+        </label>
       </div>
 
-      <!-- Submit Button -->
-      <button type="submit" class="btn-teal" [disabled]="!scheduleForm.form.valid || isSubmitting">
+      <button
+        type="submit"
+        class="btn-teal"
+        [disabled]="!scheduleForm.form.valid || isSubmitting"
+      >
         {{ isSubmitting ? 'Scheduling...' : 'Confirm Schedule' }}
       </button>
     </form>

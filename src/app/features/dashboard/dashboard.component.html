@@ -1,5 +1,6 @@
 <div class="dashboard-page">
 
+  <!-- قسم الترحيب -->
   <section class="welcome-section">
     <div>
       <span class="eyebrow">
@@ -25,6 +26,7 @@
     </div>
   </section>
 
+  <!-- كاردات معلومات الحساب + حالة الـ Onboarding -->
   <section class="account-grid">
 
     <!-- Card 1: Account Email -->
@@ -33,7 +35,6 @@
         <span class="card-label">
           Account
         </span>
-
         <span class="card-value email">
           {{ auth.currentUser()?.email }}
         </span>
@@ -46,38 +47,64 @@
         <span class="card-label">
           Role
         </span>
-
         <span class="card-value">
           {{ auth.role() }}
         </span>
       </div>
     </p-card>
 
+    <!-- Card 3: Onboarding Status (خاص بالممبر فقط) -->
+    <p-card styleClass="account-card" *ngIf="auth.role() === 'Member'">
+      <div class="card-content">
+        <span class="card-label">
+          Onboarding Status
+        </span>
+        
+        <div *ngIf="isLoadingCase()">
+          <span class="card-value">Loading...</span>
+        </div>
+
+        <div *ngIf="!isLoadingCase()">
+          <span class="status-badge" *ngIf="onboardingCase(); else noCase">
+            {{ onboardingCase()?.finalStatus }}
+          </span>
+          <ng-template #noCase>
+            <span class="card-value" style="color: #e67e22;">Not Started</span>
+          </ng-template>
+        </div>
+      </div>
+    </p-card>
+
   </section>
 
+  <!-- قسم الوصول السريع والتحكم في المستندات -->
   <section class="quick-access">
 
     <div class="section-heading">
       <h2>Quick Access</h2>
-
       <p>
         Use the navigation menu to access the features
         available for your account.
       </p>
     </div>
 
-    <div class="info-panel">
+    <div class="info-panel" *ngIf="auth.role() === 'Member'">
       <div class="info-icon">
-        $
+        📁
+      </div>
+
+      <div style="flex-grow: 1;">
+        <h3>Document Management & Onboarding</h3>
+        <p>
+          Upload your required verification documents and track your onboarding review progress in real-time.
+        </p>
       </div>
 
       <div>
-        <h3>Your Money Loop</h3>
-
-        <p>
-          Your available features depend on your assigned
-          role and current membership status.
-        </p>
+        <!-- زرار يوجهه لصفحة الرفع بتاعت الفجوة التانية -->
+        <a routerLink="/onboarding-member-ledger/member-upload" class="btn-action" style="padding: 0.6rem 1.2rem; background: #089d93; color: white; border-radius: 8px; text-decoration: none; font-weight: 600;">
+          Manage Documents
+        </a>
       </div>
     </div>
 
