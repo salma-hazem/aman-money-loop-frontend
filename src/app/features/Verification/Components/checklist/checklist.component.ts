@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { VerificationChecklistService } from '../Services/checklist.service';
+import { VerificationChecklistService } from '../../Services/checklist.service';
 
 @Component({
   selector: 'app-verification-checklist',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './checklist.component.html',
+  styleUrl: './checklist.component.scss'
 })
 export class VerificationChecklistComponent implements OnInit {
   // Model state for checklist fields
