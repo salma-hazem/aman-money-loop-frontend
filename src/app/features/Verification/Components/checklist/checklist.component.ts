@@ -1,7 +1,9 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { VerificationChecklistService } from '../../Services/checklist.service';
+import { CreateVerificationChecklistSubmission } from '../../Models/checklist.model';
 
 @Component({
   selector: 'app-verification-checklist',
@@ -11,11 +13,11 @@ import { VerificationChecklistService } from '../../Services/checklist.service';
   styleUrl: './checklist.component.scss'
 })
 export class VerificationChecklistComponent implements OnInit {
-  @Input() scheduleId: string = ''; // Receives schedule ID from parent component or router
+  @Input() scheduleId: string = '';
 
-  roundTitle: string = 'Document Check';
-  memberName: string = 'Ahmed Hassan';
-  status: string = 'Scheduled';
+  roundTitle: string = '';
+  memberName: string = '';
+  status: string = '';
 
   documentAuthenticityRating: number = 0;
   idMatchRating: number = 0;
@@ -24,9 +26,16 @@ export class VerificationChecklistComponent implements OnInit {
 
   isSubmitting: boolean = false;
 
-  constructor(private checklistService: VerificationChecklistService) { }
+  constructor(
+    private checklistService: VerificationChecklistService,
+    private route: ActivatedRoute
+  ) { }
 
   ngOnInit(): void {
+    if (!this.scheduleId) {
+      this.scheduleId = this.route.snapshot.paramMap.get('scheduleId') || '';
+    }
+
     if (this.scheduleId) {
       this.loadChecklistDetails(this.scheduleId);
     }
@@ -34,12 +43,15 @@ export class VerificationChecklistComponent implements OnInit {
 
   loadChecklistDetails(scheduleId: string): void {
     this.checklistService.getSubmissionBySchedule(scheduleId).subscribe({
-      next: (data: any) => {
+      next: (data) => {
         if (data) {
-          this.documentAuthenticityRating = data.documentAuthenticityRating || 0;
-          this.idMatchRating = data.idMatchRating || 0;
-          this.completenessRating = data.completenessRating || 0;
-          this.reviewerComments = data.reviewerComments || '';
+          this.reviewerComments = data.overallComments || '';
+
+          data.criterionRatings?.forEach((item) => {
+            if (item.verificationCriterionId === 'authenticity') this.documentAuthenticityRating = item.rating;
+            if (item.verificationCriterionId === 'idMatch') this.idMatchRating = item.rating;
+            if (item.verificationCriterionId === 'completeness') this.completenessRating = item.rating;
+          });
         }
       },
       error: (err) => console.error('Error loading checklist details:', err)
@@ -52,23 +64,27 @@ export class VerificationChecklistComponent implements OnInit {
     if (category === 'completeness') this.completenessRating = score;
   }
 
-  get calculatedCompositeScore(): number {
-    const total = this.documentAuthenticityRating + this.idMatchRating + this.completenessRating;
-    return total > 0 ? Number((total / 3).toFixed(1)) : 0;
-  }
-
   onSubmitChecklist(): void {
+    if (!this.scheduleId) {
+      alert('Missing Schedule ID!');
+      return;
+    }
+
     this.isSubmitting = true;
-    const payload = {
+    const currentUserId = localStorage.getItem('userId') || '';
+
+    const payload: CreateVerificationChecklistSubmission = {
       verificationScheduleId: this.scheduleId,
-      documentAuthenticityRating: this.documentAuthenticityRating,
-      idMatchRating: this.idMatchRating,
-      completenessRating: this.completenessRating,
-      reviewerComments: this.reviewerComments,
-      compositeScore: this.calculatedCompositeScore
+      submittedByUserId: currentUserId,
+      overallComments: this.reviewerComments,
+      ratings: [
+        { verificationCriterionId: 'authenticity', rating: this.documentAuthenticityRating },
+        { verificationCriterionId: 'idMatch', rating: this.idMatchRating },
+        { verificationCriterionId: 'completeness', rating: this.completenessRating }
+      ]
     };
 
-    this.checklistService.submitChecklist(payload as any).subscribe({
+    this.checklistService.submitChecklist(payload).subscribe({
       next: () => {
         alert('Checklist submitted successfully!');
         this.isSubmitting = false;
