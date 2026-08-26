@@ -7,17 +7,35 @@
       <div class="form-row grid-3">
         <div class="form-group">
           <label>Application ID</label>
-          <input type="text" [(ngModel)]="formData.applicationId" name="applicationId" placeholder="Membership application ID" required />
+          <input
+            type="text"
+            [(ngModel)]="formData.applicationId"
+            name="applicationId"
+            placeholder="Membership application ID"
+            required
+          />
         </div>
 
         <div class="form-group">
           <label>Verification Round</label>
-          <input type="text" [(ngModel)]="formData.verificationRoundId" name="verificationRoundId" placeholder="Document Check" required />
+          <input
+            type="text"
+            [(ngModel)]="formData.verificationRoundId"
+            name="verificationRoundId"
+            placeholder="Verification round ID"
+            required
+          />
         </div>
 
         <div class="form-group">
           <label>Scheduled By User ID</label>
-          <input type="text" [(ngModel)]="formData.scheduledByUserId" name="scheduledByUserId" placeholder="Organizer or Admin user ID" required />
+          <input
+            type="text"
+            [(ngModel)]="formData.scheduledByUserId"
+            name="scheduledByUserId"
+            placeholder="Organizer or Admin user ID"
+            required
+          />
         </div>
       </div>
 
@@ -25,24 +43,43 @@
       <div class="form-row">
         <div class="form-group">
           <label>Scheduled Date and Time</label>
-          <input type="datetime-local" [(ngModel)]="formData.scheduledDateTime" name="scheduledDateTime" required />
+          <input
+            type="datetime-local"
+            [(ngModel)]="formData.scheduledDateTime"
+            name="scheduledDateTime"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Location or Video Link</label>
+          <input
+            type="text"
+            [(ngModel)]="formData.locationOrLink"
+            name="locationOrLink"
+            placeholder="Meeting link / address"
+          />
         </div>
       </div>
 
-      <!-- Row 3: Location or Video Link -->
-      <div class="form-group">
-        <label>Location or Video Link</label>
-        <input type="text" [(ngModel)]="formData.locationOrLink" name="locationOrLink" placeholder="Meeting link / address" required />
-      </div>
-
-      <!-- Checkbox -->
       <div class="checkbox-group">
-        <input type="checkbox" id="invite" [(ngModel)]="formData.sendCalendarInvite" name="sendCalendarInvite" />
-        <label for="invite">Send calendar invite to member and reviewer</label>
+        <input
+          type="checkbox"
+          id="invite"
+          [(ngModel)]="formData.sendCalendarInvite"
+          name="sendCalendarInvite"
+        />
+
+        <label for="invite">
+          Send calendar invite to member and reviewer
+        </label>
       </div>
 
-      <!-- Submit Button -->
-      <button type="submit" class="btn-teal" [disabled]="!scheduleForm.form.valid || isSubmitting">
+      <button
+        type="submit"
+        class="btn-teal"
+        [disabled]="!scheduleForm.form.valid || isSubmitting"
+      >
         {{ isSubmitting ? 'Scheduling...' : 'Confirm Schedule' }}
       </button>
     </form>
