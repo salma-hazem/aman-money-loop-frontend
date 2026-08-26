@@ -7,8 +7,7 @@ import { VerificationChecklistService } from '../Services/checklist.service';
   selector: 'app-verification-checklist',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './verification-checklist.component.html',
-  styleUrls: ['./verification-checklist.component.scss']
+  templateUrl: './checklist.component.html',
 })
 export class VerificationChecklistComponent implements OnInit {
   // Model state for checklist fields
