@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { AuthService } from '../../../core/services/auth.service';
+import { ProfileService } from '../../../core/services/profile.service';
 import { MembershipApplicationService } from '../services/membership-application.service';
 import { ListingSummary } from '../models/membership-application.model';
 
@@ -20,6 +21,7 @@ export class ApplyComponent {
   private router = inject(Router);
   private auth = inject(AuthService);
   private membershipApplicationService = inject(MembershipApplicationService);
+  private profileService = inject(ProfileService);
 
   listingId = '';
 
@@ -52,13 +54,33 @@ export class ApplyComponent {
     }
 
     const currentUser = this.auth.currentUser();
+
     if (currentUser) {
-      this.form.patchValue({
-        name: currentUser.fullName,
-        email: currentUser.email,
+      this.profileService.get().subscribe({
+        next: (profile) => {
+          this.form.patchValue({
+            name: `${profile.firstName} ${profile.lastName}`.trim(),
+            email: profile.email,
+            phone: profile.phoneNumber ?? '',
+            nationalId: profile.nationalId ?? '',
+          });
+
+          this.form.controls.name.disable();
+          this.form.controls.email.disable();
+          this.form.controls.phone.disable();
+          this.form.controls.nationalId.disable();
+        },
+        error: () => {
+          // Fallback to the basic logged-in user information
+          this.form.patchValue({
+            name: currentUser.fullName,
+            email: currentUser.email,
+          });
+
+          this.form.controls.name.disable();
+          this.form.controls.email.disable();
+        },
       });
-      this.form.controls.name.disable();
-      this.form.controls.email.disable();
     }
   }
 
