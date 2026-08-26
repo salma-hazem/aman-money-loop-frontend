@@ -12,11 +12,20 @@ import { CreateVerificationSchedule } from '../../Models/schedule.model';
   styleUrl: './schedule.component.scss'
 })
 export class ScheduleVerificationComponent implements OnInit {
+  pageTitle = 'Schedule Verification';
+
+  placeholders = {
+    applicationId: 'Membership application ID',
+    verificationRoundId: 'Document Check',
+    scheduledByUserId: 'Organizer or Admin user ID',
+    locationOrLink: 'Meeting link / address'
+  };
+
   formData: CreateVerificationSchedule = {
     applicationId: '',
     verificationRoundId: '',
     scheduledByUserId: '',
-    scheduledDateTime: new Date(),
+    scheduledDateTime: '', // Initialized as string for datetime-local binding compatibility
     locationOrLink: '',
     sendCalendarInvite: false
   };

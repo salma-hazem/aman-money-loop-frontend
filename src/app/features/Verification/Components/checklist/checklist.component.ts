@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { VerificationChecklistService } from '../../Services/checklist.service';
@@ -11,7 +11,12 @@ import { VerificationChecklistService } from '../../Services/checklist.service';
   styleUrl: './checklist.component.scss'
 })
 export class VerificationChecklistComponent implements OnInit {
-  // Model state for checklist fields
+  @Input() scheduleId: string = ''; // Receives schedule ID from parent component or router
+
+  roundTitle: string = 'Document Check';
+  memberName: string = 'Ahmed Hassan';
+  status: string = 'Scheduled';
+
   documentAuthenticityRating: number = 0;
   idMatchRating: number = 0;
   completenessRating: number = 0;
@@ -21,7 +26,25 @@ export class VerificationChecklistComponent implements OnInit {
 
   constructor(private checklistService: VerificationChecklistService) { }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    if (this.scheduleId) {
+      this.loadChecklistDetails(this.scheduleId);
+    }
+  }
+
+  loadChecklistDetails(scheduleId: string): void {
+    this.checklistService.getSubmissionBySchedule(scheduleId).subscribe({
+      next: (data: any) => {
+        if (data) {
+          this.documentAuthenticityRating = data.documentAuthenticityRating || 0;
+          this.idMatchRating = data.idMatchRating || 0;
+          this.completenessRating = data.completenessRating || 0;
+          this.reviewerComments = data.reviewerComments || '';
+        }
+      },
+      error: (err) => console.error('Error loading checklist details:', err)
+    });
+  }
 
   setRating(category: string, score: number): void {
     if (category === 'authenticity') this.documentAuthenticityRating = score;
@@ -37,6 +60,7 @@ export class VerificationChecklistComponent implements OnInit {
   onSubmitChecklist(): void {
     this.isSubmitting = true;
     const payload = {
+      verificationScheduleId: this.scheduleId,
       documentAuthenticityRating: this.documentAuthenticityRating,
       idMatchRating: this.idMatchRating,
       completenessRating: this.completenessRating,
@@ -44,7 +68,6 @@ export class VerificationChecklistComponent implements OnInit {
       compositeScore: this.calculatedCompositeScore
     };
 
-    // Call your checklist service submission endpoint
     this.checklistService.submitChecklist(payload as any).subscribe({
       next: () => {
         alert('Checklist submitted successfully!');
