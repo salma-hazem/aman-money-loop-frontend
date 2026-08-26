@@ -323,7 +323,7 @@ export const routes: Routes = [
       },
 
       {
-        path: 'verification/checklist',
+        path: 'verification/checklist/:scheduleId',
         canActivate: [roleGuard([Role.Organizer, Role.Admin])],
         loadComponent: () =>
           import(
