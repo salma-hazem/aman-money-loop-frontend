@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+import { roleGuard } from './core/guards/auth.guard';
+import { Role } from './core/models/role.model';
 import {
   authGuard,
   guestRedirectGuard,
@@ -232,9 +234,29 @@ export const routes: Routes = [
 
       {
         path: 'onboarding',
-        loadComponent: () =>
-          import('./features/onboarding/onboarding.component')
-            .then((m) => m.OnboardingComponent),
+        children: [
+          {
+            path: 'upload',
+            canActivate: [roleGuard([Role.Member])],
+            loadComponent: () =>
+              import('./features/onboarding-memberLedger/member-upload/upload.component')
+                .then((m) => m.OnboardingUploadComponent),
+          },
+          {
+            path: 'review',
+            canActivate: [roleGuard([Role.Organizer, Role.Admin])],
+            loadComponent: () =>
+              import('./features/onboarding-memberLedger/organizer-review/onboarding-review.component')
+                .then((m) => m.OnboardingReviewComponent),
+          },
+          {
+            path: 'activation',
+            canActivate: [roleGuard([Role.Admin])],
+            loadComponent: () =>
+              import('./features/onboarding-memberLedger/admin-activation/member-ledger-activation.component')
+                .then((m) => m.MemberLedgerActivationComponent),
+          },
+        ]
       },
 
       // =================================================
