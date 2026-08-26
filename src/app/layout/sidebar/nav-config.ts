@@ -100,10 +100,22 @@ export const NAV_CONFIG: NavGroup[] = [
     label: 'Onboarding',
     items: [
       {
-        label: 'Onboarding',
-        icon: 'pi pi-user-plus',
-        route: '/console/onboarding',
+        label: 'Upload Documents',
+        icon: 'pi pi-upload',
+        route: '/console/onboarding/upload',
+        roles: [Role.Member],
+      },
+      {
+        label: 'Document Review',
+        icon: 'pi pi-file-check',
+        route: '/console/onboarding/review',
         roles: [Role.Organizer, Role.Admin],
+      },
+      {
+        label: 'Ledger Activation',
+        icon: 'pi pi-user-plus',
+        route: '/console/onboarding/activation',
+        roles: [Role.Admin],
       },
     ],
   },

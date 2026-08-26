@@ -215,7 +215,7 @@ export const routes: Routes = [
         canActivate: [roleGuard([Role.Organizer, Role.Admin])],
         loadComponent: () =>
           import(
-            './features/Verification/components/verification.component'
+            './features/Verification/Components/verification.component'
           ).then((m) => m.ScheduleVerificationComponent),
       },
       {
@@ -223,7 +223,7 @@ export const routes: Routes = [
         canActivate: [roleGuard([Role.Organizer, Role.Admin])],
         loadComponent: () =>
           import(
-            './features/Verification/components/checklist.component'
+            './features/Verification/Components/checklist.component'
           ).then((m) => m.VerificationChecklistComponent),
       },
 

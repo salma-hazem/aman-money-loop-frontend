@@ -8,8 +8,7 @@ import { CreateVerificationSchedule } from '../Models/schedule.model';
   selector: 'app-schedule-verification',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './schedule-verification.component.html',
-  styleUrls: ['./schedule-verification.component.scss']
+  templateUrl: './verification.component.html',
 })
 export class ScheduleVerificationComponent implements OnInit {
   formData: CreateVerificationSchedule = {
