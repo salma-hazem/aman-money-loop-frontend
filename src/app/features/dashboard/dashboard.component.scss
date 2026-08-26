@@ -121,10 +121,18 @@
 .info-panel {
   display: flex;
   align-items: center;
+  justify-content: space-between; /* بتضمن توزيع العناصر بين النص والزرار بشكل مريح */
+  flex-wrap: wrap; /* تمنع تداخل العناصر وتخليهم ينزلوا تحت بعض في الشاشات الضيقة */
   gap: 1rem;
   padding: 1.25rem;
   border-radius: 12px;
   background: #f3fbfa;
+}
+
+/* لمنع انكماش أو تداخل الأزرار جوه البانل */
+.info-panel .action-button, 
+.info-panel button {
+  flex-shrink: 0;
 }
 
 .info-icon {
@@ -176,17 +184,6 @@
     overflow-wrap: anywhere;
   }
 
-  .welcome-section {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .welcome-logo {
-    display: none;
-  }
-}
-
-@media (max-width: 650px) {
   .welcome-section {
     flex-direction: column;
     align-items: flex-start;
