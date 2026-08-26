@@ -1,14 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { VerificationScheduleService } from '../Services/schedule.service';
-import { CreateVerificationSchedule } from '../Models/schedule.model';
+import { VerificationScheduleService } from '../../Services/schedule.service';
+import { CreateVerificationSchedule } from '../../Models/schedule.model';
 
 @Component({
   selector: 'app-schedule-verification',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './verification.component.html',
+  templateUrl: './schedule.component.html',
+  styleUrl: './schedule.component.scss'
 })
 export class ScheduleVerificationComponent implements OnInit {
   formData: CreateVerificationSchedule = {
