@@ -53,7 +53,10 @@
   <!-- Footer Actions -->
   <div class="action-footer">
     <div class="score-box">
-      <strong>Weighted Composite Score: {{ calculatedCompositeScore }}</strong>
+    <strong>
+      Weighted Composite Score:
+      {{ calculatedCompositeScore !== null ? calculatedCompositeScore : '—' }}
+    </strong>    
       <small>Calculated after submission</small>
     </div>
 

@@ -80,9 +80,17 @@ export class ApprovalDetailsComponent {
   }
 
   openDecision(decision: Decision): void {
-    this.activeDecision.set(decision);
-    this.reasonForm.reset();
-  }
+      this.activeDecision.set(decision);
+      this.reasonForm.reset();
+
+      setTimeout(() => {
+        document.getElementById('decision-section')?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+        document.getElementById('reason')?.focus();
+      }, 0);
+    }
 
   closeDecision(): void {
     this.activeDecision.set(null);
