@@ -52,7 +52,7 @@
     </div>
 
     @if (activeDecision()) {
-      <section class="panel">
+      <section id="decision-section" class="panel">
         <div class="panel-header"><h2>{{ activeDecision() === 'reject' ? 'Rejection Reason' : 'Requested Changes' }}</h2></div>
         <form class="panel-body" [formGroup]="reasonForm" (ngSubmit)="submitDecision()">
           <div class="form-field">

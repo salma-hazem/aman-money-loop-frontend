@@ -1,43 +1,334 @@
 <div class="profile-page">
+
   <header class="profile-heading">
-    <div><span class="eyebrow">Account</span><h1>My Profile</h1><p>Keep your personal and contact information current.</p></div>
-    <a class="secondary-button" routerLink="/console/change-password"><i class="pi pi-key"></i> Change Password</a>
+    <div>
+      <span class="eyebrow">Account</span>
+
+      <h1>My Profile</h1>
+
+      <p>
+        Keep your personal and contact information current.
+      </p>
+    </div>
+
+    <a
+      class="secondary-button"
+      routerLink="/console/change-password"
+    >
+      <i class="pi pi-key"></i>
+      Change Password
+    </a>
   </header>
 
-  @if (successMessage()) { <p-message severity="success" [text]="successMessage()!" styleClass="w-full" /> }
-  @if (errorMessage()) { <p-message severity="error" [text]="errorMessage()!" styleClass="w-full" /> }
+  <!-- Success Message -->
+  @if (successMessage()) {
+    <p-message
+      severity="success"
+      [text]="successMessage()!"
+      styleClass="w-full"
+    />
+  }
+
+  <!-- Error Message -->
+  @if (errorMessage()) {
+    <p-message
+      severity="error"
+      [text]="errorMessage()!"
+      styleClass="w-full"
+    />
+  }
 
   @if (isLoading()) {
-    <section class="profile-card state"><i class="pi pi-spin pi-spinner"></i><h2>Loading profile</h2></section>
+
+    <section class="profile-card state">
+      <i class="pi pi-spin pi-spinner"></i>
+
+      <h2>Loading profile</h2>
+    </section>
+
   } @else {
+
     <div class="profile-layout">
-      <form class="profile-card" [formGroup]="profileForm" (ngSubmit)="saveProfile()">
-        <div class="card-header"><div><h2>Personal Information</h2><p>Name and phone can be updated here.</p></div><span class="verified"><i class="pi pi-verified"></i> Verified Account</span></div>
-        <div class="form-grid">
-          <div class="field"><label for="profileFirstName">First Name</label><input pInputText id="profileFirstName" formControlName="firstName" />@if (profileForm.controls.firstName.touched && profileForm.controls.firstName.invalid) { <small>First name is required.</small> }</div>
-          <div class="field"><label for="profileLastName">Last Name</label><input pInputText id="profileLastName" formControlName="lastName" />@if (profileForm.controls.lastName.touched && profileForm.controls.lastName.invalid) { <small>Last name is required.</small> }</div>
-          <div class="field full"><label for="profileEmail">Email</label><input pInputText id="profileEmail" formControlName="email" /><small class="hint">Use the secure email-change form to update this address.</small></div>
-          <div class="field"><label for="profilePhone">Phone Number</label><input pInputText id="profilePhone" formControlName="phoneNumber" inputmode="tel" />@if (profileForm.controls.phoneNumber.touched && profileForm.controls.phoneNumber.invalid) { <small>Enter a valid Egyptian mobile number.</small> }</div>
-          <div class="field"><label for="profileNationalId">National ID</label><input pInputText id="profileNationalId" formControlName="nationalId" /></div>
+
+      <!-- ========================== -->
+      <!-- Personal Information -->
+      <!-- ========================== -->
+
+      <form
+        class="profile-card"
+        [formGroup]="profileForm"
+        (ngSubmit)="saveProfile()"
+      >
+
+        <div class="card-header">
+          <div>
+            <h2>Personal Information</h2>
+
+            <p>
+              Name and phone can be updated here.
+            </p>
+          </div>
+
+          <span class="verified">
+            <i class="pi pi-verified"></i>
+            Verified Account
+          </span>
         </div>
-        <div class="form-actions"><button pButton type="submit" label="Save Changes" icon="pi pi-save" [loading]="isSaving()"></button></div>
+
+        <div class="form-grid">
+
+          <!-- First Name -->
+          <div class="field">
+            <label for="profileFirstName">
+              First Name
+            </label>
+
+            <input
+              pInputText
+              id="profileFirstName"
+              formControlName="firstName"
+            />
+
+            @if (
+              profileForm.controls.firstName.touched &&
+              profileForm.controls.firstName.invalid
+            ) {
+              <small>
+                First name is required.
+              </small>
+            }
+          </div>
+
+          <!-- Last Name -->
+          <div class="field">
+            <label for="profileLastName">
+              Last Name
+            </label>
+
+            <input
+              pInputText
+              id="profileLastName"
+              formControlName="lastName"
+            />
+
+            @if (
+              profileForm.controls.lastName.touched &&
+              profileForm.controls.lastName.invalid
+            ) {
+              <small>
+                Last name is required.
+              </small>
+            }
+          </div>
+
+          <!-- Email -->
+          <div class="field full">
+            <label for="profileEmail">
+              Email
+            </label>
+
+            <input
+              pInputText
+              id="profileEmail"
+              formControlName="email"
+            />
+
+            <small class="hint">
+              Use the secure email-change form to update
+              this address.
+            </small>
+          </div>
+
+          <!-- Phone -->
+          <div class="field">
+            <label for="profilePhone">
+              Phone Number
+            </label>
+
+            <input
+              pInputText
+              id="profilePhone"
+              formControlName="phoneNumber"
+              inputmode="tel"
+            />
+
+            @if (
+              profileForm.controls.phoneNumber.touched &&
+              profileForm.controls.phoneNumber.invalid
+            ) {
+              <small>
+                Enter a valid Egyptian mobile number.
+              </small>
+            }
+          </div>
+
+          <!-- National ID -->
+          <div class="field">
+            <label for="profileNationalId">
+              National ID
+            </label>
+
+            <input
+              pInputText
+              id="profileNationalId"
+              formControlName="nationalId"
+            />
+          </div>
+
+        </div>
+
+        <div class="form-actions">
+          <button
+            pButton
+            type="submit"
+            label="Save Changes"
+            icon="pi pi-save"
+            [loading]="isSaving()"
+          ></button>
+        </div>
+
       </form>
 
+      <!-- ========================== -->
+      <!-- Change Email -->
+      <!-- ========================== -->
+
       <section class="profile-card email-card">
-        <div class="card-header"><div><h2>Change Email</h2><p>Confirmation is required at the new address.</p></div></div>
+
+        <div class="card-header">
+          <div>
+            <h2>Change Email</h2>
+
+            <p>
+              Confirmation is required at the new address.
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 1: Enter New Email -->
         @if (emailStep() === 'idle') {
-          <form [formGroup]="emailForm" (ngSubmit)="requestEmailChange()">
-            <div class="field"><label for="newEmail">New Email</label><input pInputText id="newEmail" type="email" formControlName="newEmail" />@if (emailForm.controls.newEmail.touched && emailForm.controls.newEmail.invalid) { <small>Enter a valid email.</small> }</div>
-            <button pButton type="submit" label="Send Confirmation Code" icon="pi pi-envelope" [loading]="emailActionLoading()" class="w-full"></button>
+
+          <form
+            [formGroup]="emailForm"
+            (ngSubmit)="requestEmailChange()"
+          >
+
+            <div class="field">
+              <label for="newEmail">
+                New Email
+              </label>
+
+              <input
+                pInputText
+                id="newEmail"
+                type="email"
+                formControlName="newEmail"
+                autocomplete="email"
+              />
+
+              @if (
+                emailForm.controls.newEmail.touched &&
+                emailForm.controls.newEmail.invalid
+              ) {
+                <small>
+                  Enter a valid email.
+                </small>
+              }
+            </div>
+
+            <button
+              pButton
+              type="submit"
+              label="Send Confirmation Code"
+              icon="pi pi-envelope"
+              [loading]="emailActionLoading()"
+              class="w-full"
+            ></button>
+
           </form>
+
         } @else {
-          <form [formGroup]="codeForm" (ngSubmit)="confirmEmailChange()">
-            <div class="field"><label for="emailCode">6-Digit Code</label><input pInputText id="emailCode" formControlName="code" maxlength="6" inputmode="numeric" />@if (codeForm.controls.code.touched && codeForm.controls.code.invalid) { <small>Enter the 6-digit code.</small> }</div>
-            <div class="stacked-actions"><button pButton type="submit" label="Confirm New Email" icon="pi pi-check" [loading]="emailActionLoading()" class="w-full"></button><button pButton type="button" label="Cancel" severity="secondary" class="w-full" (click)="emailStep.set('idle')"></button></div>
+
+          <!-- Step 2: Confirmation Code -->
+
+          <form
+            [formGroup]="codeForm"
+            (ngSubmit)="confirmEmailChange()"
+          >
+
+            <div class="field">
+              <label for="emailCode">
+                6-Digit Code
+              </label>
+
+              <input
+                pInputText
+                id="emailCode"
+                formControlName="code"
+                maxlength="6"
+                inputmode="numeric"
+                autocomplete="one-time-code"
+              />
+
+              @if (
+                codeForm.controls.code.touched &&
+                codeForm.controls.code.invalid
+              ) {
+                <small>
+                  Enter the 6-digit code.
+                </small>
+              }
+            </div>
+
+            <div class="stacked-actions">
+
+              <!-- Confirm -->
+              <button
+                pButton
+                type="submit"
+                label="Confirm New Email"
+                icon="pi pi-check"
+                [loading]="emailActionLoading()"
+                [disabled]="emailResending()"
+                class="w-full"
+              ></button>
+
+              <!-- Resend -->
+              <button
+                pButton
+                type="button"
+                label="Resend Code"
+                icon="pi pi-refresh"
+                severity="secondary"
+                [loading]="emailResending()"
+                [disabled]="emailActionLoading()"
+                class="w-full"
+                (click)="resendEmailChangeCode()"
+              ></button>
+
+              <!-- Cancel -->
+              <button
+                pButton
+                type="button"
+                label="Cancel"
+                severity="secondary"
+                [disabled]="
+                  emailActionLoading() ||
+                  emailResending()
+                "
+                class="w-full"
+                (click)="emailStep.set('idle')"
+              ></button>
+
+            </div>
+
           </form>
+
         }
+
       </section>
+
     </div>
   }
-</div>
 
+</div>

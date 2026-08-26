@@ -5,14 +5,26 @@ import { RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
+
 import { AuthService } from '../../../core/services/auth.service';
 import { ProfileService } from '../../../core/services/profile.service';
-import { EGYPTIAN_PHONE_PATTERN, OTP_PATTERN, backendErrorMessage } from '../../../core/validators/account.validators';
+import {
+  EGYPTIAN_PHONE_PATTERN,
+  OTP_PATTERN,
+  backendErrorMessage,
+} from '../../../core/validators/account.validators';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, ButtonModule, InputTextModule, MessageModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterLink,
+    ButtonModule,
+    InputTextModule,
+    MessageModule,
+  ],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',
 })
@@ -23,23 +35,69 @@ export class ProfileComponent {
 
   readonly isLoading = signal(true);
   readonly isSaving = signal(false);
+
   readonly emailStep = signal<'idle' | 'code'>('idle');
   readonly emailActionLoading = signal(false);
+  readonly emailResending = signal(false);
+
   readonly errorMessage = signal<string | null>(null);
   readonly successMessage = signal<string | null>(null);
 
   readonly profileForm = this.fb.nonNullable.group({
-    firstName: ['', [Validators.required, Validators.maxLength(100)]],
-    lastName: ['', [Validators.required, Validators.maxLength(100)]],
-    email: [{ value: '', disabled: true }],
-    phoneNumber: ['', [Validators.required, Validators.pattern(EGYPTIAN_PHONE_PATTERN)]],
-    nationalId: [{ value: '', disabled: true }],
+    firstName: [
+      '',
+      [
+        Validators.required,
+        Validators.maxLength(100),
+      ],
+    ],
+    lastName: [
+      '',
+      [
+        Validators.required,
+        Validators.maxLength(100),
+      ],
+    ],
+    email: [
+      {
+        value: '',
+        disabled: true,
+      },
+    ],
+    phoneNumber: [
+      '',
+      [
+        Validators.required,
+        Validators.pattern(EGYPTIAN_PHONE_PATTERN),
+      ],
+    ],
+    nationalId: [
+      {
+        value: '',
+        disabled: true,
+      },
+    ],
   });
+
   readonly emailForm = this.fb.nonNullable.group({
-    newEmail: ['', [Validators.required, Validators.email, Validators.maxLength(128)]],
+    newEmail: [
+      '',
+      [
+        Validators.required,
+        Validators.email,
+        Validators.maxLength(128),
+      ],
+    ],
   });
+
   readonly codeForm = this.fb.nonNullable.group({
-    code: ['', [Validators.required, Validators.pattern(OTP_PATTERN)]],
+    code: [
+      '',
+      [
+        Validators.required,
+        Validators.pattern(OTP_PATTERN),
+      ],
+    ],
   });
 
   constructor() {
@@ -49,6 +107,7 @@ export class ProfileComponent {
   loadProfile(): void {
     this.isLoading.set(true);
     this.errorMessage.set(null);
+
     this.profileService.get().subscribe({
       next: (profile) => {
         this.profileForm.reset({
@@ -58,11 +117,19 @@ export class ProfileComponent {
           phoneNumber: profile.phoneNumber ?? '',
           nationalId: profile.nationalId ?? 'Not provided',
         });
+
         this.auth.updateCurrentUserFromProfile(profile);
+
         this.isLoading.set(false);
       },
       error: (error) => {
-        this.errorMessage.set(backendErrorMessage(error, 'Your profile could not be loaded.'));
+        this.errorMessage.set(
+          backendErrorMessage(
+            error,
+            'Your profile could not be loaded.'
+          )
+        );
+
         this.isLoading.set(false);
       },
     });
@@ -73,70 +140,167 @@ export class ProfileComponent {
       this.profileForm.markAllAsTouched();
       return;
     }
+
     const value = this.profileForm.getRawValue();
+
     this.isSaving.set(true);
     this.errorMessage.set(null);
     this.successMessage.set(null);
-    this.profileService.update({
-      firstName: value.firstName.trim(),
-      lastName: value.lastName.trim(),
-      phoneNumber: value.phoneNumber.trim(),
-    }).subscribe({
-      next: (profile) => {
-        this.auth.updateCurrentUserFromProfile(profile);
-        this.isSaving.set(false);
-        this.successMessage.set('Profile information updated successfully.');
-      },
-      error: (error) => {
-        this.isSaving.set(false);
-        this.errorMessage.set(backendErrorMessage(error, 'Your profile could not be updated.'));
-      },
-    });
+
+    this.profileService
+      .update({
+        firstName: value.firstName.trim(),
+        lastName: value.lastName.trim(),
+        phoneNumber: value.phoneNumber.trim(),
+      })
+      .subscribe({
+        next: (profile) => {
+          this.auth.updateCurrentUserFromProfile(profile);
+
+          this.isSaving.set(false);
+
+          this.successMessage.set(
+            'Profile information updated successfully.'
+          );
+        },
+        error: (error) => {
+          this.isSaving.set(false);
+
+          this.errorMessage.set(
+            backendErrorMessage(
+              error,
+              'Your profile could not be updated.'
+            )
+          );
+        },
+      });
   }
 
+  // Send the first confirmation code to the new email.
   requestEmailChange(): void {
     if (this.emailForm.invalid) {
       this.emailForm.markAllAsTouched();
       return;
     }
+
     this.emailActionLoading.set(true);
     this.errorMessage.set(null);
     this.successMessage.set(null);
-    this.profileService.requestEmailChange(this.emailForm.getRawValue().newEmail).subscribe({
-      next: () => {
-        this.emailActionLoading.set(false);
-        this.emailStep.set('code');
-        this.successMessage.set('A confirmation code was sent to your new email address.');
-      },
-      error: (error) => {
-        this.emailActionLoading.set(false);
-        this.errorMessage.set(backendErrorMessage(error, 'The email change could not be requested.'));
-      },
-    });
+
+    const newEmail =
+      this.emailForm.getRawValue().newEmail.trim();
+
+    this.profileService
+      .requestEmailChange(newEmail)
+      .subscribe({
+        next: () => {
+          this.emailActionLoading.set(false);
+
+          this.codeForm.reset();
+
+          this.emailStep.set('code');
+
+          this.successMessage.set(
+            'A confirmation code was sent to your new email address.'
+          );
+        },
+        error: (error) => {
+          this.emailActionLoading.set(false);
+
+          this.errorMessage.set(
+            backendErrorMessage(
+              error,
+              'The email change could not be requested.'
+            )
+          );
+        },
+      });
   }
 
+  // Resend a new confirmation code to the same new email.
+  resendEmailChangeCode(): void {
+    const newEmail =
+      this.emailForm.getRawValue().newEmail.trim();
+
+    if (!newEmail || this.emailResending()) {
+      return;
+    }
+
+    this.emailResending.set(true);
+    this.errorMessage.set(null);
+    this.successMessage.set(null);
+
+    this.profileService
+      .requestEmailChange(newEmail)
+      .subscribe({
+        next: () => {
+          this.emailResending.set(false);
+
+          // Clear any previously entered code because
+          // the new OTP replaces the old one.
+          this.codeForm.reset();
+
+          this.successMessage.set(
+            'A new confirmation code was sent to your new email address.'
+          );
+        },
+        error: (error) => {
+          this.emailResending.set(false);
+
+          this.errorMessage.set(
+            backendErrorMessage(
+              error,
+              'The confirmation code could not be resent.'
+            )
+          );
+        },
+      });
+  }
+
+  // Confirm the new email using the OTP.
   confirmEmailChange(): void {
     if (this.codeForm.invalid) {
       this.codeForm.markAllAsTouched();
       return;
     }
+
     this.emailActionLoading.set(true);
     this.errorMessage.set(null);
-    this.profileService.confirmEmailChange(this.codeForm.getRawValue().code).subscribe({
-      next: (profile) => {
-        this.auth.updateCurrentUserFromProfile(profile);
-        this.profileForm.controls.email.setValue(profile.email);
-        this.emailStep.set('idle');
-        this.emailForm.reset();
-        this.codeForm.reset();
-        this.emailActionLoading.set(false);
-        this.successMessage.set('Email address changed successfully.');
-      },
-      error: (error) => {
-        this.emailActionLoading.set(false);
-        this.errorMessage.set(backendErrorMessage(error, 'The confirmation code is invalid or expired.'));
-      },
-    });
+    this.successMessage.set(null);
+
+    const { code } = this.codeForm.getRawValue();
+
+    this.profileService
+      .confirmEmailChange(code)
+      .subscribe({
+        next: (profile) => {
+          this.auth.updateCurrentUserFromProfile(profile);
+
+          this.profileForm.controls.email.setValue(
+            profile.email
+          );
+
+          this.emailStep.set('idle');
+
+          this.emailForm.reset();
+          this.codeForm.reset();
+
+          this.emailActionLoading.set(false);
+
+          this.successMessage.set(
+            'Email address changed successfully.'
+          );
+        },
+        error: (error) => {
+          this.emailActionLoading.set(false);
+
+          this.errorMessage.set(
+            backendErrorMessage(
+              error,
+              'The confirmation code is invalid or expired.'
+            )
+          );
+        },
+      });
   }
 }
-

@@ -25,6 +25,7 @@ export class VerificationChecklistComponent implements OnInit {
   reviewerComments: string = '';
 
   isSubmitting: boolean = false;
+  calculatedCompositeScore: number | null = null;
 
   constructor(
     private checklistService: VerificationChecklistService,
@@ -46,6 +47,7 @@ export class VerificationChecklistComponent implements OnInit {
       next: (data) => {
         if (data) {
           this.reviewerComments = data.overallComments || '';
+          this.calculatedCompositeScore = data.compositeScore;
 
           data.criterionRatings?.forEach((item) => {
             if (item.verificationCriterionId === 'authenticity') this.documentAuthenticityRating = item.rating;
@@ -85,7 +87,9 @@ export class VerificationChecklistComponent implements OnInit {
     };
 
     this.checklistService.submitChecklist(payload).subscribe({
-      next: () => {
+      next: (response) => {
+        this.calculatedCompositeScore = response.compositeScore;
+
         alert('Checklist submitted successfully!');
         this.isSubmitting = false;
       },
