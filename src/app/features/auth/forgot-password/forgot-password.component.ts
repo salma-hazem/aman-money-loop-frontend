@@ -1,40 +1,42 @@
 import { Component, inject, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { InputTextModule } from 'primeng/inputtext';
-import { PasswordModule } from 'primeng/password';
+import { Router, RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
-import { StepsModule } from 'primeng/steps';
+import { PasswordModule } from 'primeng/password';
 import { AuthService } from '../../../core/services/auth.service';
-
+import {
+  OTP_PATTERN,
+  backendErrorMessage,
+  passwordStrengthValidator,
+} from '../../../core/validators/account.validators';
 
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
-imports: [ReactiveFormsModule, InputTextModule, PasswordModule, ButtonModule, MessageModule, StepsModule, RouterLink],  templateUrl: './forgot-password.component.html',
+  imports: [ReactiveFormsModule, InputTextModule, PasswordModule, ButtonModule, MessageModule, RouterLink],
+  templateUrl: './forgot-password.component.html',
   styleUrl: './forgot-password.component.scss',
 })
 export class ForgotPasswordComponent {
-  private fb = inject(FormBuilder);
-  private auth = inject(AuthService);
-  private router = inject(Router);
+  private readonly fb = inject(FormBuilder);
+  private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
 
-  step = signal<'email' | 'otp' | 'newPassword'>('email');
-  loading = signal(false);
-  error = signal<string | null>(null);
-  submittedEmail = signal('');
+  readonly step = signal<'email' | 'otp' | 'newPassword'>('email');
+  readonly loading = signal(false);
+  readonly error = signal<string | null>(null);
+  readonly submittedEmail = signal('');
 
-  emailForm = this.fb.nonNullable.group({
-    email: ['', [Validators.required, Validators.email]],
+  readonly emailForm = this.fb.nonNullable.group({
+    email: ['', [Validators.required, Validators.email, Validators.maxLength(128)]],
   });
-
-  otpForm = this.fb.nonNullable.group({
-    code: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]],
+  readonly otpForm = this.fb.nonNullable.group({
+    code: ['', [Validators.required, Validators.pattern(OTP_PATTERN)]],
   });
-
-  passwordForm = this.fb.nonNullable.group({
-    newPassword: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(64)]],
+  readonly passwordForm = this.fb.nonNullable.group({
+    newPassword: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(64), passwordStrengthValidator()]],
     confirmPassword: ['', Validators.required],
   });
 
@@ -47,15 +49,14 @@ export class ForgotPasswordComponent {
     this.error.set(null);
     const { email } = this.emailForm.getRawValue();
     this.submittedEmail.set(email);
-
     this.auth.forgotPassword(email).subscribe({
       next: () => {
         this.loading.set(false);
         this.step.set('otp');
       },
-      error: () => {
+      error: (error) => {
         this.loading.set(false);
-        this.error.set('Something went wrong. Please try again.');
+        this.error.set(backendErrorMessage(error, 'The reset code could not be sent.'));
       },
     });
   }
@@ -65,7 +66,8 @@ export class ForgotPasswordComponent {
       this.otpForm.markAllAsTouched();
       return;
     }
-    // الكود مش بيتأكد هنا لوحده، هيتأكد مع الباسورد الجديد في نفس الطلب
+    // The backend validates the code together with the new password in one request.
+    this.error.set(null);
     this.step.set('newPassword');
   }
 
@@ -83,14 +85,13 @@ export class ForgotPasswordComponent {
     this.loading.set(true);
     this.error.set(null);
     const { code } = this.otpForm.getRawValue();
-
-    this.auth.resetPassword(this.submittedEmail(), code, newPassword).subscribe({
+    this.auth.resetPassword(this.submittedEmail(), code, newPassword, confirmPassword).subscribe({
       next: () => {
         this.loading.set(false);
         this.router.navigate(['/login']);
       },
-      error: (err) => {
-        this.error.set(err?.error?.detail ?? 'Reset failed. Please try again.');
+      error: (error) => {
+        this.error.set(backendErrorMessage(error, 'Reset failed. Please check the code and try again.'));
         this.loading.set(false);
       },
     });

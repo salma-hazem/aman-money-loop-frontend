@@ -11,13 +11,15 @@
       <i [class]="isDark() ? 'pi pi-sun' : 'pi pi-moon'"></i>
     </button>
 
-    <button class="icon-btn"  aria-label="Pending approvals">
-      @if (pendingApprovals() > 0) {
-      <i class="pi pi-bell" pBadge [value]="pendingApprovals()" severity="danger"></i>
-      } @else {
-      <i class="pi pi-bell"></i>
-      }
-    </button>
+    @if (canViewApprovals) {
+      <button class="icon-btn" (click)="goToApprovals()" aria-label="Pending approvals">
+        @if (pendingApprovals() > 0) {
+          <i class="pi pi-bell" pBadge [value]="pendingApprovals()" severity="danger"></i>
+        } @else {
+          <i class="pi pi-bell"></i>
+        }
+      </button>
+    }
 
     <button class="user-btn" (click)="userMenu.toggle($event)">
       <p-avatar [label]="initials()" shape="circle" styleClass="user-avatar" />

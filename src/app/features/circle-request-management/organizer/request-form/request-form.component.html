@@ -1,0 +1,131 @@
+<div class="management-page">
+  <header class="page-heading">
+    <div>
+      <span class="eyebrow">Circle requests / {{ isEdit() ? 'Edit' : 'New' }}</span>
+      <h1>{{ isEdit() ? 'Edit Circle Request' : 'New Circle Request' }}</h1>
+      <p>Requests stay as drafts until you explicitly submit them for approval.</p>
+    </div>
+    <a class="button button-secondary" routerLink="/console/circle-requests">
+      <i class="pi pi-arrow-left"></i> Back to Requests
+    </a>
+  </header>
+
+  @if (isLoading()) {
+    <section class="panel state-card">
+      <i class="pi pi-spin pi-spinner"></i>
+      <h2>Loading request</h2>
+    </section>
+  } @else {
+    <form class="panel" [formGroup]="form" (ngSubmit)="saveDraft()">
+      <div class="panel-header">
+        <h2>Request Information</h2>
+        <span class="status-badge draft">Draft</span>
+      </div>
+
+      <div class="panel-body form-grid">
+        @if (errorMessage()) {
+          <div class="alert error form-field full-width">
+            <i class="pi pi-exclamation-circle"></i>
+            <span>{{ errorMessage() }}</span>
+          </div>
+        }
+
+        <div class="form-field full-width">
+          <label for="requestType">Circle Type</label>
+          <select id="requestType" formControlName="requestType" [attr.disabled]="isEdit() ? true : null">
+            <option value="NewCircle">New Circle (Growth)</option>
+            <option value="Replacement">Replacement Circle</option>
+          </select>
+          <small>
+            {{ isReplacement
+              ? 'Choose an existing circle and one of its vacant slots.'
+              : 'Create a new circle with its own contribution, duration, and capacity.' }}
+          </small>
+        </div>
+
+        @if (!isReplacement) {
+          <div class="form-field full-width">
+            <label for="circleTitle">Circle Title</label>
+            <input id="circleTitle" type="text" formControlName="circleTitle" maxlength="128" placeholder="Example: Family Goal Circle" />
+            @if (form.controls.circleTitle.touched && form.controls.circleTitle.invalid) {
+              <small class="field-error">A circle title is required.</small>
+            }
+          </div>
+
+          <div class="form-field">
+            <label for="contributionAmount">Monthly Contribution (EGP)</label>
+            <input id="contributionAmount" type="number" min="0.01" step="0.01" formControlName="contributionAmount" placeholder="2000" />
+            @if (form.controls.contributionAmount.touched && form.controls.contributionAmount.invalid) {
+              <small class="field-error">Enter an amount greater than zero.</small>
+            }
+          </div>
+
+          <div class="form-field">
+            <label for="duration">Duration (Months)</label>
+            <input id="duration" type="number" min="1" formControlName="duration" placeholder="12" />
+            @if (form.controls.duration.touched && form.controls.duration.invalid) {
+              <small class="field-error">Enter at least one month.</small>
+            }
+          </div>
+
+          <div class="form-field">
+            <label for="numberOfSlots">Number of Slots</label>
+            <input id="numberOfSlots" type="number" min="1" formControlName="numberOfSlots" placeholder="8" />
+            @if (form.controls.numberOfSlots.touched && form.controls.numberOfSlots.invalid) {
+              <small class="field-error">Enter at least one slot.</small>
+            }
+          </div>
+        } @else {
+          <div class="form-field">
+            <label for="existingCircleId">Existing Circle</label>
+            <select id="existingCircleId" formControlName="existingCircleId">
+              <option value="">Select a circle</option>
+              @for (circle of circles(); track circle.circleId) {
+                <option [value]="circle.circleId">{{ circle.circleTitle }} — {{ circle.status }}</option>
+              }
+            </select>
+            @if (form.controls.existingCircleId.touched && form.controls.existingCircleId.invalid) {
+              <small class="field-error">Choose the circle with the vacant position.</small>
+            }
+          </div>
+
+          <div class="form-field">
+            <label for="vacantSlotNumber">Vacant Slot</label>
+            <select id="vacantSlotNumber" formControlName="vacantSlotNumber" [disabled]="!form.controls.existingCircleId.value || isLoadingSlots()">
+              <option [ngValue]="null">{{ isLoadingSlots() ? 'Loading slots...' : 'Select a vacant slot' }}</option>
+              @for (slot of slots(); track slot.circleSlotId) {
+                <option [ngValue]="slot.slotNumber">Slot {{ slot.slotNumber }}</option>
+              }
+            </select>
+            @if (!isLoadingSlots() && form.controls.existingCircleId.value && slots().length === 0) {
+              <small class="field-error">This circle currently has no vacant slots.</small>
+            }
+          </div>
+        }
+
+        <div class="form-field full-width">
+          <label for="shortJustification">{{ isReplacement ? 'Notes (Optional)' : 'Business Justification' }}</label>
+          <textarea
+            id="shortJustification"
+            formControlName="shortJustification"
+            maxlength="500"
+            [placeholder]="isReplacement ? 'Add any useful context for the Admin' : 'Explain why this new circle should be launched'"
+          ></textarea>
+          <small>{{ form.controls.shortJustification.value.length }}/500 characters</small>
+          @if (form.controls.shortJustification.touched && form.controls.shortJustification.invalid) {
+            <small class="field-error">A justification is required for a new circle.</small>
+          }
+        </div>
+
+        <div class="form-actions form-field full-width">
+          <a class="button button-secondary" routerLink="/console/circle-requests">Cancel</a>
+          <button type="submit" class="button button-primary" [disabled]="isSaving()">
+            <i [class]="isSaving() ? 'pi pi-spin pi-spinner' : 'pi pi-save'"></i>
+            {{ isSaving() ? 'Saving...' : 'Save Draft' }}
+          </button>
+        </div>
+      </div>
+    </form>
+  }
+</div>
+

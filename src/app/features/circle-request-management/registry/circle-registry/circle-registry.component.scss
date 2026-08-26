@@ -1,0 +1,32 @@
+.selectable-row { cursor: pointer; }
+.selectable-row.selected { background: var(--p-highlight-background) !important; }
+.panel-subtitle { color: var(--p-surface-400); }
+.state-card.compact { padding: 1.75rem; }
+
+.slot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.9rem;
+}
+
+.slot-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  padding: 1rem;
+  border: 1px solid var(--p-surface-200);
+  border-top: 3px solid var(--p-surface-300);
+  border-radius: 12px;
+  background: var(--p-surface-0);
+
+  &.vacant { border-top-color: #10b981; }
+  &.assigned { border-top-color: var(--p-primary-500); }
+  &.locked { border-top-color: #6b7280; }
+  .button { width: 100%; margin-top: auto; }
+}
+
+.slot-heading { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.slot-meta { display: flex; flex-direction: column; gap: 0.2rem; }
+.slot-meta span { color: var(--p-surface-400); font-size: 0.72rem; }
+.slot-meta strong { color: var(--p-surface-700); font-size: 0.82rem; }
+

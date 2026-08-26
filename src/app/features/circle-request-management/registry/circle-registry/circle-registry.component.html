@@ -1,0 +1,97 @@
+<div class="management-page">
+  <header class="page-heading">
+    <div>
+      <span class="eyebrow">Circle management</span>
+      <h1>Circle Registry</h1>
+      <p>Track approved circles, recruitment capacity, listings, and individual slots.</p>
+    </div>
+  </header>
+
+  <section class="metric-grid">
+    <div class="metric-card"><span>Visible Circles</span><strong>{{ circles().length }}</strong></div>
+    <div class="metric-card"><span>Approved Slots</span><strong>{{ approvedSlotCount() }}</strong></div>
+    <div class="metric-card"><span>Filled Slots</span><strong>{{ filledSlotCount() }}</strong></div>
+    <div class="metric-card"><span>Available Slots</span><strong>{{ availableSlotCount() }}</strong></div>
+  </section>
+
+  @if (successMessage()) {
+    <div class="alert success"><i class="pi pi-check-circle"></i><span>{{ successMessage() }}</span></div>
+  }
+  @if (errorMessage() && !isLoading()) {
+    <div class="alert error"><i class="pi pi-exclamation-circle"></i><span>{{ errorMessage() }}</span></div>
+  }
+
+  <section class="panel">
+    <div class="panel-header">
+      <div class="filter-row" aria-label="Circle status filters">
+        @for (filter of filters; track filter) {
+          <button type="button" class="filter-button" [class.active]="selectedFilter() === filter" (click)="setFilter(filter)">
+            {{ filter === 'InRecruitment' ? 'In Recruitment' : filter }}
+          </button>
+        }
+      </div>
+    </div>
+
+    @if (isLoading()) {
+      <div class="state-card"><i class="pi pi-spin pi-spinner"></i><h2>Loading registry</h2></div>
+    } @else if (circles().length === 0) {
+      <div class="state-card"><i class="pi pi-sitemap"></i><h2>No circles found</h2><p>No registered circles match the selected status.</p></div>
+    } @else {
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th>Circle</th><th>Contribution</th><th>Duration</th><th>Approved</th><th>Filled</th><th>Available</th><th>Status</th><th>Listing</th></tr></thead>
+          <tbody>
+            @for (circle of circles(); track circle.circleId) {
+              <tr class="selectable-row" [class.selected]="selectedCircle()?.circleId === circle.circleId" (click)="selectCircle(circle)">
+                <td><div class="title-cell"><strong>{{ circle.circleTitle }}</strong><small>{{ circle.circleId.slice(0, 8) }}</small></div></td>
+                <td>{{ circle.amount | currency:'EGP':'symbol':'1.0-0' }}</td>
+                <td>{{ circle.duration }} months</td>
+                <td>{{ circle.approvedSlots }}</td>
+                <td>{{ circle.filledCount }}</td>
+                <td>{{ circle.approvedSlots - circle.filledCount }}</td>
+                <td><span [class]="'status-badge ' + statusClass(circle.status)">{{ statusLabel(circle.status) }}</span></td>
+                <td>{{ circle.marketplaceListing?.listingStatus || 'Not published' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+
+  @if (selectedCircle(); as circle) {
+    <section class="panel">
+      <div class="panel-header">
+        <div><h2>{{ circle.circleTitle }} — Slot Tracking</h2><small class="panel-subtitle">Select another registry row to inspect a different circle.</small></div>
+        <span [class]="'status-badge ' + statusClass(circle.status)">{{ statusLabel(circle.status) }}</span>
+      </div>
+      @if (isLoadingSlots()) {
+        <div class="state-card compact"><i class="pi pi-spin pi-spinner"></i><h2>Loading slots</h2></div>
+      } @else if (slots().length === 0) {
+        <div class="state-card compact"><i class="pi pi-th-large"></i><h2>No slot records found</h2></div>
+      } @else {
+        <div class="slot-grid panel-body">
+          @for (slot of slots(); track slot.circleSlotId) {
+            <article class="slot-card" [class]="'slot-card ' + statusClass(slot.status)">
+              <div class="slot-heading"><strong>Slot {{ slot.slotNumber }}</strong><span [class]="'status-badge ' + statusClass(slot.status)">{{ slot.status }}</span></div>
+              <div class="slot-meta">
+                <span>Member Ledger</span>
+                <strong>{{ slot.memberLedgerId ? slot.memberLedgerId.slice(0, 8) : 'Not assigned' }}</strong>
+              </div>
+              <div class="slot-meta">
+                <span>Last Updated</span>
+                <strong>{{ (slot.assignedAt || slot.vacatedAt | date:'mediumDate') || '—' }}</strong>
+              </div>
+              @if (isAdmin && slot.status === 'Assigned') {
+                <button type="button" class="button button-danger" [disabled]="slotActionInFlight() !== null" (click)="vacateSlot(slot)">
+                  <i [class]="slotActionInFlight() === slot.slotNumber ? 'pi pi-spin pi-spinner' : 'pi pi-user-minus'"></i> Vacate Slot
+                </button>
+              }
+            </article>
+          }
+        </div>
+      }
+    </section>
+  }
+</div>
+

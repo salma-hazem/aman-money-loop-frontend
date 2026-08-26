@@ -1,90 +1,32 @@
 import { Component, inject, signal } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import {
-  AbstractControl,
-  FormBuilder,
-  ReactiveFormsModule,
-  ValidationErrors,
-  ValidatorFn,
-  Validators,
-} from '@angular/forms';
-import { PasswordModule } from 'primeng/password';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
+import { PasswordModule } from 'primeng/password';
 import { AuthService } from '../../../core/services/auth.service';
+import { backendErrorMessage, passwordStrengthValidator } from '../../../core/validators/account.validators';
 
-function passwordStrengthValidator(): ValidatorFn {
-  return (
-    control: AbstractControl
-  ): ValidationErrors | null => {
-    const value: string =
-      control.value ?? '';
-
-    if (!value) {
-      return null;
-    }
-
-    const errors: ValidationErrors = {};
-
-    if (!/[a-z]/.test(value)) {
-      errors['requiresLowercase'] = true;
-    }
-
-    if (!/[A-Z]/.test(value)) {
-      errors['requiresUppercase'] = true;
-    }
-
-    if (!/[0-9]/.test(value)) {
-      errors['requiresDigit'] = true;
-    }
-
-    if (!/[^a-zA-Z0-9]/.test(value)) {
-      errors['requiresSpecialCharacter'] =
-        true;
-    }
-
-    return Object.keys(errors).length
-      ? errors
-      : null;
-  };
-}
 @Component({
   selector: 'app-change-password',
   standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    PasswordModule,
-    ButtonModule,
-    MessageModule,
-  ],
+  imports: [ReactiveFormsModule, PasswordModule, ButtonModule, MessageModule],
   templateUrl: './change-password.component.html',
   styleUrl: './change-password.component.scss',
 })
 export class ChangePasswordComponent {
-  private fb = inject(FormBuilder);
-  private auth = inject(AuthService);
-  private router = inject(Router);
+  private readonly fb = inject(FormBuilder);
+  private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
 
-  loading = signal(false);
-  error = signal<string | null>(null);
+  readonly loading = signal(false);
+  readonly error = signal<string | null>(null);
+  readonly mustChangePassword = this.auth.currentUser()?.mustChangePassword ?? false;
 
-  form = this.fb.nonNullable.group({
+  readonly form = this.fb.nonNullable.group({
     currentPassword: ['', Validators.required],
-
-    newPassword: [
-    '',
-    [
-        Validators.required,
-        Validators.minLength(8),
-        Validators.maxLength(64),
-        passwordStrengthValidator(),
-    ],
-    ],
-
-    confirmPassword: [
-      '',
-      Validators.required,
-    ],
+    newPassword: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(64), passwordStrengthValidator()]],
+    confirmPassword: ['', Validators.required],
   });
 
   submit(): void {
@@ -92,58 +34,27 @@ export class ChangePasswordComponent {
       this.form.markAllAsTouched();
       return;
     }
-
-    const {
-      currentPassword,
-      newPassword,
-      confirmPassword,
-    } = this.form.getRawValue();
-
+    const { currentPassword, newPassword, confirmPassword } = this.form.getRawValue();
     if (newPassword !== confirmPassword) {
-      this.error.set(
-        'New password and confirmation do not match.'
-      );
+      this.error.set('New password and confirmation do not match.');
+      return;
+    }
+    if (newPassword === currentPassword) {
+      this.error.set('The new password must be different from the current password.');
       return;
     }
 
     this.loading.set(true);
     this.error.set(null);
-
-    this.auth
-      .changePassword(
-        currentPassword,
-        newPassword
-      )
-      .subscribe({
-        next: () => {
-          this.auth.markPasswordChanged();
-
-          this.router.navigate([
-            '/console',
-          ]);
-        },
-
-        error: (err) => {
-            const backendErrors =
-                err?.error?.errors;
-
-            if (backendErrors) {
-                const messages =
-                Object.values(backendErrors)
-                    .flat() as string[];
-
-                this.error.set(
-                messages.join(' ')
-                );
-            } else {
-                this.error.set(
-                err?.error?.detail ??
-                    'Password could not be changed. Please try again.'
-                );
-            }
-
-            this.loading.set(false);
-            },
-      });
+    this.auth.changePassword(currentPassword, newPassword, confirmPassword).subscribe({
+      next: () => {
+        this.auth.markPasswordChanged();
+        this.router.navigate(['/console/profile']);
+      },
+      error: (error) => {
+        this.error.set(backendErrorMessage(error, 'Password could not be changed. Please try again.'));
+        this.loading.set(false);
+      },
+    });
   }
 }

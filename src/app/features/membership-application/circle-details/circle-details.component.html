@@ -1,0 +1,65 @@
+<div class="details-page">
+
+  <button class="back-button" (click)="goBack()">&larr; Marketplace</button>
+
+  @if (isLoading()) {
+  <div class="state-message">Loading circle...</div>
+  }
+
+  @else if (errorMessage()) {
+  <div class="state-message error">{{ errorMessage() }}</div>
+  }
+
+  @else {
+  @if (listing(); as listing) {
+
+  <div class="details-body">
+
+    <div class="main-panel">
+      <h1>{{ listing.title }}</h1>
+      <span class="status-badge" [attr.data-status]="listing.listingStatus">
+        {{ listing.availableSlots > 0 ? 'Open' : 'Full' }}
+      </span>
+
+      <div class="section">
+        <h2>Overview</h2>
+        <p>
+          Join this money circle to save and grow together with other members.
+          Review the terms below before applying.
+        </p>
+      </div>
+    </div>
+
+    <div class="summary-panel">
+      <h2>Circle Summary</h2>
+
+      <div class="summary-row">
+        <span class="label">Monthly contribution</span>
+        <span class="value">EGP {{ listing.monthlyContribution }}</span>
+      </div>
+      <div class="summary-row">
+        <span class="label">Duration</span>
+        <span class="value">{{ listing.durationMonths }} months</span>
+      </div>
+      <div class="summary-row">
+        <span class="label">Available slots</span>
+        <span class="value">{{ listing.availableSlots }} / {{ listing.totalSlots }}</span>
+      </div>
+      <div class="summary-row">
+        <span class="label">Status</span>
+        <span class="value">{{ listing.availableSlots > 0 ? 'Open' : 'Full' }}</span>
+      </div>
+
+      <button class="apply-button"
+              [disabled]="listing.availableSlots === 0"
+              (click)="apply()">
+        {{ listing.availableSlots > 0 ? 'Apply for This Circle' : 'No Slots Available' }}
+      </button>
+    </div>
+
+  </div>
+
+  }
+  }
+
+</div>

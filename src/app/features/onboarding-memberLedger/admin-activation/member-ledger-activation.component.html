@@ -1,0 +1,50 @@
+<div class="page">
+  <div class="page-header">
+    <h1>Onboarding Cases — Ready for Activation</h1>
+  </div>
+
+  @if (error()) {
+    <p-message severity="error" [text]="error()!" styleClass="w-full" />
+  }
+  @if (success()) {
+    <p-message severity="success" [text]="success()!" styleClass="w-full" />
+  }
+
+  <p-card>
+    <table class="case-table">
+      <thead>
+        <tr>
+          <th>Case ID</th>
+          <th>Status</th>
+          <th>Checklist</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of cases(); track item.onboardingCaseId) {
+          <tr>
+            <td>{{ item.onboardingCaseId.slice(0, 8) }}...</td>
+            <td><p-tag value="Approved" severity="success" /></td>
+            <td>
+              <div class="checklist">
+                <label><p-checkbox [binary]="true" [ngModel]="true" [disabled]="true" /> Agreement accepted</label>
+                <label><p-checkbox [binary]="true" [ngModel]="true" [disabled]="true" /> All documents verified</label>
+                <label><p-checkbox [binary]="true" [ngModel]="true" [disabled]="true" /> Organizer review complete</label>
+              </div>
+            </td>
+            <td>
+              <button
+                pButton
+                label="Activate Membership"
+                severity="success"
+                size="small"
+                [loading]="activatingId() === item.onboardingCaseId"
+                (click)="activate(item)"
+              ></button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </p-card>
+</div>

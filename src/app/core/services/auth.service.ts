@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { CurrentUser, Role } from '../models/role.model';
+import { RegisterRequest, UserProfile } from '../models/account.model';
 
 interface AuthResponse {
   userId: string;
@@ -96,18 +97,28 @@ export class AuthService {
 
   private loadUser(): CurrentUser | null {
     const raw = localStorage.getItem(USER_KEY);
-    return raw ? JSON.parse(raw) : null;
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw) as CurrentUser;
+    } catch {
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(REFRESH_TOKEN_KEY);
+      localStorage.removeItem(USER_KEY);
+      return null;
+    }
   }
 
   changePassword(
     currentPassword: string,
-    newPassword: string
+    newPassword: string,
+    confirmNewPassword: string
   ): Observable<void> {
     return this.http.post<void>(
       `${this.base}/api/auth/change-password`,
       {
         currentPassword,
         newPassword,
+        confirmNewPassword,
       }
     );
   }
@@ -132,14 +143,7 @@ export class AuthService {
     this._currentUser.set(updatedUser);
   }
 
-  register(request: {
-    firstName: string;
-    lastName: string;
-    nationalId: string;
-    email: string;
-    phoneNumber: string;
-    password: string;
-  }): Observable<string> {
+  register(request: RegisterRequest): Observable<string> {
     return this.http.post<string>(
       `${this.base}/api/auth/register`,
       request
@@ -159,11 +163,41 @@ export class AuthService {
     );
   }
 
+  resendRegistrationOtp(userId: string): Observable<void> {
+    return this.http.post<void>(
+      `${this.base}/api/auth/resend-registration-otp`,
+      { userId }
+    );
+  }
+
   forgotPassword(email: string): Observable<void> {
     return this.http.post<void>(`${this.base}/api/auth/forgot-password`, { email });
   }
 
-  resetPassword(userId: string, code: string, newPassword: string): Observable<void> {
-    return this.http.post<void>(`${this.base}/api/auth/reset-password`, { userId, code, newPassword });
+  resetPassword(
+    email: string,
+    code: string,
+    newPassword: string,
+    confirmNewPassword: string
+  ): Observable<void> {
+    return this.http.post<void>(`${this.base}/api/auth/reset-password`, {
+      email,
+      code,
+      newPassword,
+      confirmNewPassword,
+    });
+  }
+
+  updateCurrentUserFromProfile(profile: UserProfile): void {
+    const currentUser = this._currentUser();
+    if (!currentUser) return;
+
+    const updatedUser: CurrentUser = {
+      ...currentUser,
+      fullName: `${profile.firstName} ${profile.lastName}`.trim(),
+      email: profile.email,
+    };
+    localStorage.setItem(USER_KEY, JSON.stringify(updatedUser));
+    this._currentUser.set(updatedUser);
   }
 }

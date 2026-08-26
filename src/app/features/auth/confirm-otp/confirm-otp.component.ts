@@ -11,6 +11,7 @@ import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
 
 import { AuthService } from '../../../core/services/auth.service';
+import { OTP_PATTERN, backendErrorMessage } from '../../../core/validators/account.validators';
 
 @Component({
   selector: 'app-confirm-otp',
@@ -32,8 +33,9 @@ export class ConfirmOtpComponent {
   loading = signal(false);
   error = signal<string | null>(null);
   success = signal<string | null>(null);
+  resending = signal(false);
 
-  private userId =
+  readonly userId =
     sessionStorage.getItem('registration_user_id');
 
   form = this.fb.nonNullable.group({
@@ -43,6 +45,7 @@ export class ConfirmOtpComponent {
         Validators.required,
         Validators.minLength(6),
         Validators.maxLength(6),
+        Validators.pattern(OTP_PATTERN),
       ],
     ],
   });
@@ -94,5 +97,22 @@ export class ConfirmOtpComponent {
           this.loading.set(false);
         },
       });
+  }
+
+  resend(): void {
+    if (!this.userId || this.resending()) return;
+    this.resending.set(true);
+    this.error.set(null);
+    this.success.set(null);
+    this.auth.resendRegistrationOtp(this.userId).subscribe({
+      next: () => {
+        this.resending.set(false);
+        this.success.set('A new verification code has been sent to your email.');
+      },
+      error: (error) => {
+        this.resending.set(false);
+        this.error.set(backendErrorMessage(error, 'The verification code could not be resent.'));
+      },
+    });
   }
 }

@@ -56,5 +56,16 @@
       [loading]="loading()"
       class="w-full"
     ></button>
+
+    <button
+      pButton
+      type="button"
+      label="Resend Code"
+      severity="secondary"
+      [loading]="resending()"
+      [disabled]="loading() || !userId"
+      class="w-full resend-button"
+      (click)="resend()"
+    ></button>
   </form>
 </div>

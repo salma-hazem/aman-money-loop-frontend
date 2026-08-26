@@ -1,0 +1,36 @@
+<div class="users-page">
+  <header class="users-heading">
+    <div><span class="eyebrow">Administration</span><h1>Internal Users</h1><p>Create Organizer and Admin accounts with secure temporary-password delivery.</p></div>
+  </header>
+
+  @if (errorMessage()) { <p-message severity="error" [text]="errorMessage()!" styleClass="w-full" /> }
+  @if (createdUser(); as user) {
+    <section class="success-card">
+      <i class="pi pi-check-circle"></i>
+      <div><strong>{{ user.firstName }} {{ user.lastName }} was created.</strong><p>The welcome email contains the temporary password. The user must change it on first login.</p></div>
+    </section>
+  }
+
+  <div class="users-layout">
+    <form class="users-card" [formGroup]="form" (ngSubmit)="createUser()">
+      <div class="card-header"><div><h2>Add Internal User</h2><p>Only Admin and Organizer roles can be created here.</p></div></div>
+      <div class="form-grid">
+        <div class="field"><label for="userFirstName">First Name</label><input pInputText id="userFirstName" formControlName="firstName" />@if (form.controls.firstName.touched && form.controls.firstName.invalid) { <small>First name is required.</small> }</div>
+        <div class="field"><label for="userLastName">Last Name</label><input pInputText id="userLastName" formControlName="lastName" />@if (form.controls.lastName.touched && form.controls.lastName.invalid) { <small>Last name is required.</small> }</div>
+        <div class="field full"><label for="userEmail">Email</label><input pInputText id="userEmail" type="email" formControlName="email" />@if (form.controls.email.touched && form.controls.email.invalid) { <small>Enter a valid email address.</small> }</div>
+        <div class="field"><label for="userPhone">Phone Number</label><input pInputText id="userPhone" formControlName="phoneNumber" placeholder="01xxxxxxxxx" inputmode="tel" />@if (form.controls.phoneNumber.touched && form.controls.phoneNumber.invalid) { <small>Enter a valid Egyptian mobile number.</small> }</div>
+        <div class="field"><label for="userNationalId">National ID (Optional)</label><input pInputText id="userNationalId" formControlName="nationalId" maxlength="14" inputmode="numeric" />@if (form.controls.nationalId.touched && form.controls.nationalId.invalid) { <small>National ID must contain exactly 14 digits.</small> }</div>
+        <div class="field full"><label for="userRole">Role</label><select id="userRole" formControlName="role"><option [value]="Role.Organizer">Organizer</option><option [value]="Role.Admin">Admin</option></select><span class="role-note">Admins have full oversight. Organizers manage requests, applicants, verification, agreements, and onboarding.</span></div>
+      </div>
+      <div class="form-actions"><button pButton type="submit" label="Create Internal User" icon="pi pi-user-plus" [loading]="isSubmitting()"></button></div>
+    </form>
+
+    <aside class="users-card limitation-card">
+      <div class="limitation-icon"><i class="pi pi-info-circle"></i></div>
+      <h2>User Directory</h2>
+      <p>The current backend supports creating internal accounts but does not provide list, search, edit, deactivate, or role-update endpoints.</p>
+      <p>This screen therefore avoids showing fake user data. The directory can be added after its API contract is approved.</p>
+    </aside>
+  </div>
+</div>
+

@@ -1,0 +1,49 @@
+<div class="page">
+  <div class="page-header">
+    <h1>Pending Document Review</h1>
+  </div>
+
+  @if (error()) {
+    <p-message severity="error" [text]="error()!" styleClass="w-full" />
+  }
+
+  <p-card>
+    <table class="doc-table">
+      <thead>
+        <tr>
+          <th>File</th>
+          <th>Uploaded</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (doc of documents(); track doc.documentId) {
+          <tr>
+            <td>{{ doc.fileName }}</td>
+            <td>{{ doc.uploadedAt | date: 'dd MMM yyyy' }}</td>
+            <td><p-tag value="Pending" severity="warn" /></td>
+            <td>
+              <button pButton label="Verify" severity="success" size="small" (click)="approve(doc)"></button>
+              <button pButton label="Reject" severity="danger" size="small" (click)="openReject(doc)"></button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <p-paginator
+      [rows]="pageSize"
+      [totalRecords]="totalCount()"
+      (onPageChange)="onPageChange($event)"
+    />
+  </p-card>
+</div>
+
+<p-dialog header="Reject Document" [(visible)]="rejectDialogVisible" [modal]="true">
+  <div class="field">
+    <label>Rejection Reason</label>
+    <input pInputText [(ngModel)]="rejectionReason" class="w-full" />
+  </div>
+  <button pButton label="Confirm Reject" severity="danger" (click)="confirmReject()"></button>
+</p-dialog>
