@@ -73,6 +73,24 @@ export class MembershipApplicationService {
       );
   }
 
+  // =====================================================
+  // Get My Applications
+  // =====================================================
+
+  getMine(): Observable<MembershipApplicationDetail[]> {
+
+    return this.http
+      .get<any[]>(
+        `${this.baseUrl}/mine`
+      )
+      .pipe(
+        map((applications) =>
+          applications.map((application) =>
+            this.mapDetail(application)
+          )
+        )
+      );
+  }
 
   // =====================================================
   // Get Applications By Listing

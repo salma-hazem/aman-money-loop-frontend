@@ -1,0 +1,42 @@
+<div class="my-applications-page">
+
+  <div class="page-header">
+    <h1>My Applications</h1>
+    <p>Track the status of the circles you've applied to.</p>
+  </div>
+
+  @if (isLoading()) {
+  <div class="state-message">Loading your applications...</div>
+  }
+
+  @else if (errorMessage()) {
+  <div class="state-message error">{{ errorMessage() }}</div>
+  }
+
+  @else if (applications().length === 0) {
+  <div class="state-message">
+    You haven't applied to any circles yet.
+    <a routerLink="/marketplace">Browse the marketplace</a> to get started.
+  </div>
+  }
+
+  @else {
+  <div class="application-list">
+    @for (application of applications(); track application.membershipApplicationId) {
+    <div class="application-card">
+      <div class="application-info">
+        <h2>{{ application.title || 'Circle application' }}</h2>
+        <span class="applied-date">
+          Applied {{ application.createdAt | date: 'dd MMM yyyy' }}
+        </span>
+      </div>
+
+      <span class="stage-badge" [attr.data-stage]="application.stage">
+        {{ application.stage }}
+      </span>
+    </div>
+    }
+  </div>
+  }
+
+</div>

@@ -299,6 +299,16 @@ export const routes: Routes = [
           ).then((m) => m.ApplicantDetailsComponent),
       },
 
+      // My Applications - member's own submitted applications.
+      {
+        path: 'my-applications',
+        canActivate: [roleGuard([Role.Member])],
+        loadComponent: () =>
+          import(
+            './features/membership-application/my-applications/my-applications.component'
+          ).then((m) => m.MyApplicationsComponent),
+      },
+
       // =================================================
       // Module 4 - Verification
       // =================================================

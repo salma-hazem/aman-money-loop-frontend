@@ -4,6 +4,23 @@
   padding: 48px 24px;
 }
 
+.back-button {
+  display: block;
+  max-width: 900px;
+  margin: 0 auto 20px;
+  background: none;
+  border: none;
+  color: #087f73;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 .apply-card {
   max-width: 900px;
   margin: 0 auto;
