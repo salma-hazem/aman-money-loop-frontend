@@ -30,7 +30,8 @@ export class ApplicantDetailsComponent {
   private verificationService = inject(VerificationService);
 
   applicationId = this.route.snapshot.paramMap.get('id') ?? '';
-
+  openScheduleOnLoad =
+  this.route.snapshot.queryParamMap.get('schedule') === 'true';
   applicant = signal<MembershipApplicationDetail | null>(null);
   activeSchedule = signal<VerificationSchedule | null>(null);
   availableRounds = signal<VerificationRound[]>([]);
@@ -75,24 +76,27 @@ export class ApplicantDetailsComponent {
       ),
     }).subscribe({
       next: ({ applicant, schedules }) => {
-        this.applicant.set({ ...applicant, stage: normalizeStage(applicant.stage) });
+        const normalizedStage = normalizeStage(applicant.stage);
+
+        this.applicant.set({
+          ...applicant,
+          stage: normalizedStage,
+        });
 
         const active = schedules
           .filter((s) => s.status !== 'Cancelled')
           .sort((a, b) => (a.date < b.date ? 1 : -1))[0];
+
         this.activeSchedule.set(active ?? null);
 
         this.isLoading.set(false);
-      },
-      error: (error) => {
-        this.isLoading.set(false);
 
-        if (error.status === 401 || error.status === 403) {
-          this.errorMessage.set('You do not have permission to view this applicant.');
-        } else if (error.status === 404) {
-          this.errorMessage.set('This applicant could not be found.');
-        } else {
-          this.errorMessage.set('An unexpected error occurred while loading this applicant.');
+        if (
+          this.openScheduleOnLoad &&
+          normalizedStage === 'Shortlisted' &&
+          !active
+        ) {
+          this.openSchedulePanel();
         }
       },
     });

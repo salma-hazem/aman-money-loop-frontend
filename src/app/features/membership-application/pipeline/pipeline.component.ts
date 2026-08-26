@@ -269,6 +269,11 @@ export class PipelineComponent {
   viewDetails(applicantId: string): void {
     this.router.navigate(['/console/applicants', applicantId]);
   }
+  scheduleVerification(applicantId: string): void {
+    this.router.navigate(['/console/applicants', applicantId], {
+      queryParams: { schedule: 'true' },
+    });
+  }
 
   private patchApplicantStage(
     applicantId: string,

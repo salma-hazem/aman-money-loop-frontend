@@ -1,23 +1,41 @@
 <div class="schedule-container">
   <div class="card-box">
-    <h2 class="page-title">{{ pageTitle || 'Schedule Verification' }}</h2>
+    <h2 class="page-title">Schedule Verification</h2>
 
     <form (ngSubmit)="onSubmit()" #scheduleForm="ngForm">
       <!-- Row 1: Application, Round, Scheduler -->
       <div class="form-row grid-3">
         <div class="form-group">
           <label>Application ID</label>
-          <input type="text" [(ngModel)]="formData.applicationId" name="applicationId" [placeholder]="placeholders.applicationId" required />
+          <input
+            type="text"
+            [(ngModel)]="formData.applicationId"
+            name="applicationId"
+            placeholder="Membership application ID"
+            required
+          />
         </div>
 
         <div class="form-group">
           <label>Verification Round</label>
-          <input type="text" [(ngModel)]="formData.verificationRoundId" name="verificationRoundId" [placeholder]="placeholders.verificationRoundId" required />
+          <input
+            type="text"
+            [(ngModel)]="formData.verificationRoundId"
+            name="verificationRoundId"
+            placeholder="Verification round ID"
+            required
+          />
         </div>
 
         <div class="form-group">
           <label>Scheduled By User ID</label>
-          <input type="text" [(ngModel)]="formData.scheduledByUserId" name="scheduledByUserId" [placeholder]="placeholders.scheduledByUserId" required />
+          <input
+            type="text"
+            [(ngModel)]="formData.scheduledByUserId"
+            name="scheduledByUserId"
+            placeholder="Organizer or Admin user ID"
+            required
+          />
         </div>
       </div>
 
@@ -33,10 +51,15 @@
           />
         </div>
 
-      <!-- Row 3: Location or Video Link -->
-      <div class="form-group">
-        <label>Location or Video Link</label>
-        <input type="text" [(ngModel)]="formData.locationOrLink" name="locationOrLink" [placeholder]="placeholders.locationOrLink" required />
+        <div class="form-group">
+          <label>Location or Video Link</label>
+          <input
+            type="text"
+            [(ngModel)]="formData.locationOrLink"
+            name="locationOrLink"
+            placeholder="Meeting link / address"
+          />
+        </div>
       </div>
 
       <div class="checkbox-group">

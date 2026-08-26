@@ -397,31 +397,43 @@
                   ====================================== -->
 
                   @else if (
-                    column.stage === 'Shortlisted'
-                  ) {
+                      column.stage === 'Shortlisted'
+                    ) {
 
-                    <div class="card-actions">
+                      <div class="card-actions">
 
-                      <button
-                        type="button"
-                        class="reject-button"
-                        [disabled]="
-                          actionInFlightId()
-                            ===
-                          applicant.membershipApplicationId
-                        "
-                        (click)="
-                          reject(
+                        <button
+                          type="button"
+                          class="shortlist-button"
+                          (click)="
+                            scheduleVerification(
+                              applicant.membershipApplicationId
+                            )
+                          "
+                        >
+                          Schedule Verification
+                        </button>
+
+                        <button
+                          type="button"
+                          class="reject-button"
+                          [disabled]="
+                            actionInFlightId()
+                              ===
                             applicant.membershipApplicationId
-                          )
-                        "
-                      >
-                        Reject
-                      </button>
+                          "
+                          (click)="
+                            reject(
+                              applicant.membershipApplicationId
+                            )
+                          "
+                        >
+                          Reject
+                        </button>
 
-                    </div>
+                      </div>
 
-                  }
+                    }
 
 
                   <!-- =====================================
