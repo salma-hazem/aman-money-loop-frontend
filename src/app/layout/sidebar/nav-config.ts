@@ -34,6 +34,12 @@ export const NAV_CONFIG: NavGroup[] = [
         roles: [Role.Member],
       },
       {
+        label: 'My Applications',
+        icon: 'pi pi-file',
+        route: '/console/my-applications',
+        roles: [Role.Member],
+      },
+      {
         label: 'Applicant Pipeline',
         icon: 'pi pi-list',
         route: '/console/pipeline',
