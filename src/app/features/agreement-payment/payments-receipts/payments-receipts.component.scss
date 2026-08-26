@@ -13,6 +13,8 @@
   background: #ffffff;
 }
 
+/* Header */
+
 .payments-header {
   margin-bottom: 2rem;
 
@@ -38,10 +40,178 @@
   letter-spacing: 0.1em;
 }
 
+/* Ledger Selection */
+
+.ledger-selection-section {
+  margin-top: 0.5rem;
+}
+
+.ledger-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.ledger-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+  padding: 1.4rem;
+  border: 1px solid #dce8e7;
+  border-radius: 14px;
+  background: #ffffff;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    border-color: #08a99f;
+    box-shadow: 0 8px 24px rgba(17, 87, 82, 0.08);
+    transform: translateY(-2px);
+  }
+}
+
+.ledger-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+
+  h3 {
+    margin: 0.3rem 0 0;
+    color: #173431;
+    font-size: 1.05rem;
+  }
+}
+
+.ledger-circle-label,
+.ledger-member-label {
+  display: block;
+  color: #748784;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.slot-badge {
+  flex-shrink: 0;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  background: #e8f8f6;
+  color: #087c74;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.ledger-member {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+
+  strong {
+    display: block;
+    margin-top: 0.2rem;
+    color: #173431;
+    font-size: 0.95rem;
+  }
+}
+
+.member-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #eff9f8;
+  color: #079c92;
+  font-size: 1rem;
+}
+
+.ledger-activated {
+  color: #718583;
+  font-size: 0.78rem;
+}
+
+.ledger-card-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 1rem;
+  border-top: 1px solid #edf2f1;
+  color: #087c74;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+/* Selected Ledger */
+
+.selected-ledger-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.2rem;
+  border: 1px solid #cfe6e3;
+  border-radius: 12px;
+  background: #f3fbfa;
+}
+
+.selected-ledger-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+
+  strong {
+    color: #173431;
+    font-size: 1rem;
+  }
+
+  span:last-child {
+    color: #657b79;
+    font-size: 0.82rem;
+  }
+}
+
+.selected-ledger-label {
+  color: #079c92 !important;
+  font-size: 0.7rem !important;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.change-member-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid #9bd9d4;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #087c74;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    background: #effaf9;
+  }
+}
+
+/* Summary */
+
 .summary-grid {
   display: grid;
-  grid-template-columns:
-    repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1rem;
   margin-bottom: 2rem;
 }
@@ -72,17 +242,14 @@
   font-size: 1rem;
 }
 
+/* Record Transaction */
+
 .record-section {
   margin-bottom: 2rem;
   padding: 1.5rem;
   border: 1px solid #dcebea;
   border-radius: 14px;
-  background:
-    linear-gradient(
-      135deg,
-      #ffffff 0%,
-      #effaf8 100%
-    );
+  background: linear-gradient(135deg, #ffffff 0%, #effaf8 100%);
 }
 
 .section-heading {
@@ -100,10 +267,11 @@
   }
 }
 
+/* Form */
+
 .form-grid {
   display: grid;
-  grid-template-columns:
-    repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1.25rem;
 }
 
@@ -120,22 +288,34 @@
 
   input,
   select {
+    width: 100%;
     min-height: 48px;
     box-sizing: border-box;
     padding: 0.7rem 0.8rem;
     border: 1px solid #cadbd9;
     border-radius: 8px;
     outline: none;
-    background: #ffffff;
-    color: #183633;
-    font: inherit;
+    background: #ffffff !important;
+    color: #183633 !important;
+    -webkit-text-fill-color: #183633 !important;
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.4;
+    opacity: 1 !important;
 
     &:focus {
       border-color: #08a99f;
-      box-shadow:
-        0 0 0 3px
-        rgba(8, 169, 159, 0.1);
+      box-shadow: 0 0 0 3px rgba(8, 169, 159, 0.1);
     }
+  }
+
+  select {
+    cursor: pointer;
+  }
+
+  select option {
+    background: #ffffff;
+    color: #183633;
   }
 }
 
@@ -151,23 +331,35 @@
   font-size: 0.75rem;
 }
 
+/* Form Actions */
+
 .form-actions {
+  display: flex;
+  align-items: center;
   margin-top: 1.25rem;
 }
 
 .record-button {
-  min-height: 44px;
-  padding: 0.7rem 1.3rem;
-  border: none;
-  border-radius: 8px;
-  background: #08a99f;
-  color: #ffffff;
-  font: inherit;
-  font-weight: 600;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: auto !important;
+  min-width: 150px !important;
+  min-height: 44px !important;
+  padding: 0.7rem 1.3rem !important;
+  border: none !important;
+  border-radius: 8px !important;
+  background: #08a99f !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  font-family: inherit !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
   cursor: pointer;
 
   &:hover:not(:disabled) {
-    background: #078f87;
+    background: #078f87 !important;
   }
 
   &:disabled {
@@ -175,6 +367,8 @@
     cursor: not-allowed;
   }
 }
+
+/* Transactions */
 
 .transactions-section {
   padding-top: 0.5rem;
@@ -195,8 +389,7 @@
   th {
     padding: 0.9rem 1rem;
     background: #f7faf9;
-    border-bottom:
-      1px solid #e0e9e8;
+    border-bottom: 1px solid #e0e9e8;
     color: #405957;
     text-align: left;
     font-size: 0.8rem;
@@ -205,8 +398,7 @@
 
   td {
     padding: 0.9rem 1rem;
-    border-bottom:
-      1px solid #e8eeee;
+    border-bottom: 1px solid #e8eeee;
     color: #526a68;
     font-size: 0.88rem;
   }
@@ -233,6 +425,8 @@
   white-space: nowrap;
 }
 
+/* Status */
+
 .status-badge {
   display: inline-flex;
   padding: 0.35rem 0.65rem;
@@ -256,12 +450,19 @@
   color: #b42318;
 }
 
+/* Receipt */
+
 .receipt-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
   padding: 0.55rem 0.8rem;
   border: 1px solid #9bd9d4;
   border-radius: 7px;
   background: #ffffff;
-  color: #087c74;
+  color: #087c74 !important;
+  font-family: inherit;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
@@ -275,6 +476,8 @@
     cursor: not-allowed;
   }
 }
+
+/* Messages */
 
 .error-message,
 .success-message {
@@ -295,6 +498,8 @@
   background: #ecfbf5;
   color: #087a5b;
 }
+
+/* Loading / Empty */
 
 .loading-state,
 .empty-state {
@@ -317,10 +522,12 @@
   }
 }
 
+/* Responsive */
+
 @media (max-width: 950px) {
-  .summary-grid {
-    grid-template-columns:
-      repeat(2, 1fr);
+  .summary-grid,
+  .ledger-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -334,11 +541,19 @@
   }
 
   .summary-grid,
-  .form-grid {
+  .form-grid,
+  .ledger-grid {
     grid-template-columns: 1fr;
   }
 
+  .selected-ledger-banner {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .change-member-button,
   .record-button {
-    width: 100%;
+    width: 100% !important;
+    justify-content: center;
   }
 }

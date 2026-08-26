@@ -1,0 +1,51 @@
+<div class="management-page">
+  <header class="page-heading">
+    <div>
+      <span class="eyebrow">Administration</span>
+      <h1>Circle Request Approvals</h1>
+      <p>Review submitted requests and make a traceable approval decision.</p>
+    </div>
+    <a class="button button-secondary" routerLink="/console/circle-registry">
+      <i class="pi pi-sitemap"></i> Circle Registry
+    </a>
+  </header>
+
+  <section class="metric-grid">
+    <div class="metric-card"><span>Awaiting Review</span><strong>{{ requests().length }}</strong></div>
+    <div class="metric-card"><span>New Circles</span><strong>{{ newCircleCount() }}</strong></div>
+    <div class="metric-card"><span>Replacements</span><strong>{{ replacementCount() }}</strong></div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header"><h2>Requests Requiring Action</h2></div>
+    @if (isLoading()) {
+      <div class="state-card"><i class="pi pi-spin pi-spinner"></i><h2>Loading approval queue</h2></div>
+    } @else if (errorMessage()) {
+      <div class="state-card error">
+        <i class="pi pi-exclamation-circle"></i><h2>Unable to load queue</h2><p>{{ errorMessage() }}</p>
+        <button class="button button-secondary" type="button" (click)="loadQueue()">Try Again</button>
+      </div>
+    } @else if (requests().length === 0) {
+      <div class="state-card"><i class="pi pi-check-circle"></i><h2>Approval queue is clear</h2><p>There are no submitted circle requests waiting for review.</p></div>
+    } @else {
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th>Request</th><th>Type</th><th>Contribution</th><th>Duration</th><th>Slots</th><th>Submitted</th><th></th></tr></thead>
+          <tbody>
+            @for (request of requests(); track request.requestId) {
+              <tr>
+                <td><div class="title-cell"><strong>{{ request.circleTitle }}</strong><small>{{ request.requestId.slice(0, 8) }}</small></div></td>
+                <td>{{ request.circleType === 'NewCircle' ? 'New Circle' : 'Replacement' }}</td>
+                <td>{{ request.contributionAmount | currency:'EGP':'symbol':'1.0-0' }}</td>
+                <td>{{ request.duration }} months</td>
+                <td>{{ request.numberOfSlots }}</td>
+                <td>{{ request.submittedAt | date:'mediumDate' }}</td>
+                <td><a class="button button-primary review-button" [routerLink]="['/console/admin/circle-requests', request.requestId]">Review</a></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</div>

@@ -28,4 +28,11 @@ export class MemberLedgerService {
       `${this.baseUrl}/by-user/${userId}`
     );
   }
+
+  getAvailableLedgers(): Observable<MemberLedger[]> {
+
+    return this.http.get<MemberLedger[]>(
+      this.baseUrl
+    );
+  }
 }

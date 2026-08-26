@@ -1,162 +1,515 @@
 <div class="pipeline-page">
 
-  <div class="pipeline-header">
-    <h1>Applicant Pipeline</h1>
-    <p>
-      Track and manage applicants as they move through review.
-    </p>
-  </div>
+  <!-- =====================================================
+       PIPELINE SELECTOR
+       /console/pipeline
+  ====================================================== -->
 
-  @if (isLoading()) {
-    <div class="state-message">
-      Loading applicants...
+  @if (isPipelineSelector) {
+
+    <div class="pipeline-header">
+      <div>
+        <span class="header-kicker">
+          MEMBERSHIP
+        </span>
+
+        <h1>
+          Applicant Pipelines
+        </h1>
+
+        <p>
+          Select a circle to view and manage its applicant pipeline.
+        </p>
+      </div>
     </div>
-  }
 
-  @else if (errorMessage()) {
-    <div class="state-message error">
-      {{ errorMessage() }}
-    </div>
-  }
 
-  @else {
+    <!-- Loading -->
 
-    <div class="board">
+    @if (isLoading()) {
 
-      @for (column of columns; track column.stage) {
+      <div class="state-message">
+        Loading available circles...
+      </div>
 
-        <div class="board-column">
+    }
 
-          <div class="column-header">
-            <span class="column-title">
-              {{ column.label }}
-            </span>
 
-            <span class="column-count">
-              {{ applicantsForStage(column.stage).length }}
-            </span>
-          </div>
+    <!-- Error -->
 
-          <div class="column-cards">
+    @else if (errorMessage()) {
 
-            @for (
-              applicant of applicantsForStage(column.stage);
-              track applicant.membershipApplicationId
-            ) {
+      <div class="state-message error">
+        {{ errorMessage() }}
+      </div>
 
-              <div class="applicant-card">
+    }
 
-                <div
-                  class="card-name"
-                  (click)="
-                    viewDetails(
-                      applicant.membershipApplicationId
-                    )
-                  "
-                >
-                  {{ applicant.name }}
+
+    <!-- Circle Selector -->
+
+    @else {
+
+      @if (availablePipelineCircles().length > 0) {
+
+        <div class="pipeline-selector-grid">
+
+          @for (
+            circle of availablePipelineCircles();
+            track circle.circleId
+          ) {
+
+            <div class="pipeline-selector-card">
+
+              <div class="selector-card-header">
+
+                <div>
+
+                  <span class="circle-label">
+                    CIRCLE
+                  </span>
+
+                  <h2>
+                    {{ circle.circleTitle }}
+                  </h2>
+
                 </div>
 
-                <div class="card-date">
-                  Applied
-                  {{ applicant.createdAt | date: 'dd MMM' }}
-                </div>
 
-                <!-- Submitted -->
-                @if (column.stage === 'Submitted') {
-
-                  <div class="card-actions">
-
-                    <button
-                      class="shortlist-button"
-                      [disabled]="
-                        actionInFlightId() ===
-                        applicant.membershipApplicationId
-                      "
-                      (click)="
-                        shortlist(
-                          applicant.membershipApplicationId
-                        )
-                      "
-                    >
-                      Shortlist
-                    </button>
-
-                    <button
-                      class="reject-button"
-                      [disabled]="
-                        actionInFlightId() ===
-                        applicant.membershipApplicationId
-                      "
-                      (click)="
-                        reject(
-                          applicant.membershipApplicationId
-                        )
-                      "
-                    >
-                      Reject
-                    </button>
-
-                  </div>
-
-                }
-
-                <!-- Shortlisted -->
-                @else if (
-                  column.stage === 'Shortlisted'
-                ) {
-
-                  <div class="card-actions">
-
-                    <button
-                      class="reject-button"
-                      [disabled]="
-                        actionInFlightId() ===
-                        applicant.membershipApplicationId
-                      "
-                      (click)="
-                        reject(
-                          applicant.membershipApplicationId
-                        )
-                      "
-                    >
-                      Reject
-                    </button>
-
-                  </div>
-
-                }
-
-                <!-- Verification Completed -->
-                @else if (
-                  column.stage === 'VerificationCompleted'
-                ) {
-
-                  <div class="card-actions">
-
-                    <button
-                      class="shortlist-button"
-                      (click)="
-                        generateAgreement(
-                          applicant.membershipApplicationId
-                        )
-                      "
-                    >
-                      Generate Agreement
-                    </button>
-
-                  </div>
-
-                }
+                <span class="circle-status">
+                  {{ circle.status }}
+                </span>
 
               </div>
 
-            }
 
-            @empty {
+              <div class="circle-info-grid">
 
-              <div class="column-empty">
-                No applicants
+                <!-- Contribution -->
+
+                <div class="circle-info-item">
+                  <span class="info-label">
+                    Contribution
+                  </span>
+
+                  <span class="info-value">
+                    {{ circle.amount | number:'1.2-2' }}
+                  </span>
+                </div>
+
+
+                <!-- Duration -->
+
+                <div class="circle-info-item">
+                  <span class="info-label">
+                    Duration
+                  </span>
+
+                  <span class="info-value">
+                    {{ circle.duration }} months
+                  </span>
+                </div>
+
+
+                <!-- Slots -->
+
+                <div class="circle-info-item">
+                  <span class="info-label">
+                    Filled Slots
+                  </span>
+
+                  <span class="info-value">
+                    {{ circle.filledCount }}
+                    /
+                    {{ circle.approvedSlots }}
+                  </span>
+                </div>
+
+
+                <!-- Listing -->
+
+                <div class="circle-info-item">
+                  <span class="info-label">
+                    Listing Status
+                  </span>
+
+                  <span class="info-value">
+                    {{
+                      circle.marketplaceListing?.listingStatus
+                    }}
+                  </span>
+                </div>
+
+              </div>
+
+
+              <button
+                type="button"
+                class="open-pipeline-button"
+                (click)="openPipeline(circle)"
+              >
+                <i class="pi pi-users"></i>
+
+                <span>
+                  Open Applicant Pipeline
+                </span>
+              </button>
+
+            </div>
+
+          }
+
+        </div>
+
+      }
+
+      @else {
+
+        <div class="empty-selector-state">
+
+          <div class="empty-selector-icon">
+            <i class="pi pi-inbox"></i>
+          </div>
+
+          <h2>
+            No Active Applicant Pipelines
+          </h2>
+
+          <p>
+            There are currently no active marketplace listings
+            with applicant pipelines available.
+          </p>
+
+        </div>
+
+      }
+
+    }
+
+  }
+
+
+  <!-- =====================================================
+       SPECIFIC LISTING PIPELINE
+       /console/listings/:listingId/pipeline
+  ====================================================== -->
+
+  @else {
+
+    <!-- ===================================================
+         Header
+    ==================================================== -->
+
+    <div class="pipeline-header pipeline-board-header">
+
+      <div>
+
+        <span class="header-kicker">
+          MEMBERSHIP
+        </span>
+
+        <h1>
+          @if (selectedCircleTitle) {
+            {{ selectedCircleTitle }} - Applicant Pipeline
+          }
+          @else {
+            Applicant Pipeline
+          }
+        </h1>
+
+        <p>
+          Track and manage applicants as they move through
+          the membership process.
+        </p>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="back-button"
+        (click)="backToPipelines()"
+      >
+        <i class="pi pi-arrow-left"></i>
+
+        <span>
+          All Pipelines
+        </span>
+      </button>
+
+    </div>
+
+
+    <!-- ===================================================
+         Loading
+    ==================================================== -->
+
+    @if (isLoading()) {
+
+      <div class="state-message">
+        Loading applicants...
+      </div>
+
+    }
+
+
+    <!-- ===================================================
+         Error
+    ==================================================== -->
+
+    @else if (errorMessage()) {
+
+      <div class="state-message error">
+        {{ errorMessage() }}
+      </div>
+
+    }
+
+
+    <!-- ===================================================
+         Pipeline Board
+    ==================================================== -->
+
+    @else {
+
+      <div class="board">
+
+        @for (
+          column of columns;
+          track column.stage
+        ) {
+
+          <div class="board-column">
+
+            <!-- ===========================================
+                 Column Header
+            ============================================ -->
+
+            <div class="column-header">
+
+              <span class="column-title">
+                {{ column.label }}
+              </span>
+
+              <span class="column-count">
+                {{
+                  applicantsForStage(
+                    column.stage
+                  ).length
+                }}
+              </span>
+
+            </div>
+
+
+            <!-- ===========================================
+                 Applicant Cards
+            ============================================ -->
+
+            <div class="column-cards">
+
+              @for (
+                applicant of applicantsForStage(
+                  column.stage
+                );
+                track applicant.membershipApplicationId
+              ) {
+
+                <div class="applicant-card">
+
+                  <!-- Applicant Name -->
+
+                  <div
+                    class="card-name"
+                    (click)="
+                      viewDetails(
+                        applicant.membershipApplicationId
+                      )
+                    "
+                  >
+                    {{ applicant.name }}
+                  </div>
+
+
+                  <!-- Applied Date -->
+
+                  <div class="card-date">
+                    Applied
+                    {{
+                      applicant.createdAt
+                        | date:'dd MMM'
+                    }}
+                  </div>
+
+
+                  <!-- =====================================
+                       Submitted
+                  ====================================== -->
+
+                  @if (
+                    column.stage === 'Submitted'
+                  ) {
+
+                    <div class="card-actions">
+
+                      <button
+                        type="button"
+                        class="shortlist-button"
+                        [disabled]="
+                          actionInFlightId()
+                            ===
+                          applicant.membershipApplicationId
+                        "
+                        (click)="
+                          shortlist(
+                            applicant.membershipApplicationId
+                          )
+                        "
+                      >
+                        Shortlist
+                      </button>
+
+
+                      <button
+                        type="button"
+                        class="reject-button"
+                        [disabled]="
+                          actionInFlightId()
+                            ===
+                          applicant.membershipApplicationId
+                        "
+                        (click)="
+                          reject(
+                            applicant.membershipApplicationId
+                          )
+                        "
+                      >
+                        Reject
+                      </button>
+
+                    </div>
+
+                  }
+
+
+                  <!-- =====================================
+                       Shortlisted
+                  ====================================== -->
+
+                  @else if (
+                    column.stage === 'Shortlisted'
+                  ) {
+
+                    <div class="card-actions">
+
+                      <button
+                        type="button"
+                        class="reject-button"
+                        [disabled]="
+                          actionInFlightId()
+                            ===
+                          applicant.membershipApplicationId
+                        "
+                        (click)="
+                          reject(
+                            applicant.membershipApplicationId
+                          )
+                        "
+                      >
+                        Reject
+                      </button>
+
+                    </div>
+
+                  }
+
+
+                  <!-- =====================================
+                       Verification Completed
+                       Module 5 entry point
+                  ====================================== -->
+
+                  @else if (
+                    column.stage ===
+                    'VerificationCompleted'
+                    &&
+                    canGenerateAgreement
+                  ) {
+
+                    <div class="card-actions">
+
+                      <button
+                        type="button"
+                        class="generate-agreement-button"
+                        (click)="
+                          generateAgreement(
+                            applicant.membershipApplicationId
+                          )
+                        "
+                      >
+                        Generate Agreement
+                      </button>
+
+                    </div>
+
+                  }
+
+                </div>
+
+              }
+
+
+              <!-- Empty Column -->
+
+              @empty {
+
+                <div class="column-empty">
+                  No applicants
+                </div>
+
+              }
+
+            </div>
+
+          </div>
+
+        }
+
+      </div>
+
+
+      <!-- =================================================
+           Rejected Applicants
+      ================================================== -->
+
+      @if (
+        rejectedApplicants().length > 0
+      ) {
+
+        <div class="rejected-panel">
+
+          <h2>
+            Rejected
+            ({{ rejectedApplicants().length }})
+          </h2>
+
+
+          <div class="rejected-list">
+
+            @for (
+              applicant of rejectedApplicants();
+              track applicant.membershipApplicationId
+            ) {
+
+              <div
+                class="rejected-item"
+                (click)="
+                  viewDetails(
+                    applicant.membershipApplicationId
+                  )
+                "
+              >
+                {{ applicant.name }}
               </div>
 
             }
@@ -166,41 +519,6 @@
         </div>
 
       }
-
-    </div>
-
-    @if (rejectedApplicants().length > 0) {
-
-      <div class="rejected-panel">
-
-        <h2>
-          Rejected
-          ({{ rejectedApplicants().length }})
-        </h2>
-
-        <div class="rejected-list">
-
-          @for (
-            applicant of rejectedApplicants();
-            track applicant.membershipApplicationId
-          ) {
-
-            <div
-              class="rejected-item"
-              (click)="
-                viewDetails(
-                  applicant.membershipApplicationId
-                )
-              "
-            >
-              {{ applicant.name }}
-            </div>
-
-          }
-
-        </div>
-
-      </div>
 
     }
 

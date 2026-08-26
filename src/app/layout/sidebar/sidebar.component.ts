@@ -21,10 +21,11 @@ export class SidebarComponent {
 
   /** Nav groups filtered down to what the signed-in role can see; groups left empty after filtering are dropped. */
   visibleGroups = computed<NavGroup[]>(() => {
-    const role = this.auth.role();
     return NAV_CONFIG.map((group) => ({
       ...group,
-      items: group.items.filter((item) => !item.roles || (role && item.roles.includes(role))),
+      items: group.items.filter(
+        (item) => !item.roles || item.roles.some((role) => this.auth.hasRole(role))
+      ),
     })).filter((group) => group.items.length > 0);
   });
 

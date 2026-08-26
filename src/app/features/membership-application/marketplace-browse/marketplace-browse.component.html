@@ -1,0 +1,87 @@
+<div class="browse-page">
+
+  <div class="browse-header">
+    <h1>Find a Money Circle</h1>
+    <p>Browse open circles without signing in.</p>
+  </div>
+
+  <form class="filter-bar" [formGroup]="filterForm" (ngSubmit)="search()">
+
+    <div class="filter-field wide">
+      <label for="search">Circle title</label>
+      <input id="search" type="text" formControlName="search" placeholder="Search" />
+    </div>
+
+    <div class="filter-field">
+      <label for="minContribution">Min contribution</label>
+      <input id="minContribution" type="number" formControlName="minContribution" placeholder="EGP" />
+    </div>
+
+    <div class="filter-field">
+      <label for="maxContribution">Max contribution</label>
+      <input id="maxContribution" type="number" formControlName="maxContribution" placeholder="EGP" />
+    </div>
+
+    <div class="filter-field">
+      <label for="minDuration">Min duration</label>
+      <input id="minDuration" type="number" formControlName="minDuration" placeholder="months" />
+    </div>
+
+    <div class="filter-field">
+      <label for="maxDuration">Max duration</label>
+      <input id="maxDuration" type="number" formControlName="maxDuration" placeholder="months" />
+    </div>
+
+    <div class="filter-field">
+      <label for="minAvailableSlots">Min slots</label>
+      <input id="minAvailableSlots" type="number" formControlName="minAvailableSlots" placeholder="1+" />
+    </div>
+
+    <div class="filter-actions">
+      <button type="submit" class="search-button">Search</button>
+      <button type="button" class="clear-button" (click)="clearFilters()">Clear</button>
+    </div>
+
+  </form>
+
+  @if (isLoading()) {
+  <div class="state-message">Loading circles...</div>
+  }
+
+  @else if (errorMessage()) {
+  <div class="state-message error">{{ errorMessage() }}</div>
+  }
+
+  @else if (listings().length === 0) {
+  <div class="state-message">No circles match your search. Try adjusting the filters.</div>
+  }
+
+  @else {
+  <div class="listing-grid">
+    @for (listing of listings(); track listing.listingId) {
+    <div class="listing-card">
+      <h2>{{ listing.title }}</h2>
+
+      <div class="listing-contribution">
+        EGP {{ listing.monthlyContribution }} / month
+      </div>
+
+      <div class="listing-meta">
+        {{ listing.durationMonths }} months
+        &middot;
+        {{ listing.availableSlots }} slot{{ listing.availableSlots === 1 ? '' : 's' }}
+      </div>
+
+      <span class="status-badge" [attr.data-status]="listing.listingStatus">
+        {{ listing.availableSlots > 0 ? 'Open' : 'Full' }}
+      </span>
+
+      <button class="view-details-button" (click)="viewDetails(listing.listingId)">
+        View Details
+      </button>
+    </div>
+    }
+  </div>
+  }
+
+</div>

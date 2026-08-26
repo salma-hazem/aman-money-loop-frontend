@@ -1,0 +1,82 @@
+<div class="management-page">
+  <header class="page-heading">
+    <div>
+      <span class="eyebrow">Circle requests / Details</span>
+      <h1>{{ request()?.circleTitle || 'Circle Request' }}</h1>
+      <p>Review request information and complete the next available action.</p>
+    </div>
+    <a class="button button-secondary" routerLink="/console/circle-requests">
+      <i class="pi pi-arrow-left"></i> Back to Requests
+    </a>
+  </header>
+
+  @if (isLoading()) {
+    <section class="panel state-card">
+      <i class="pi pi-spin pi-spinner"></i><h2>Loading request</h2>
+    </section>
+  } @else if (!request()) {
+    <section class="panel state-card error">
+      <i class="pi pi-exclamation-circle"></i>
+      <h2>Unable to load request</h2>
+      <p>{{ errorMessage() }}</p>
+    </section>
+  } @else {
+    @if (request(); as item) {
+    @if (successMessage()) {
+      <div class="alert success"><i class="pi pi-check-circle"></i><span>{{ successMessage() }}</span></div>
+    }
+    @if (errorMessage()) {
+      <div class="alert error"><i class="pi pi-exclamation-circle"></i><span>{{ errorMessage() }}</span></div>
+    }
+    @if (item.decisionReason) {
+      <div class="alert info">
+        <i class="pi pi-comment"></i>
+        <span><strong>Admin feedback:</strong> {{ item.decisionReason }}</span>
+      </div>
+    }
+
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Request Summary</h2>
+        <span [class]="'status-badge ' + statusClass(item.requestStatus)">{{ statusLabel(item.requestStatus) }}</span>
+      </div>
+      <div class="panel-body details-grid">
+        <div class="detail-item"><span>Request ID</span><strong>{{ item.requestId }}</strong></div>
+        <div class="detail-item"><span>Circle Type</span><strong>{{ item.circleType === 'NewCircle' ? 'New Circle (Growth)' : 'Replacement Circle' }}</strong></div>
+        <div class="detail-item"><span>Contribution</span><strong>{{ item.contributionAmount | currency:'EGP':'symbol':'1.0-0' }} / month</strong></div>
+        <div class="detail-item"><span>Duration</span><strong>{{ item.duration }} months</strong></div>
+        <div class="detail-item"><span>Approved / Requested Slots</span><strong>{{ item.numberOfSlots }}</strong></div>
+        @if (item.vacantSlotNumber) {
+          <div class="detail-item"><span>Vacant Slot</span><strong>Slot {{ item.vacantSlotNumber }}</strong></div>
+        }
+        <div class="detail-item"><span>Created</span><strong>{{ item.createdAt | date:'medium' }}</strong></div>
+        <div class="detail-item"><span>Submitted</span><strong>{{ item.submittedAt ? (item.submittedAt | date:'medium') : 'Not submitted' }}</strong></div>
+        <div class="detail-item full-width"><span>Justification / Notes</span><strong>{{ item.shortJustification || 'No additional notes.' }}</strong></div>
+      </div>
+      <div class="panel-body detail-actions">
+        @if (canCancel()) {
+          <button type="button" class="button button-danger" [disabled]="actionInFlight() !== null" (click)="cancel()">
+            <i class="pi pi-times"></i> Cancel Request
+          </button>
+        }
+        <span class="action-spacer"></span>
+        @if (canEdit()) {
+          <a class="button button-secondary" [routerLink]="['/console/circle-requests', item.requestId, 'edit']">
+            <i class="pi pi-pencil"></i> Edit Draft
+          </a>
+        }
+        @if (canSubmit()) {
+          <button type="button" class="button button-primary" [disabled]="actionInFlight() !== null" (click)="submitForApproval()">
+            <i [class]="actionInFlight() === 'submit' ? 'pi pi-spin pi-spinner' : 'pi pi-send'"></i> Submit for Approval
+          </button>
+        }
+        @if (canPublish()) {
+          <button type="button" class="button button-accent" [disabled]="actionInFlight() !== null" (click)="publish()">
+            <i [class]="actionInFlight() === 'publish' ? 'pi pi-spin pi-spinner' : 'pi pi-megaphone'"></i> Publish to Marketplace
+          </button>
+        }
+      </div>
+    </section>
+    }
+  }
+</div>

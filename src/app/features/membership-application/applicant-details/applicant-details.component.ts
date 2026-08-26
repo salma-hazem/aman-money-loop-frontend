@@ -1,0 +1,219 @@
+import { CommonModule } from '@angular/common';
+import { Component, inject, signal } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { forkJoin } from 'rxjs';
+
+import { MembershipApplicationService } from '../services/membership-application.service';
+import { VerificationService } from '../services/verification.service';
+import {
+  MembershipApplicationDetail,
+  normalizeStage,
+} from '../models/membership-application.model';
+import {
+  VerificationRound,
+  VerificationSchedule,
+} from '../models/verification.model';
+
+@Component({
+  selector: 'app-applicant-details',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
+  templateUrl: './applicant-details.component.html',
+  styleUrl: './applicant-details.component.scss',
+})
+export class ApplicantDetailsComponent {
+  private fb = inject(FormBuilder);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private membershipApplicationService = inject(MembershipApplicationService);
+  private verificationService = inject(VerificationService);
+
+  applicationId = this.route.snapshot.paramMap.get('id') ?? '';
+
+  applicant = signal<MembershipApplicationDetail | null>(null);
+  activeSchedule = signal<VerificationSchedule | null>(null);
+  availableRounds = signal<VerificationRound[]>([]);
+
+  isLoading = signal(true);
+  errorMessage = signal<string | null>(null);
+
+  actionInProgress = signal(false);
+  actionError = signal<string | null>(null);
+
+  schedulePanelOpen = signal(false);
+  isLoadingRounds = signal(false);
+  isSubmittingSchedule = signal(false);
+  scheduleError = signal<string | null>(null);
+
+  scheduleForm = this.fb.nonNullable.group({
+    verificationRoundId: ['', Validators.required],
+    date: ['', Validators.required],
+    time: ['', Validators.required],
+    locationLink: [''],
+    videoLink: [''],
+  });
+
+  constructor() {
+    this.load();
+  }
+
+  private load(): void {
+    if (!this.applicationId) {
+      this.errorMessage.set('No applicant was specified.');
+      this.isLoading.set(false);
+      return;
+    }
+
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
+
+    forkJoin({
+      applicant: this.membershipApplicationService.getById(this.applicationId),
+      schedules: this.verificationService.getSchedulesByApplication(
+        this.applicationId
+      ),
+    }).subscribe({
+      next: ({ applicant, schedules }) => {
+        this.applicant.set({ ...applicant, stage: normalizeStage(applicant.stage) });
+
+        const active = schedules
+          .filter((s) => s.status !== 'Cancelled')
+          .sort((a, b) => (a.date < b.date ? 1 : -1))[0];
+        this.activeSchedule.set(active ?? null);
+
+        this.isLoading.set(false);
+      },
+      error: (error) => {
+        this.isLoading.set(false);
+
+        if (error.status === 401 || error.status === 403) {
+          this.errorMessage.set('You do not have permission to view this applicant.');
+        } else if (error.status === 404) {
+          this.errorMessage.set('This applicant could not be found.');
+        } else {
+          this.errorMessage.set('An unexpected error occurred while loading this applicant.');
+        }
+      },
+    });
+  }
+
+  shortlist(): void {
+    const applicant = this.applicant();
+    if (!applicant || this.actionInProgress()) {
+      return;
+    }
+
+    this.actionInProgress.set(true);
+    this.actionError.set(null);
+
+    this.membershipApplicationService.shortlist(applicant.membershipApplicationId).subscribe({
+      next: (updated) => {
+        this.applicant.set({ ...applicant, stage: normalizeStage(updated.stage) });
+        this.actionInProgress.set(false);
+      },
+      error: () => {
+        this.actionInProgress.set(false);
+        this.actionError.set('Could not shortlist this applicant. Refresh and try again.');
+      },
+    });
+  }
+
+  reject(): void {
+    const applicant = this.applicant();
+    if (!applicant || this.actionInProgress()) {
+      return;
+    }
+
+    this.actionInProgress.set(true);
+    this.actionError.set(null);
+
+    this.membershipApplicationService.reject(applicant.membershipApplicationId).subscribe({
+      next: (updated) => {
+        this.applicant.set({ ...applicant, stage: normalizeStage(updated.stage) });
+        this.actionInProgress.set(false);
+      },
+      error: () => {
+        this.actionInProgress.set(false);
+        this.actionError.set('Could not reject this applicant. Refresh and try again.');
+      },
+    });
+  }
+
+  openSchedulePanel(): void {
+    this.schedulePanelOpen.set(true);
+    this.scheduleError.set(null);
+
+    const applicant = this.applicant();
+    if (!applicant || this.availableRounds().length > 0) {
+      return;
+    }
+
+    this.isLoadingRounds.set(true);
+
+    this.verificationService.getRoundsByCircle(applicant.circleId).subscribe({
+      next: (rounds) => {
+        this.availableRounds.set(rounds);
+        this.isLoadingRounds.set(false);
+      },
+      error: () => {
+        this.isLoadingRounds.set(false);
+        this.scheduleError.set(
+          'Could not load verification rounds for this circle.'
+        );
+      },
+    });
+  }
+
+  closeSchedulePanel(): void {
+    this.schedulePanelOpen.set(false);
+  }
+
+  submitSchedule(): void {
+    const applicant = this.applicant();
+    if (!applicant || this.scheduleForm.invalid) {
+      this.scheduleForm.markAllAsTouched();
+      return;
+    }
+
+    this.isSubmittingSchedule.set(true);
+    this.scheduleError.set(null);
+
+    const raw = this.scheduleForm.getRawValue();
+
+    this.verificationService
+      .createSchedule({
+        applicationId: applicant.membershipApplicationId,
+        verificationRoundId: raw.verificationRoundId,
+        date: raw.date,
+        time: raw.time.length === 5 ? `${raw.time}:00` : raw.time,
+        locationLink: raw.locationLink || null,
+        videoLink: raw.videoLink || null,
+      })
+      .subscribe({
+        next: (schedule) => {
+          this.activeSchedule.set(schedule);
+          this.isSubmittingSchedule.set(false);
+          this.schedulePanelOpen.set(false);
+        },
+        error: (error) => {
+          this.isSubmittingSchedule.set(false);
+          this.scheduleError.set(
+            error.error?.message ?? 'Could not schedule verification. Please try again.'
+          );
+        },
+      });
+  }
+
+  selectedRoundFormat(): string | null {
+    const roundId = this.scheduleForm.controls.verificationRoundId.value;
+    const round = this.availableRounds().find(
+      (r) => r.verificationRoundId === roundId
+    );
+    return round?.format ?? null;
+  }
+
+  goBack(): void {
+    this.router.navigate(['/console/pipeline']);
+  }
+}

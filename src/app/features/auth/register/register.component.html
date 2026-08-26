@@ -1,112 +1,55 @@
 <div class="register-wrap">
-  <form
-    class="register-card"
-    [formGroup]="form"
-    (ngSubmit)="submit()"
-  >
+  <form class="register-card" [formGroup]="form" (ngSubmit)="submit()">
+    <span class="eyebrow">Member registration</span>
     <h1>Create Account</h1>
+    <p class="subtitle">Create your Aman Money Loop account and verify it by email.</p>
 
-    <p class="subtitle">
-      Register as a member of Aman Money Loop.
-    </p>
-
-    @if (error()) {
-      <p-message
-        severity="error"
-        [text]="error()!"
-        styleClass="w-full"
-      />
-    }
+    @if (error()) { <p-message severity="error" [text]="error()!" styleClass="w-full" /> }
 
     <div class="row">
       <div class="field">
-        <label for="firstName">
-          First Name
-        </label>
-
-        <input
-          pInputText
-          id="firstName"
-          formControlName="firstName"
-        />
+        <label for="firstName">First Name</label>
+        <input pInputText id="firstName" formControlName="firstName" autocomplete="given-name" />
+        @if (form.controls.firstName.touched && form.controls.firstName.invalid) { <small class="field-error">First name is required.</small> }
       </div>
-
       <div class="field">
-        <label for="lastName">
-          Last Name
-        </label>
-
-        <input
-          pInputText
-          id="lastName"
-          formControlName="lastName"
-        />
+        <label for="lastName">Last Name</label>
+        <input pInputText id="lastName" formControlName="lastName" autocomplete="family-name" />
+        @if (form.controls.lastName.touched && form.controls.lastName.invalid) { <small class="field-error">Last name is required.</small> }
       </div>
     </div>
 
     <div class="field">
-      <label for="nationalId">
-        National ID
-      </label>
-
-      <input
-        pInputText
-        id="nationalId"
-        formControlName="nationalId"
-      />
+      <label for="nationalId">National ID</label>
+      <input pInputText id="nationalId" formControlName="nationalId" maxlength="14" inputmode="numeric" />
+      @if (form.controls.nationalId.touched && form.controls.nationalId.invalid) { <small class="field-error">National ID must contain exactly 14 digits.</small> }
     </div>
 
     <div class="field">
-      <label for="email">
-        Email
-      </label>
-
-      <input
-        pInputText
-        id="email"
-        type="email"
-        formControlName="email"
-      />
+      <label for="email">Email</label>
+      <input pInputText id="email" type="email" formControlName="email" autocomplete="email" />
+      @if (form.controls.email.touched && form.controls.email.invalid) { <small class="field-error">Enter a valid email address.</small> }
     </div>
 
     <div class="field">
-      <label for="phoneNumber">
-        Phone Number
-      </label>
-
-      <input
-        pInputText
-        id="phoneNumber"
-        formControlName="phoneNumber"
-      />
+      <label for="phoneNumber">Phone Number</label>
+      <input pInputText id="phoneNumber" formControlName="phoneNumber" placeholder="01xxxxxxxxx" inputmode="tel" autocomplete="tel" />
+      @if (form.controls.phoneNumber.touched && form.controls.phoneNumber.invalid) { <small class="field-error">Enter a valid Egyptian mobile number.</small> }
     </div>
 
-    <!-- حقل الباسورد المضاف حديثاً -->
     <div class="field">
       <label for="password">Password</label>
-      <p-password
-        id="password"
-        formControlName="password"
-        [toggleMask]="true"
-        styleClass="w-full"
-        inputStyleClass="w-full"
-      />
-      @if (form.controls.password.invalid && form.controls.password.touched) {
-        <small class="field-error">Password must be at least 8 characters.</small>
-      }
+      <p-password id="password" formControlName="password" [toggleMask]="true" styleClass="w-full" inputStyleClass="w-full" autocomplete="new-password" />
+      @if (form.controls.password.touched && form.controls.password.invalid) { <small class="field-error">Use 8-64 characters with uppercase, lowercase, number, and special character.</small> }
     </div>
 
-    <button
-      pButton
-      type="submit"
-      label="Register"
-      [loading]="loading()"
-      class="w-full"
-    ></button>
+    <div class="field">
+      <label for="confirmPassword">Confirm Password</label>
+      <p-password id="confirmPassword" formControlName="confirmPassword" [feedback]="false" [toggleMask]="true" styleClass="w-full" inputStyleClass="w-full" autocomplete="new-password" />
+      @if (form.controls.confirmPassword.touched && form.controls.confirmPassword.invalid) { <small class="field-error">Confirm your password.</small> }
+    </div>
 
-    <p class="login-link">
-      Already have an account?
-      <a href="/login">Sign In</a>
-    </p>
+    <button pButton type="submit" label="Create Account" [loading]="loading()" class="w-full"></button>
+    <p class="login-link">Already have an account? <a routerLink="/login">Sign In</a></p>
   </form>
 </div>

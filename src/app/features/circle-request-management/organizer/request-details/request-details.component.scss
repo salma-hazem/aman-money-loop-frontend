@@ -1,0 +1,8 @@
+.action-spacer {
+  flex: 1;
+}
+
+@media (max-width: 680px) {
+  .action-spacer { display: none; }
+}
+

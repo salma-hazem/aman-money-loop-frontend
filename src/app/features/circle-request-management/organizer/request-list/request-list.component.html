@@ -1,0 +1,109 @@
+<div class="management-page">
+  <header class="page-heading">
+    <div>
+      <span class="eyebrow">Circle management</span>
+      <h1>Circle Requests</h1>
+      <p>Create requests, follow approval decisions, and publish approved circles.</p>
+    </div>
+    <a class="button button-primary" routerLink="/console/circle-requests/new">
+      <i class="pi pi-plus"></i>
+      New Circle Request
+    </a>
+  </header>
+
+  <section class="panel">
+    <div class="panel-header">
+      <div class="filter-row" aria-label="Request status filters">
+        @for (filter of filters; track filter) {
+          <button
+            type="button"
+            class="filter-button"
+            [class.active]="selectedFilter() === filter"
+            (click)="setFilter(filter)"
+          >
+            {{ filter === 'Submitted' ? 'Pending' : filter === 'ModificationRequested' ? 'Changes Requested' : filter }}
+          </button>
+        }
+      </div>
+    </div>
+
+    @if (isLoading()) {
+      <div class="state-card">
+        <i class="pi pi-spin pi-spinner"></i>
+        <h2>Loading requests</h2>
+        <p>Getting your latest request statuses.</p>
+      </div>
+    } @else if (errorMessage()) {
+      <div class="state-card error">
+        <i class="pi pi-exclamation-circle"></i>
+        <h2>Unable to load requests</h2>
+        <p>{{ errorMessage() }}</p>
+        <button type="button" class="button button-secondary" (click)="loadRequests()">Try Again</button>
+      </div>
+    } @else if (filteredRequests().length === 0) {
+      <div class="state-card">
+        <i class="pi pi-inbox"></i>
+        <h2>No requests here yet</h2>
+        <p>Create a new request or choose another status filter.</p>
+      </div>
+    } @else {
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Circle</th>
+              <th>Type</th>
+              <th>Contribution</th>
+              <th>Duration</th>
+              <th>Slots</th>
+              <th>Status</th>
+              <th>Created</th>
+              <th><span class="visually-hidden">Actions</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (request of filteredRequests(); track request.requestId) {
+              <tr>
+                <td>
+                  <div class="title-cell">
+                    <strong>{{ request.circleTitle }}</strong>
+                    <small>{{ request.requestId.slice(0, 8) }}</small>
+                  </div>
+                </td>
+                <td>{{ request.circleType === 'NewCircle' ? 'New Circle' : 'Replacement' }}</td>
+                <td>{{ request.contributionAmount | currency:'EGP':'symbol':'1.0-0' }}</td>
+                <td>{{ request.duration }} months</td>
+                <td>{{ request.numberOfSlots }}</td>
+                <td>
+                  <span class="status-badge" [class]="'status-badge ' + statusClass(request.requestStatus)">
+                    {{ statusLabel(request.requestStatus) }}
+                  </span>
+                </td>
+                <td>{{ request.createdAt | date:'mediumDate' }}</td>
+                <td>
+                  <div class="row-actions">
+                    @if (canEdit(request)) {
+                      <a
+                        class="icon-action"
+                        [routerLink]="['/console/circle-requests', request.requestId, 'edit']"
+                        aria-label="Edit request"
+                        title="Edit"
+                      ><i class="pi pi-pencil"></i></a>
+                    }
+                    <a
+                      class="icon-action"
+                      [routerLink]="['/console/circle-requests', request.requestId]"
+                      aria-label="View request"
+                      title="View"
+                    ><i class="pi pi-arrow-right"></i></a>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</div>
+

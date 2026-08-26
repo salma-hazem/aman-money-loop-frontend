@@ -17,6 +17,7 @@ export interface MembershipApplicationSummary {
 export interface MembershipApplicationDetail {
   membershipApplicationId: string;
   listingId: string;
+  circleId: string;
   name: string;
   email: string;
   phone: string;
@@ -42,10 +43,30 @@ export interface PagedResult<T> {
   totalCount: number;
   totalPages: number;
 }
+
 export interface ListingSummary {
   listingId: string;
   title: string;
   monthlyContribution: number;
   durationMonths: number;
   availableSlots: number;
+}
+
+// The backend serializes MembershipApplicationStage as its numeric enum
+// value (0-6), not the string name. Order must exactly match
+// MonyLoop.Domain.Constants.MembershipApplicationStage.
+const STAGE_NAMES: MembershipApplicationStage[] = [
+  'Submitted',
+  'Shortlisted',
+  'VerificationScheduled',
+  'VerificationCompleted',
+  'AgreementExtended',
+  'Confirmed',
+  'Rejected',
+];
+
+export function normalizeStage(
+  stage: MembershipApplicationStage | number
+): MembershipApplicationStage {
+  return typeof stage === 'number' ? STAGE_NAMES[stage] : stage;
 }

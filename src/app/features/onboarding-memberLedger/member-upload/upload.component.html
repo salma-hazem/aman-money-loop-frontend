@@ -1,0 +1,48 @@
+<div class="page">
+  <div class="page-header">
+    <h1>My Documents</h1>
+  </div>
+
+  @if (error()) {
+    <p-message severity="error" [text]="error()!" styleClass="w-full" />
+  }
+
+  <p-card>
+    <table class="doc-table">
+      <thead>
+        <tr>
+          <th>Document</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (req of requirements(); track req.documentRequirementId) {
+          <tr>
+            <td>
+              {{ req.documentName }}
+              @if (req.isRequired) { <span class="required">*</span> }
+            </td>
+            <td>
+              <p-tag
+                [value]="statusFor(req.documentRequirementId)"
+                [severity]="severityFor(req.documentRequirementId)"
+              />
+            </td>
+            <td>
+              <p-fileUpload
+                mode="basic"
+                [chooseLabel]="hasDocument(req.documentRequirementId) ? 'Replace' : 'Upload'"
+                [auto]="true"
+                customUpload="true"
+                (uploadHandler)="onUpload($event, req.documentRequirementId)"
+                accept=".pdf,.jpg,.jpeg,.png"
+                [maxFileSize]="5000000"
+              />
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </p-card>
+</div>
