@@ -67,6 +67,24 @@ export const NAV_CONFIG: NavGroup[] = [
   },
 
   {
+    label: 'Verification',
+    items: [
+      {
+        label: 'Schedule Verification',
+        icon: 'pi pi-calendar-plus',
+        route: '/console/verification/schedule',
+        roles: [Role.Organizer, Role.Admin],
+      },
+      {
+        label: 'Verification Checklist',
+        icon: 'pi pi-check-circle',
+        route: '/console/verification/checklist',
+        roles: [Role.Organizer, Role.Admin],
+      },
+    ],
+  },
+
+  {
     label: 'Agreement & Payment',
     items: [
       {

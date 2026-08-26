@@ -207,6 +207,27 @@ export const routes: Routes = [
       },
 
       // =================================================
+      // Module 4 - Verification
+      // =================================================
+
+      {
+        path: 'verification/schedule',
+        canActivate: [roleGuard([Role.Organizer, Role.Admin])],
+        loadComponent: () =>
+          import(
+            './features/Verification/components/schedule-verification.component'
+          ).then((m) => m.ScheduleVerificationComponent),
+      },
+      {
+        path: 'verification/checklist',
+        canActivate: [roleGuard([Role.Organizer, Role.Admin])],
+        loadComponent: () =>
+          import(
+            './features/Verification/components/verification-checklist.component'
+          ).then((m) => m.VerificationChecklistComponent),
+      },
+
+      // =================================================
       // Module 5 - Agreement & Payment
       // =================================================
 
