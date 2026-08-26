@@ -4,18 +4,19 @@ export interface CreateVerificationCriterionRating {
   comments?: string;
 }
 
+export interface CreateVerificationChecklistSubmission {
+  verificationScheduleId: string;
+  submittedByUserId: string;
+  overallComments?: string;
+  ratings: CreateVerificationCriterionRating[];
+}
+
 export interface VerificationCriterionRatingResponse {
   verificationCriterionRatingId: string;
   verificationChecklistSubmissionId: string;
   verificationCriterionId: string;
   rating: number;
   comments?: string;
-}
-export interface CreateVerificationChecklistSubmission {
-  verificationScheduleId: string;
-  submittedByUserId: string;
-  overallComments?: string;
-  ratings: CreateVerificationCriterionRating[];
 }
 
 export interface VerificationChecklistSubmissionResponse {
