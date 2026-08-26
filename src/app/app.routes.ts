@@ -1,6 +1,4 @@
 import { Routes } from '@angular/router';
-import { roleGuard } from './core/guards/auth.guard';
-import { Role } from './core/models/role.model';
 import {
   authGuard,
   guestRedirectGuard,
