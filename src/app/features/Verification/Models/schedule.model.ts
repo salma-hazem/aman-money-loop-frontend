@@ -8,7 +8,7 @@ export interface CreateVerificationSchedule {
   applicationId: string;
   verificationRoundId: string;
   scheduledByUserId: string;
-  scheduledDateTime: Date;
+  scheduledDateTime: string | Date;
   locationOrLink?: string;
   sendCalendarInvite: boolean;
 }
@@ -18,7 +18,7 @@ export interface VerificationScheduleResponse {
   applicationId: string;
   verificationRoundId: string;
   scheduledByUserId: string;
-  scheduledDateTime: Date;
+  scheduledDateTime: string | Date;
   locationOrLink?: string;
   status: ScheduleStatus;
 }

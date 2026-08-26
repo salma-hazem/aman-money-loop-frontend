@@ -1,7 +1,7 @@
 <div class="checklist-container">
   <div class="header-row">
-    <h2>Document Check - Ahmed Hassan</h2>
-    <span class="status-badge">Scheduled</span>
+    <h2>{{ roundTitle }} - {{ memberName }}</h2>
+    <span class="status-badge" [ngClass]="status ? status.toLowerCase() : ''">{{ status }}</span>
   </div>
 
   <!-- Item 1: Document Authenticity -->
