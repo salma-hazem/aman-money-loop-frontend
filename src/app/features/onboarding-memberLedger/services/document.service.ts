@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-import { DocumentItem, DocumentRequest, DocumentReviewRequest } from '../models/document.model';
+import { DocumentItem, DocumentReviewRequest } from '../models/document.model';
 import { PagedResult } from '../../../core/models/paged-result.model';
 
 @Injectable({ providedIn: 'root' })
@@ -10,8 +10,9 @@ export class DocumentService {
   private http = inject(HttpClient);
   private base = `${environment.apiBase}/api/Documents`;
 
-  upload(request: DocumentRequest): Observable<DocumentItem> {
-    return this.http.post<DocumentItem>(this.base, request);
+  // 🆕 بياخد FormData حقيقي بدل الـ DTO، وبيبعت لـ /upload بالظبط
+  upload(formData: FormData): Observable<DocumentItem> {
+    return this.http.post<DocumentItem>(`${this.base}/upload`, formData);
   }
 
   getByOnboardingCase(onboardingCaseId: string): Observable<DocumentItem[]> {
