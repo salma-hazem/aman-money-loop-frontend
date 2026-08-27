@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { VerificationScheduleService } from '../../Services/schedule.service';
-import { CreateVerificationSchedule } from '../../Models/schedule.model';
+import { VerificationService } from '../../../membership-application/services/verification.service';
+import { CreateVerificationScheduleRequest } from '../../../membership-application/models/verification.model';
 
 @Component({
   selector: 'app-schedule-verification',
@@ -21,24 +21,40 @@ export class ScheduleVerificationComponent implements OnInit {
     locationOrLink: 'Meeting link / address'
   };
 
-  formData: CreateVerificationSchedule = {
+  formData = {
     applicationId: '',
     verificationRoundId: '',
     scheduledByUserId: '',
-    scheduledDateTime: '', // Initialized as string for datetime-local binding compatibility
+    scheduledDateTime: '', // Datetime-local binding compatibility for HTML template
     locationOrLink: '',
     sendCalendarInvite: false
   };
 
   isSubmitting = false;
 
-  constructor(private scheduleService: VerificationScheduleService) { }
+  constructor(private verificationService: VerificationService) { }
 
   ngOnInit(): void { }
 
   onSubmit(): void {
     this.isSubmitting = true;
-    this.scheduleService.scheduleVerification(this.formData).subscribe({
+
+    // Parse scheduledDateTime (e.g., "2026-08-28T14:30") into date and time
+    const dateTimeParts = this.formData.scheduledDateTime ? this.formData.scheduledDateTime.split('T') : ['', ''];
+    const dateStr = dateTimeParts[0] || '';
+    const timeStr = dateTimeParts[1] ? (dateTimeParts[1].length === 5 ? `${dateTimeParts[1]}:00` : dateTimeParts[1]) : '';
+
+    const payload: CreateVerificationScheduleRequest = {
+      applicationId: this.formData.applicationId,
+      verificationRoundId: this.formData.verificationRoundId,
+      scheduledByUserId: this.formData.scheduledByUserId,
+      date: dateStr,
+      time: timeStr,
+      locationLink: this.formData.locationOrLink || null,
+      sendCalendarInvite: this.formData.sendCalendarInvite
+    };
+
+    this.verificationService.createSchedule(payload).subscribe({
       next: (res) => {
         alert('Verification schedule created successfully!');
         this.isSubmitting = false;

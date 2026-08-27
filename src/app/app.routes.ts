@@ -314,6 +314,15 @@ export const routes: Routes = [
       // =================================================
 
       {
+        path: 'verification/rounds/:circleId',
+        canActivate: [roleGuard([Role.Organizer, Role.Admin])],
+        loadComponent: () =>
+          import(
+            './features/Verification/Components/round/round.component'
+          ).then((m) => m.VerificationRoundComponent),
+      },
+
+      {
         path: 'verification/schedule',
         canActivate: [roleGuard([Role.Organizer, Role.Admin])],
         loadComponent: () =>

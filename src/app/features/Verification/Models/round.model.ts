@@ -11,6 +11,14 @@ export interface CreateVerificationCriterion {
   isActive: boolean;
 }
 
+export interface UpdateVerificationCriterion {
+  verificationCriterionId?: string; // Included when updating an existing criterion, omitted for new criteria
+  criterionName: string;
+  weight: number;
+  displayOrder: number;
+  isActive: boolean;
+}
+
 export interface VerificationCriterionResponse {
   verificationCriterionId: string;
   verificationRoundId: string;
@@ -26,6 +34,13 @@ export interface CreateVerificationRound {
   roundName: string;
   format: VerificationFormat;
   criteria: CreateVerificationCriterion[];
+}
+
+export interface UpdateVerificationRound {
+  reviewedByUserId?: string;
+  roundName: string;
+  format: VerificationFormat;
+  criteria: UpdateVerificationCriterion[];
 }
 
 export interface VerificationRoundResponse {

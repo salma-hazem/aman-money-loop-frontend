@@ -38,6 +38,7 @@ export interface CreateVerificationScheduleRequest {
   locationLink?: string | null;
   videoLink?: string | null;
   sendCalendarInvite: boolean; // <-- Add this property here
+  scheduledByUserId?: string; // <-- Add this line
 }
 
 // The backend serializes VerificationFormat and ScheduleStatus as their

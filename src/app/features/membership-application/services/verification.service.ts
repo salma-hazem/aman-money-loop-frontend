@@ -53,4 +53,21 @@ export class VerificationService {
         map((s) => ({ ...s, status: normalizeScheduleStatus(s.status) }))
       );
   }
+
+  // ADDED: Fetch single schedule by ID
+  getScheduleById(scheduleId: string): Observable<VerificationSchedule> {
+    return this.http
+      .get<VerificationSchedule>(`${this.schedulesBaseUrl}/${scheduleId}`)
+      .pipe(
+        map((s) => ({ ...s, status: normalizeScheduleStatus(s.status) }))
+      );
+  }
+
+  // ADDED: Update schedule status (e.g. Cancelled/Completed)
+  updateSchedule(
+    scheduleId: string,
+    dto: { status: string }
+  ): Observable<void> {
+    return this.http.put<void>(`${this.schedulesBaseUrl}/${scheduleId}`, dto);
+  }
 }

@@ -1,0 +1,120 @@
+<div class="round-setup-page">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Verification Rounds</h1>
+      <p>Configure evaluation stages and weighted criteria for this circle.</p>
+    </div>
+
+    @if (!isFormVisible) {
+    <button class="btn-primary" (click)="openCreateForm()">+ Add Round</button>
+    }
+  </div>
+
+  @if (isLoading) {
+  <div class="state-message">Loading verification rounds...</div>
+  }
+
+  @else if (errorMessage) {
+  <div class="state-message error">{{ errorMessage }}</div>
+  }
+
+  @else if (isFormVisible) {
+  <!-- CREATE / EDIT FORM -->
+  <div class="form-container">
+    <h2>{{ editingRoundId ? 'Edit Round' : 'Create New Round' }}</h2>
+
+    <form [formGroup]="roundForm" (ngSubmit)="saveRound()">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="roundName">Round Name</label>
+          <input id="roundName" type="text" formControlName="roundName" placeholder="e.g. Technical Interview" />
+        </div>
+
+        <div class="form-group">
+          <label for="format">Interview Format</label>
+          <select id="format" formControlName="format">
+            @for (option of formatOptions; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="criteria-section">
+        <div class="criteria-header">
+          <h3>Evaluation Criteria</h3>
+          <button type="button" class="btn-secondary btn-sm" (click)="addCriterion()">+ Add Criterion</button>
+        </div>
+
+        <div formArrayName="criteria" class="criteria-list">
+          @if (criteriaFormArray.length === 0) {
+          <div class="state-message">No criteria added. Add at least one to evaluate candidates.</div>
+          }
+
+          @for (crit of criteriaFormArray.controls; track $index) {
+          <div class="criterion-row" [formGroupName]="$index">
+
+            <div class="form-group name-col">
+              <label>Criterion Name</label>
+              <input type="text" formControlName="criterionName" placeholder="e.g. Communication Skills" />
+            </div>
+
+            <div class="form-group num-col">
+              <label>Weight</label>
+              <input type="number" formControlName="weight" min="1" />
+            </div>
+
+            <div class="form-group num-col">
+              <label>Order</label>
+              <input type="number" formControlName="displayOrder" />
+            </div>
+
+            <div class="form-group check-col">
+              <label>Active</label>
+              <input type="checkbox" formControlName="isActive" />
+            </div>
+
+            <button type="button" class="btn-danger btn-sm" (click)="removeCriterion($index)">Remove</button>
+          </div>
+          }
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" (click)="cancelForm()" [disabled]="isSaving">Cancel</button>
+        <button type="submit" class="btn-primary" [disabled]="roundForm.invalid || isSaving">
+          {{ isSaving ? 'Saving...' : 'Save Round' }}
+        </button>
+      </div>
+    </form>
+  </div>
+  }
+
+  @else if (rounds.length === 0) {
+  <div class="state-message">
+    No verification rounds exist for this circle yet.
+    <br /><br />
+    <button class="btn-primary" (click)="openCreateForm()">Create your first round</button>
+  </div>
+  }
+
+  @else {
+  <!-- LIST VIEW -->
+  <div class="round-list">
+    @for (round of rounds; track round.verificationRoundId) {
+    <div class="round-card">
+      <div class="round-info">
+        <h2>{{ round.roundName }}</h2>
+        <span class="round-meta">
+          Format: {{ getFormatLabel(round.format) }} • Criteria count: {{ round.criteria.length }}
+        </span>
+      </div>
+
+      <div class="card-actions">
+        <button class="btn-secondary btn-sm" (click)="openEditForm(round)">Edit</button>
+      </div>
+    </div>
+    }
+  </div>
+  }
+</div>

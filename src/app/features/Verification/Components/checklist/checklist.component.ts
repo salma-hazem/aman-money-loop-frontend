@@ -4,12 +4,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { VerificationChecklistService } from '../../Services/checklist.service';
 import { VerificationRoundService } from '../../Services/round.service';
-import { VerificationScheduleService } from '../../Services/schedule.service';
+import { VerificationService } from '../../../membership-application/services/verification.service';
 import {
   CreateVerificationChecklistSubmission,
   CreateVerificationCriterionRating,
 } from '../../Models/checklist.model';
-import { ScheduleStatus } from '../../Models/schedule.model';
+import { ScheduleStatus } from '../../../membership-application/models/verification.model';
 import { MembershipApplicationService } from '../../../membership-application/services/membership-application.service';
 import { AuthService } from '../../../../core/services/auth.service';
 
@@ -21,13 +21,11 @@ interface CriterionRatingRow {
   comments?: string;
 }
 
-// Backend serializes ScheduleStatus as its numeric enum value, not the name.
-// Order must exactly match MonyLoop.Domain.Constants.Verification.ScheduleStatus.
 const SCHEDULE_STATUS_LABELS: Record<ScheduleStatus, string> = {
-  [ScheduleStatus.Pending]: 'Pending',
-  [ScheduleStatus.Scheduled]: 'Scheduled',
-  [ScheduleStatus.Completed]: 'Completed',
-  [ScheduleStatus.Cancelled]: 'Cancelled',
+  Pending: 'Pending',
+  Scheduled: 'Scheduled',
+  Completed: 'Completed',
+  Cancelled: 'Cancelled',
 };
 
 @Component({
@@ -54,7 +52,7 @@ export class VerificationChecklistComponent implements OnInit {
   constructor(
     private checklistService: VerificationChecklistService,
     private roundService: VerificationRoundService,
-    private scheduleService: VerificationScheduleService,
+    private scheduleService: VerificationService,
     private applicationService: MembershipApplicationService,
     private authService: AuthService,
     private route: ActivatedRoute
@@ -130,7 +128,6 @@ export class VerificationChecklistComponent implements OnInit {
           }
         });
       },
-      // No prior submission yet is expected, not an error worth surfacing.
       error: () => { }
     });
   }

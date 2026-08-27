@@ -4,7 +4,8 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import {
   VerificationRoundResponse,
-  CreateVerificationRound
+  CreateVerificationRound,
+  UpdateVerificationRound
 } from '../Models/round.model';
 
 @Injectable({
@@ -25,5 +26,9 @@ export class VerificationRoundService {
 
   createRound(dto: CreateVerificationRound): Observable<VerificationRoundResponse> {
     return this.http.post<VerificationRoundResponse>(this.apiUrl, dto);
+  }
+
+  updateRound(roundId: string, dto: UpdateVerificationRound): Observable<VerificationRoundResponse> {
+    return this.http.put<VerificationRoundResponse>(`${this.apiUrl}/${roundId}`, dto);
   }
 }
