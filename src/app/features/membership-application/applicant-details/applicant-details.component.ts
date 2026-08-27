@@ -52,6 +52,7 @@ export class ApplicantDetailsComponent implements OnInit {
 
   isLoadingHistory = signal(false);
   historyError = signal<string | null>(null);
+  historyPanelOpen = signal(false);
 
   // Property to restrict calendar date picking to today or future
   minDate = new Date().toISOString().split('T')[0];
@@ -156,6 +157,10 @@ export class ApplicantDetailsComponent implements OnInit {
         this.historyError.set('No evaluation history found or failed to load history.');
       }
     });
+  }
+
+  toggleHistoryPanel(): void {
+    this.historyPanelOpen.update((isOpen) => !isOpen);
   }
 
   shortlist(): void {
