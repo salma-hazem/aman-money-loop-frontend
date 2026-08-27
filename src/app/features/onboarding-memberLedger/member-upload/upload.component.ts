@@ -5,6 +5,7 @@ import { FileUploadModule, FileUploadHandlerEvent } from 'primeng/fileupload';
 import { MessageModule } from 'primeng/message';
 import { DocumentRequirementService } from '../services/document-requirement.service';
 import { DocumentService } from '../services/document.service';
+import { OnboardingCaseService } from '../services/onboarding-case.service';
 import { DocumentRequirement } from '../models/document-requirement.model';
 import { DocumentItem, DocumentStatus } from '../models/document.model';
 
@@ -18,6 +19,7 @@ import { DocumentItem, DocumentStatus } from '../models/document.model';
 export class OnboardingUploadComponent implements OnInit {
   private requirementService = inject(DocumentRequirementService);
   private documentService = inject(DocumentService);
+  private onboardingCaseService = inject(OnboardingCaseService);
 
   requirements = signal<DocumentRequirement[]>([]);
   documents = signal<DocumentItem[]>([]);
@@ -30,12 +32,18 @@ export class OnboardingUploadComponent implements OnInit {
       error: () => this.error.set('Failed to load document requirements.'),
     });
 
-    const caseId = this.onboardingCaseId();
-    if (caseId) {
-      this.documentService.getByOnboardingCase(caseId).subscribe({
-        next: (docs) => this.documents.set(docs),
-      });
-    }
+    // 🆕 جلب الـ OnboardingCase بتاع اليوزر الحالي من endpoint الموجود بالفعل
+    this.onboardingCaseService.getMyCase().subscribe({
+      next: (myCase) => {
+        this.onboardingCaseId.set(myCase.onboardingCaseId);
+
+        this.documentService.getByOnboardingCase(myCase.onboardingCaseId).subscribe({
+          next: (docs) => this.documents.set(docs),
+          error: () => this.error.set('Failed to load uploaded documents.'),
+        });
+      },
+      error: () => this.error.set('No active onboarding case found for your account.'),
+    });
   }
 
   hasDocument(requirementId: string): boolean {
@@ -60,17 +68,24 @@ export class OnboardingUploadComponent implements OnInit {
   onUpload(event: FileUploadHandlerEvent, requirementId: string): void {
     const file = event.files[0];
     const caseId = this.onboardingCaseId();
-    if (!file || !caseId) return;
 
-    this.documentService.upload({
-      onboardingCaseId: caseId,
-      documentRequirementId: requirementId,
-      fileName: file.name,
-      filePath: `/uploads/${file.name}`,
-      fileSize: file.size,
-    }).subscribe({
+    if (!file || !caseId) {
+      this.error.set('Cannot upload: no active onboarding case found.');
+      return;
+    }
+
+    // 🆕 FormData حقيقي فيه الملف نفسه، مطابق للباك إند [FromForm]/IFormFile
+    const formData = new FormData();
+    formData.append('onboardingCaseId', caseId);
+    formData.append('documentRequirementId', requirementId);
+    formData.append('file', file, file.name);
+
+    this.documentService.upload(formData).subscribe({
       next: (doc) => {
-        this.documents.update((docs) => [...docs.filter((d) => d.documentRequirementId !== requirementId), doc]);
+        this.documents.update((docs) => [
+          ...docs.filter((d) => d.documentRequirementId !== requirementId),
+          doc,
+        ]);
       },
       error: () => this.error.set('Upload failed. Please try again.'),
     });
