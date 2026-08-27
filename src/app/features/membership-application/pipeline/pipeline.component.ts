@@ -26,6 +26,14 @@ import {
 } from '../models/membership-application.model';
 
 import {
+  MarketplaceListingService,
+} from '../services/marketplace-listing.service';
+
+import {
+  MarketplaceListingStatus,
+} from '../models/marketplace-listing.model';
+
+import {
   AuthService,
 } from '../../../core/services/auth.service';
 
@@ -109,18 +117,17 @@ export class PipelineComponent {
   private http = inject(HttpClient);
   private auth = inject(AuthService);
   private membershipApplicationService = inject(MembershipApplicationService);
+  private marketplaceListingService = inject(MarketplaceListingService);
 
   listingId = this.route.snapshot.paramMap.get('listingId') ?? '';
   selectedCircleTitle = this.route.snapshot.queryParamMap.get('circleTitle') ?? '';
 
   circles = signal<PipelineCircle[]>([]);
 
+  // Shows every circle that has a listing at all, regardless of status,
+  // so organizers can manage (close/reopen) as well as open a pipeline.
   availablePipelineCircles = computed(() =>
-    this.circles().filter(
-      (circle) =>
-        !!circle.marketplaceListing &&
-        circle.marketplaceListing.listingStatus?.toLowerCase() === 'active'
-    )
+    this.circles().filter((circle) => !!circle.marketplaceListing)
   );
 
   get isPipelineSelector(): boolean {
@@ -181,6 +188,47 @@ export class PipelineComponent {
 
     this.router.navigate(['/console/listings', listing.listingId, 'pipeline'], {
       queryParams: { circleTitle: circle.circleTitle },
+    });
+  }
+
+  closeListing(circle: PipelineCircle): void {
+    this.changeListingStatus(circle, 'Cancelled');
+  }
+
+  reopenListing(circle: PipelineCircle): void {
+    this.changeListingStatus(circle, 'Active');
+  }
+
+  private changeListingStatus(circle: PipelineCircle, status: MarketplaceListingStatus): void {
+    const listingId = circle.marketplaceListing?.listingId;
+    if (!listingId || this.actionInFlightId()) {
+      return;
+    }
+
+    this.actionInFlightId.set(listingId);
+    this.errorMessage.set(null);
+
+    this.marketplaceListingService.updateStatus(listingId, status).subscribe({
+      next: (updated) => {
+        this.circles.update((list) =>
+          list.map((c) =>
+            c.circleId === circle.circleId
+              ? {
+                ...c,
+                marketplaceListing: {
+                  ...c.marketplaceListing!,
+                  listingStatus: updated.listingStatus,
+                },
+              }
+              : c
+          )
+        );
+        this.actionInFlightId.set(null);
+      },
+      error: () => {
+        this.actionInFlightId.set(null);
+        this.errorMessage.set('Could not update this listing. Refresh and try again.');
+      },
     });
   }
 
