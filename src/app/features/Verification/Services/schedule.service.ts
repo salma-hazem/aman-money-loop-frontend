@@ -11,8 +11,8 @@ import {
 @Injectable({
   providedIn: 'root'
 })
-export class VerificationScheduleService {
-  private readonly apiUrl = `${environment.apiBase}/api/VerificationSchedule`;
+export class verificationScheduleService {
+  private readonly apiUrl = `${environment.apiBase}/api/verification/schedules`;
 
   constructor(private http: HttpClient) { }
 
@@ -22,5 +22,13 @@ export class VerificationScheduleService {
 
   getScheduleById(scheduleId: string): Observable<VerificationScheduleResponse> {
     return this.http.get<VerificationScheduleResponse>(`${this.apiUrl}/${scheduleId}`);
+  }
+
+  getSchedulesByApplication(applicationId: string): Observable<VerificationScheduleResponse[]> {
+    return this.http.get<VerificationScheduleResponse[]>(`${this.apiUrl}/application/${applicationId}`);
+  }
+
+  updateSchedule(scheduleId: string, dto: UpdateVerificationSchedule): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${scheduleId}`, dto);
   }
 }

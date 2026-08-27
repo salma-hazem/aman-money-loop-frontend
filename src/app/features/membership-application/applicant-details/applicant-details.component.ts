@@ -1,9 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
-
 import { MembershipApplicationService } from '../services/membership-application.service';
 import { VerificationService } from '../services/verification.service';
 import {
@@ -22,7 +21,7 @@ import {
   templateUrl: './applicant-details.component.html',
   styleUrl: './applicant-details.component.scss',
 })
-export class ApplicantDetailsComponent {
+export class ApplicantDetailsComponent implements OnInit {
   private fb = inject(FormBuilder);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -31,7 +30,7 @@ export class ApplicantDetailsComponent {
 
   applicationId = this.route.snapshot.paramMap.get('id') ?? '';
   openScheduleOnLoad =
-  this.route.snapshot.queryParamMap.get('schedule') === 'true';
+    this.route.snapshot.queryParamMap.get('schedule') === 'true';
   applicant = signal<MembershipApplicationDetail | null>(null);
   activeSchedule = signal<VerificationSchedule | null>(null);
   availableRounds = signal<VerificationRound[]>([]);
@@ -47,16 +46,42 @@ export class ApplicantDetailsComponent {
   isSubmittingSchedule = signal(false);
   scheduleError = signal<string | null>(null);
 
+  // Property to restrict calendar date picking to today or future
+  minDate = new Date().toISOString().split('T')[0];
+
   scheduleForm = this.fb.nonNullable.group({
     verificationRoundId: ['', Validators.required],
     date: ['', Validators.required],
     time: ['', Validators.required],
     locationLink: [''],
     videoLink: [''],
+    // NEW: Added the calendar invite flag, defaulting to true
+    sendCalendarInvite: [true]
   });
 
   constructor() {
     this.load();
+  }
+
+  ngOnInit(): void {
+    // Dynamically update validators based on the selected round format
+    this.scheduleForm.get('verificationRoundId')?.valueChanges.subscribe(() => {
+      const format = this.selectedRoundFormat();
+      const locationControl = this.scheduleForm.get('locationLink');
+      const videoControl = this.scheduleForm.get('videoLink');
+
+      locationControl?.clearValidators();
+      videoControl?.clearValidators();
+
+      if (format === 'InPerson') {
+        locationControl?.setValidators(Validators.required);
+      } else if (format === 'Video') {
+        videoControl?.setValidators(Validators.required);
+      }
+
+      locationControl?.updateValueAndValidity();
+      videoControl?.updateValueAndValidity();
+    });
   }
 
   private load(): void {
@@ -171,6 +196,7 @@ export class ApplicantDetailsComponent {
 
   closeSchedulePanel(): void {
     this.schedulePanelOpen.set(false);
+    this.scheduleForm.reset({ sendCalendarInvite: true }); // Reset form and keep default true
   }
 
   submitSchedule(): void {
@@ -193,10 +219,14 @@ export class ApplicantDetailsComponent {
         time: raw.time.length === 5 ? `${raw.time}:00` : raw.time,
         locationLink: raw.locationLink || null,
         videoLink: raw.videoLink || null,
+        // NEW: Pass the boolean flag to the API payload
+        sendCalendarInvite: raw.sendCalendarInvite
       })
       .subscribe({
         next: (schedule) => {
           this.activeSchedule.set(schedule);
+          // Manually update stage in UI so we don't have to reload
+          this.applicant.set({ ...applicant, stage: 'VerificationScheduled' });
           this.isSubmittingSchedule.set(false);
           this.schedulePanelOpen.set(false);
         },

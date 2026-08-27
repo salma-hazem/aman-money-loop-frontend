@@ -1,49 +1,25 @@
-<div class="checklist-container">
+<div class="checklist-container" *ngIf="!loadError; else errorBlock">
   <div class="header-row">
     <h2>{{ roundTitle }} - {{ memberName }}</h2>
     <span class="status-badge" [ngClass]="status ? status.toLowerCase() : ''">{{ status }}</span>
   </div>
 
-  <!-- Item 1: Document Authenticity -->
-  <div class="card-item">
-    <span class="item-title">Document authenticity</span>
+  <div class="card-item" *ngFor="let row of criteriaRows">
+    <span class="item-title">
+      {{ row.criterionName }}
+      <small>(weight {{ row.weight }})</small>
+    </span>
     <div class="rating-group">
       <label>Rating:</label>
       <button type="button" *ngFor="let score of [1,2,3,4,5]"
-              [class.active]="documentAuthenticityRating === score"
-              (click)="setRating('authenticity', score)">
+              [class.active]="row.rating === score"
+              (click)="setRating(row.verificationCriterionId, score)">
         {{ score }}
       </button>
     </div>
   </div>
 
-  <!-- Item 2: ID Match -->
-  <div class="card-item">
-    <span class="item-title">ID match</span>
-    <div class="rating-group">
-      <label>Rating:</label>
-      <button type="button" *ngFor="let score of [1,2,3,4,5]"
-              [class.active]="idMatchRating === score"
-              (click)="setRating('idMatch', score)">
-        {{ score }}
-      </button>
-    </div>
-  </div>
-
-  <!-- Item 3: Completeness & Comments -->
   <div class="card-item col-flex">
-    <div class="row-between">
-      <span class="item-title">Completeness</span>
-      <div class="rating-group">
-        <label>Rating:</label>
-        <button type="button" *ngFor="let score of [1,2,3,4,5]"
-                [class.active]="completenessRating === score"
-                (click)="setRating('completeness', score)">
-          {{ score }}
-        </button>
-      </div>
-    </div>
-
     <div class="comments-section">
       <label>Reviewer Comments</label>
       <textarea [(ngModel)]="reviewerComments" placeholder="Optional comments"></textarea>
@@ -53,10 +29,10 @@
   <!-- Footer Actions -->
   <div class="action-footer">
     <div class="score-box">
-    <strong>
-      Weighted Composite Score:
-      {{ calculatedCompositeScore !== null ? calculatedCompositeScore : '—' }}
-    </strong>    
+      <strong>
+        Weighted Composite Score:
+        {{ calculatedCompositeScore !== null ? calculatedCompositeScore : '—' }}
+      </strong>
       <small>Calculated after submission</small>
     </div>
 
@@ -65,3 +41,7 @@
     </button>
   </div>
 </div>
+
+<ng-template #errorBlock>
+  <p class="error-text">{{ loadError }}</p>
+</ng-template>

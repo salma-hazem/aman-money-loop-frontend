@@ -11,12 +11,16 @@ import {
   providedIn: 'root'
 })
 export class VerificationRoundService {
-  private readonly apiUrl = `${environment.apiBase}/api/VerificationRound`;
+  private readonly apiUrl = `${environment.apiBase}/api/verification/rounds`;
 
   constructor(private http: HttpClient) { }
 
-  getRoundsBySchedule(scheduleId: string): Observable<VerificationRoundResponse[]> {
-    return this.http.get<VerificationRoundResponse[]>(`${this.apiUrl}/schedule/${scheduleId}`);
+  getRoundById(roundId: string): Observable<VerificationRoundResponse> {
+    return this.http.get<VerificationRoundResponse>(`${this.apiUrl}/${roundId}`);
+  }
+
+  getRoundsByCircle(circleId: string): Observable<VerificationRoundResponse[]> {
+    return this.http.get<VerificationRoundResponse[]>(`${this.apiUrl}/circle/${circleId}`);
   }
 
   createRound(dto: CreateVerificationRound): Observable<VerificationRoundResponse> {

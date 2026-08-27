@@ -70,9 +70,11 @@
       </button>
       }
 
+      <!-- MODIFIED: Disabled if stage is NOT Shortlisted, or if a schedule exists -->
       <button class="secondary-button"
-              [disabled]="!!activeSchedule()"
-              (click)="openSchedulePanel()">
+              [disabled]="!!activeSchedule() || applicant.stage !== 'Shortlisted'"
+              (click)="openSchedulePanel()"
+              [title]="applicant.stage !== 'Shortlisted' ? 'Applicant must be shortlisted to schedule verification.' : ''">
         Schedule Verification
       </button>
 
@@ -144,7 +146,8 @@
         <div class="field-row">
           <div class="field">
             <label for="date">Date</label>
-            <input id="date" type="date" formControlName="date" />
+            <!-- MODIFIED: Added min="minDate" to prevent past dates -->
+            <input id="date" type="date" formControlName="date" [min]="minDate" />
           </div>
           <div class="field">
             <label for="time">Time</label>
@@ -165,6 +168,12 @@
           <input id="videoLink" type="text" formControlName="videoLink" placeholder="Meeting link" />
         </div>
         }
+
+        <!-- NEW: Checkbox for sending calendar invite -->
+        <div class="field checkbox-field" style="margin-top: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+          <input id="sendCalendarInvite" type="checkbox" formControlName="sendCalendarInvite" />
+          <label for="sendCalendarInvite" style="margin-bottom: 0;">Send Calendar Invite to Applicant</label>
+        </div>
 
         @if (scheduleError()) {
         <div class="error-message">{{ scheduleError() }}</div>
@@ -189,5 +198,4 @@
 
   }
   }
-
 </div>
