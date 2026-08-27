@@ -291,7 +291,7 @@
   .value {
     color: #173431;
     font-weight: 600;
-    text-align: right;
+    text-align: end;
   }
 }
 
@@ -329,7 +329,7 @@
     gap: 0.35rem;
 
     .value {
-      text-align: left;
+      text-align: start;
     }
   }
 }

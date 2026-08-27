@@ -4,12 +4,12 @@
 
   th, td {
     padding: .75rem;
-    text-align: left;
+    text-align: start;
     border-bottom: 1px solid var(--p-surface-200);
   }
 }
 
 .required {
   color: var(--p-red-500);
-  margin-left: .25rem;
+  margin-inline-start: .25rem;
 }

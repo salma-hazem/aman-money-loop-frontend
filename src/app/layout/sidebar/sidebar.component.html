@@ -25,7 +25,7 @@
             [routerLink]="item.route"
             routerLinkActive="active"
             [pTooltip]="collapsed() ? item.label : ''"
-            tooltipPosition="right"
+            [tooltipPosition]="language.isArabic() ? 'left' : 'right'"
           >
             <i [class]="item.icon"></i>
             @if (!collapsed()) {

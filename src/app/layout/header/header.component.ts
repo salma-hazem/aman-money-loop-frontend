@@ -7,11 +7,13 @@ import { MenuModule } from 'primeng/menu';
 import { Role } from '../../core/models/role.model';
 import { AuthService } from '../../core/services/auth.service';
 import { AdminCircleRequestService } from '../../features/circle-request-management/services/admin-circle-request.service';
+import { LanguageService } from '../../core/i18n/language.service';
+import { LanguageSwitcherComponent } from '../../shared/language-switcher/language-switcher.component';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [MenuModule, AvatarModule, BadgeModule],
+  imports: [MenuModule, AvatarModule, BadgeModule, LanguageSwitcherComponent],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
 })
@@ -19,6 +21,7 @@ export class HeaderComponent {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly approvals = inject(AdminCircleRequestService);
+  readonly language = inject(LanguageService);
 
   readonly toggleSidebar = output<void>();
   readonly currentUser = this.auth.currentUser;
@@ -31,12 +34,12 @@ export class HeaderComponent {
     return name.split(' ').slice(0, 2).map((part) => part[0]?.toUpperCase()).join('');
   });
 
-  readonly userMenuItems: MenuItem[] = [
-    { label: 'My Profile', icon: 'pi pi-user', routerLink: '/console/profile' },
-    { label: 'Change Password', icon: 'pi pi-key', routerLink: '/console/change-password' },
+  readonly userMenuItems = computed<MenuItem[]>(() => [
+    { label: this.language.translate('My Profile'), icon: 'pi pi-user', routerLink: '/console/profile' },
+    { label: this.language.translate('Change Password'), icon: 'pi pi-key', routerLink: '/console/change-password' },
     { separator: true },
-    { label: 'Sign Out', icon: 'pi pi-sign-out', command: () => this.auth.logout() },
-  ];
+    { label: this.language.translate('Sign Out'), icon: 'pi pi-sign-out', command: () => this.auth.logout() },
+  ]);
 
   constructor() {
     if (this.canViewApprovals) {

@@ -56,7 +56,7 @@
 }
 
 .apply-header {
-  text-align: left;
+  text-align: start;
   padding-bottom: 24px;
   border-bottom: 1px solid #e5e7eb;
   margin-bottom: 24px;
@@ -76,7 +76,7 @@
 .apply-body {
   display: flex;
   gap: 32px;
-  text-align: left;
+  text-align: start;
 }
 
 .apply-form {
@@ -207,7 +207,7 @@
   color: #111827;
   font-weight: 600;
   font-size: 13px;
-  text-align: right;
+  text-align: end;
 }
 
 @media (max-width: 700px) {

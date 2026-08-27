@@ -25,6 +25,23 @@ body {
   color: var(--p-surface-900);
 }
 
+html[dir='rtl'] body {
+  direction: rtl;
+  text-align: start;
+}
+
+/* Keep machine-oriented values readable inside Arabic pages. */
+html[dir='rtl'] input[type='email'],
+html[dir='rtl'] input[type='tel'],
+html[dir='rtl'] input[inputmode='numeric'],
+html[dir='rtl'] input[type='date'],
+html[dir='rtl'] input[type='datetime-local'],
+html[dir='rtl'] input[type='time'],
+html[dir='rtl'] .ltr-value {
+  direction: ltr;
+  text-align: start;
+}
+
 /* ── Scrollbars — thin, brand-tinted, same feel as the old intranet ── */
 ::-webkit-scrollbar {
   width: 6px;

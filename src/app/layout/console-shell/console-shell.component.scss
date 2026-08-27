@@ -36,6 +36,7 @@
 
   :host-context([dir='rtl']) ::ng-deep app-sidebar .sidebar {
     transform: translateX(100%);
+    box-shadow: -12px 0 32px rgba(6, 35, 33, 0.16);
   }
 
   .mobile-sidebar-open ::ng-deep app-sidebar .sidebar {

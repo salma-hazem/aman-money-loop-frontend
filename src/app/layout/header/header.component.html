@@ -6,6 +6,8 @@
   </div>
 
   <div class="topbar-right">
+    <app-language-switcher />
+
     <button class="icon-btn" (click)="toggleDarkMode()"
       [attr.aria-label]="isDark() ? 'Switch to light mode' : 'Switch to dark mode'">
       <i [class]="isDark() ? 'pi pi-sun' : 'pi pi-moon'"></i>
@@ -29,6 +31,6 @@
       </div>
       <i class="pi pi-chevron-down"></i>
     </button>
-    <p-menu #userMenu [model]="userMenuItems" [popup]="true" />
+    <p-menu #userMenu [model]="userMenuItems()" [popup]="true" />
   </div>
 </header>

@@ -5,6 +5,7 @@ import {
 } from '@angular/router';
 
 import { AuthService } from '../../core/services/auth.service';
+import { LanguageSwitcherComponent } from '../../shared/language-switcher/language-switcher.component';
 
 @Component({
   selector: 'app-public-shell',
@@ -12,6 +13,7 @@ import { AuthService } from '../../core/services/auth.service';
   imports: [
     RouterOutlet,
     RouterLink,
+    LanguageSwitcherComponent,
   ],
   templateUrl: './public-shell.component.html',
   styleUrl: './public-shell.component.scss',
