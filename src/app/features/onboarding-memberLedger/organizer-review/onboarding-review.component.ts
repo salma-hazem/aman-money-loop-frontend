@@ -93,4 +93,23 @@ export class OnboardingReviewComponent implements OnInit {
       error: () => {},
     });
   }
+
+  viewDocument(doc: DocumentItem): void {
+  const previewWindow = window.open('', '_blank');
+
+  this.documentService.getFile(doc.documentId).subscribe({
+    next: (blob) => {
+      const url = URL.createObjectURL(blob);
+
+      if (previewWindow) previewWindow.location.href = url;
+      else window.open(url, '_blank');
+
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+    },
+    error: () => {
+      previewWindow?.close();
+      this.error.set('Failed to open document.');
+    },
+  });
+}
 }

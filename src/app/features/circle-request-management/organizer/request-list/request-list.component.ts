@@ -77,6 +77,7 @@ export class RequestListComponent {
       Rejected: 'Rejected',
       Published: 'Published',
       Cancelled: 'Cancelled',
+      Fulfilled: 'Fulfilled',
     };
     return labels[status];
   }

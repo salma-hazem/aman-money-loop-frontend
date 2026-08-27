@@ -24,6 +24,7 @@
             <td>{{ doc.uploadedAt | date: 'dd MMM yyyy' }}</td>
             <td><p-tag value="Pending" severity="warn" /></td>
             <td>
+              <button pButton label="View PDF" icon="pi pi-eye" severity="secondary" size="small" (click)="viewDocument(doc)"></button>
               <button pButton label="Verify" severity="success" size="small" (click)="approve(doc)"></button>
               <button pButton label="Reject" severity="danger" size="small" (click)="openReject(doc)"></button>
             </td>

@@ -26,5 +26,12 @@ export class DocumentService {
 
   review(request: DocumentReviewRequest): Observable<DocumentItem> {
     return this.http.patch<DocumentItem>(`${this.base}/review`, request);
+  
   }
+
+  getFile(documentId: string): Observable<Blob> {
+  return this.http.get(`${this.base}/${documentId}/file`, {
+    responseType: 'blob',
+  });
+}
 }
