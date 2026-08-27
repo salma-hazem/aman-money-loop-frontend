@@ -38,3 +38,10 @@ export interface VerificationConsolidatedResult {
   submittedAt: string;
   detailedRatings: VerificationCriterionRatingResponse[];
 }
+
+export interface ApplicationVerificationSummary {
+  applicationId: string;
+  totalRoundsCompleted: number;
+  overallAverageScore: number;
+  roundResults: VerificationConsolidatedResult[];
+}

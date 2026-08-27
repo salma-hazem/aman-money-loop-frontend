@@ -70,7 +70,6 @@
       </button>
       }
 
-      <!-- MODIFIED: Disabled if stage is NOT Shortlisted, or if a schedule exists -->
       <button class="secondary-button"
               [disabled]="!!activeSchedule() || applicant.stage !== 'Shortlisted'"
               (click)="openSchedulePanel()"
@@ -78,8 +77,10 @@
         Schedule Verification
       </button>
 
-      <button class="secondary-button" disabled title="Not available yet">
-        View History
+      <!-- ENABLED: View History toggles evaluation history summary -->
+      <button class="secondary-button"
+              (click)="toggleHistoryPanel()">
+        {{ historyPanelOpen() ? 'Hide History' : 'View History' }}
       </button>
 
     </div>
@@ -110,6 +111,76 @@
         <span class="label">Video Link</span>
         <span class="value">{{ schedule.videoLink }}</span>
       </div>
+      }
+    </div>
+    }
+
+    <!-- CONSOLIDATED HISTORY PANEL -->
+    @if (historyPanelOpen()) {
+    <div class="schedule-summary history-panel" style="margin-top: 1.5rem;">
+      <h2>Evaluation History</h2>
+
+      @if (isLoadingHistory()) {
+      <div class="state-message">Loading history...</div>
+      }
+
+      @else if (historyError()) {
+      <div class="state-message error">{{ historyError() }}</div>
+      }
+
+      @else if (historySummary(); as summary) {
+      <div class="info-grid">
+        <div class="info-row">
+          <span class="label">Total Rounds Completed</span>
+          <span class="value">{{ summary.totalRoundsCompleted }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Overall Average Score</span>
+          <span class="value"><strong>{{ summary.overallAverageScore }} / 5</strong></span>
+        </div>
+      </div>
+
+      <hr style="margin: 1rem 0; border: none; border-top: 1px solid #e0e0e0;" />
+
+      <h3>Completed Round Details</h3>
+      @for (round of summary.roundResults; track round.verificationScheduleId) {
+      <div class="round-card" style="margin-bottom: 1rem; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 6px;">
+        <div class="info-row">
+          <span class="label">Round Name</span>
+          <span class="value"><strong>{{ round.roundName }}</strong></span>
+        </div>
+        <div class="info-row">
+          <span class="label">Composite Score</span>
+          <span class="value">{{ round.compositeScore }} / 5</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Submitted At</span>
+          <span class="value">{{ round.submittedAt | date: 'dd MMM yyyy, HH:mm' }}</span>
+        </div>
+        @if (round.overallComments) {
+        <div class="info-row">
+          <span class="label">Overall Comments</span>
+          <span class="value">{{ round.overallComments }}</span>
+        </div>
+        }
+
+        @if (round.detailedRatings && round.detailedRatings.length > 0) {
+        <div style="margin-top: 0.5rem;">
+          <small><strong>Criterion Ratings:</strong></small>
+          <ul style="margin: 0.25rem 0 0 1.25rem; padding: 0;">
+            @for (item of round.detailedRatings; track item.verificationCriterionRatingId) {
+            <li>
+              Score: <strong>{{ item.rating }}/5</strong>
+              @if (item.comments) {
+              - <em>{{ item.comments }}</em>
+              }
+            </li>
+            }
+          </ul>
+        </div>
+        }
+      </div>
+      }
       }
     </div>
     }
@@ -146,7 +217,6 @@
         <div class="field-row">
           <div class="field">
             <label for="date">Date</label>
-            <!-- MODIFIED: Added min="minDate" to prevent past dates -->
             <input id="date" type="date" formControlName="date" [min]="minDate" />
           </div>
           <div class="field">
@@ -169,7 +239,6 @@
         </div>
         }
 
-        <!-- NEW: Checkbox for sending calendar invite -->
         <div class="field checkbox-field" style="margin-top: 1rem; display: flex; align-items: center; gap: 0.5rem;">
           <input id="sendCalendarInvite" type="checkbox" formControlName="sendCalendarInvite" />
           <label for="sendCalendarInvite" style="margin-bottom: 0;">Send Calendar Invite to Applicant</label>

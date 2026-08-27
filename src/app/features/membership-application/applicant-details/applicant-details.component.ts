@@ -5,6 +5,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { MembershipApplicationService } from '../services/membership-application.service';
 import { VerificationService } from '../services/verification.service';
+import { VerificationChecklistService } from '../../Verification/Services/checklist.service';
+import { ApplicationVerificationSummary } from '../../Verification/Models/checklist.model';
 import {
   MembershipApplicationDetail,
   normalizeStage,
@@ -27,6 +29,7 @@ export class ApplicantDetailsComponent implements OnInit {
   private router = inject(Router);
   private membershipApplicationService = inject(MembershipApplicationService);
   private verificationService = inject(VerificationService);
+  private checklistService = inject(VerificationChecklistService);
 
   applicationId = this.route.snapshot.paramMap.get('id') ?? '';
   openScheduleOnLoad =
@@ -34,6 +37,7 @@ export class ApplicantDetailsComponent implements OnInit {
   applicant = signal<MembershipApplicationDetail | null>(null);
   activeSchedule = signal<VerificationSchedule | null>(null);
   availableRounds = signal<VerificationRound[]>([]);
+  historySummary = signal<ApplicationVerificationSummary | null>(null);
 
   isLoading = signal(true);
   errorMessage = signal<string | null>(null);
@@ -46,6 +50,9 @@ export class ApplicantDetailsComponent implements OnInit {
   isSubmittingSchedule = signal(false);
   scheduleError = signal<string | null>(null);
 
+  isLoadingHistory = signal(false);
+  historyError = signal<string | null>(null);
+
   // Property to restrict calendar date picking to today or future
   minDate = new Date().toISOString().split('T')[0];
 
@@ -55,7 +62,6 @@ export class ApplicantDetailsComponent implements OnInit {
     time: ['', Validators.required],
     locationLink: [''],
     videoLink: [''],
-    // NEW: Added the calendar invite flag, defaulting to true
     sendCalendarInvite: [true]
   });
 
@@ -116,6 +122,9 @@ export class ApplicantDetailsComponent implements OnInit {
 
         this.isLoading.set(false);
 
+        // Fetch verification history across all rounds
+        this.loadHistory();
+
         if (
           this.openScheduleOnLoad &&
           normalizedStage === 'Shortlisted' &&
@@ -124,6 +133,28 @@ export class ApplicantDetailsComponent implements OnInit {
           this.openSchedulePanel();
         }
       },
+      error: () => {
+        this.isLoading.set(false);
+        this.errorMessage.set('Could not load applicant details.');
+      }
+    });
+  }
+
+  loadHistory(): void {
+    if (!this.applicationId) return;
+
+    this.isLoadingHistory.set(true);
+    this.historyError.set(null);
+
+    this.checklistService.getApplicationConsolidatedSummary(this.applicationId).subscribe({
+      next: (summary) => {
+        this.historySummary.set(summary);
+        this.isLoadingHistory.set(false);
+      },
+      error: () => {
+        this.isLoadingHistory.set(false);
+        this.historyError.set('No evaluation history found or failed to load history.');
+      }
     });
   }
 
@@ -196,7 +227,7 @@ export class ApplicantDetailsComponent implements OnInit {
 
   closeSchedulePanel(): void {
     this.schedulePanelOpen.set(false);
-    this.scheduleForm.reset({ sendCalendarInvite: true }); // Reset form and keep default true
+    this.scheduleForm.reset({ sendCalendarInvite: true });
   }
 
   submitSchedule(): void {
@@ -219,13 +250,11 @@ export class ApplicantDetailsComponent implements OnInit {
         time: raw.time.length === 5 ? `${raw.time}:00` : raw.time,
         locationLink: raw.locationLink || null,
         videoLink: raw.videoLink || null,
-        // NEW: Pass the boolean flag to the API payload
         sendCalendarInvite: raw.sendCalendarInvite
       })
       .subscribe({
         next: (schedule) => {
           this.activeSchedule.set(schedule);
-          // Manually update stage in UI so we don't have to reload
           this.applicant.set({ ...applicant, stage: 'VerificationScheduled' });
           this.isSubmittingSchedule.set(false);
           this.schedulePanelOpen.set(false);
