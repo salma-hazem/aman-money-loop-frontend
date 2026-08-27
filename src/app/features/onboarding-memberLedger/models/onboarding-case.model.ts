@@ -5,6 +5,7 @@ export enum OnboardingCaseStatus {
   InProgress = 'InProgress',
   Approved = 'Approved',
   Rejected = 'Rejected',
+  Activated = 'Activated'
 }
 
 export interface OnboardingCase {

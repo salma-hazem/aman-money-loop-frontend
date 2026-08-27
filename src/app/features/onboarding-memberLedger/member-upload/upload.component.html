@@ -36,8 +36,8 @@
                 [auto]="true"
                 customUpload="true"
                 (uploadHandler)="onUpload($event, req.documentRequirementId)"
-                accept=".pdf,.jpg,.jpeg,.png"
-                [maxFileSize]="5000000"
+                accept=".pdf,application/pdf"
+                [maxFileSize]="10485760"
               />
             </td>
           </tr>

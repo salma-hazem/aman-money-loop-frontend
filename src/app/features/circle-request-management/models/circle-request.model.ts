@@ -7,7 +7,8 @@ export type CircleRequestStatus =
   | 'Approved'
   | 'Rejected'
   | 'Published'
-  | 'Cancelled';
+  | 'Cancelled'
+  | 'Fulfilled';
 
 export interface CircleRequestSummary {
   requestId: string;
