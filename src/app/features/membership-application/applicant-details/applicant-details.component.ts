@@ -53,6 +53,9 @@ export class ApplicantDetailsComponent implements OnInit {
   isLoadingHistory = signal(false);
   historyError = signal<string | null>(null);
 
+  // Added history panel visibility signal state
+  historyPanelOpen = signal(false);
+
   // Property to restrict calendar date picking to today or future
   minDate = new Date().toISOString().split('T')[0];
 
@@ -88,6 +91,10 @@ export class ApplicantDetailsComponent implements OnInit {
       locationControl?.updateValueAndValidity();
       videoControl?.updateValueAndValidity();
     });
+  }
+
+  toggleHistoryPanel(): void {
+    this.historyPanelOpen.update(open => !open);
   }
 
   private load(): void {

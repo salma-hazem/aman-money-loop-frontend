@@ -128,7 +128,8 @@
       <div class="state-message error">{{ historyError() }}</div>
       }
 
-      @else if (historySummary(); as summary) {
+      @else {
+      @if (historySummary(); as summary) {
       <div class="info-grid">
         <div class="info-row">
           <span class="label">Total Rounds Completed</span>
@@ -180,6 +181,7 @@
         </div>
         }
       </div>
+      }
       }
       }
     </div>
@@ -267,4 +269,5 @@
 
   }
   }
+
 </div>
