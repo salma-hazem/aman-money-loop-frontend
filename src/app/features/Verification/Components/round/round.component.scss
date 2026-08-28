@@ -117,8 +117,8 @@
 
     &:focus {
       outline: none;
-      border-color: #087f73;
-      box-shadow: 0 0 0 2px rgba(8, 127, 115, 0.1);
+      border-color: var(--ath-brand);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--ath-brand), transparent 90%);
     }
   }
 }
@@ -190,7 +190,7 @@
 }
 
 .btn-primary {
-  background: #087f73;
+  background: var(--ath-brand);
   color: white;
   border: none;
   padding: 10px 20px;
@@ -200,7 +200,7 @@
   transition: background 0.2s;
 
   &:hover:not(:disabled) {
-    background: #066057;
+    background: var(--ath-brand-hover);
   }
 
   &:disabled {

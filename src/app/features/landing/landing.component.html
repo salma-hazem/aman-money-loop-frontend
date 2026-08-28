@@ -1,142 +1,78 @@
-<div class="landing-page">
-
+<div class="landing-page" [class.arabic-landing]="language.isArabic()">
   <main>
-
-    <section class="hero">
-      <div class="hero-content">
-
-        <span class="eyebrow">
-          DIGITAL MONEY CIRCLES
-        </span>
-
-        <h1>
-          Save together.
-          <span>Grow together.</span>
-        </h1>
-
-        <p class="hero-description">
-          Aman Money Loop provides a simple and transparent
-          way to join and manage digital money circles.
-        </p>
-
-        <div class="hero-actions">
-          <a routerLink="/marketplace" class="primary-button hero-button">
-            Browse Marketplace
-          </a>
-          <a routerLink="/register" class="secondary-button hero-button">
-            Get Started
-          </a>
-          <a routerLink="/login" class="secondary-button hero-button">
-            Sign In
-          </a>
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-orb hero-orb-one" aria-hidden="true"></div>
+      <div class="hero-orb hero-orb-two" aria-hidden="true"></div>
+      <div class="hero-inner">
+        <div class="hero-content">
+          <span class="eyebrow"><i class="pi pi-sparkles" aria-hidden="true"></i>{{ copy.eyebrow }}</span>
+          <h1 id="hero-title">{{ copy.titleStart }} <span>{{ copy.titleAccent }}</span></h1>
+          <p class="hero-description">{{ copy.description }}</p>
+          <div class="hero-actions">
+            <a routerLink="/marketplace" class="button button-primary">{{ copy.browse }} <i class="pi pi-arrow-right" aria-hidden="true"></i></a>
+            <a href="#how-it-works" class="button button-secondary">{{ copy.account }}</a>
+          </div>
+          <div class="guest-row">
+            <span><i class="pi pi-check-circle" aria-hidden="true"></i>{{ copy.guestNote }}</span>
+            <a routerLink="/login">{{ copy.signIn }}</a>
+          </div>
         </div>
-
-      </div>
-
-      <div class="hero-visual">
-        <div class="logo-circle">
-          <img
-            src="/images/aman-money-loop-logo.png"
-            alt="Aman Money Loop"
-          />
+        <div class="hero-visual" aria-label="Aman Money Loop membership journey">
+          <div class="visual-topline">
+            <div class="mini-brand"><img src="/images/MoneyLoop_Logo.png" alt="" />{{ copy.visualLabel }}</div>
+            <span class="live-dot"><i></i>{{ copy.progress }}</span>
+          </div>
+          <h2>{{ copy.visualTitle }}</h2>
+          <div class="journey-list">
+            <article class="journey-card active"><span class="journey-icon"><i class="pi pi-search"></i></span><div><h3>{{ copy.listing }}</h3><p>{{ copy.listingMeta }}</p></div><span class="journey-check"><i class="pi pi-check"></i></span></article>
+            <article class="journey-card"><span class="journey-icon coral"><i class="pi pi-send"></i></span><div><h3>{{ copy.apply }}</h3><p>{{ copy.applyMeta }}</p></div><span class="journey-check"><i class="pi pi-check"></i></span></article>
+            <article class="journey-card"><span class="journey-icon violet"><i class="pi pi-shield"></i></span><div><h3>{{ copy.verified }}</h3><p>{{ copy.verifiedMeta }}</p></div><span class="journey-check pending"><i class="pi pi-arrow-right"></i></span></article>
+          </div>
+          <div class="progress-card">
+            <div class="progress-labels"><span>{{ copy.stepOne }}</span><span>{{ copy.stepTwo }}</span><span>{{ copy.stepThree }}</span></div>
+            <div class="progress-track"><span></span><i class="point one"></i><i class="point two"></i><i class="point three"></i></div>
+          </div>
         </div>
       </div>
     </section>
-
-    <section class="how-it-works">
-
-      <div class="section-heading">
-        <span class="eyebrow">HOW IT WORKS</span>
-
-        <h2>
-          Your journey with Aman Money Loop
-        </h2>
-
-        <p>
-          From creating your account to becoming an active
-          member of a money circle.
-        </p>
+    <section class="value-section" aria-labelledby="value-title">
+      <div class="section-heading"><span class="eyebrow">{{ copy.valueEyebrow }}</span><h2 id="value-title">{{ copy.valueTitle }}</h2><p>{{ copy.valueDescription }}</p></div>
+      <div class="benefits-grid">
+        <article class="benefit-card"><span class="benefit-icon"><i class="pi pi-eye"></i></span><h3>{{ copy.benefitOneTitle }}</h3><p>{{ copy.benefitOneText }}</p></article>
+        <article class="benefit-card featured"><span class="benefit-icon"><i class="pi pi-sliders-h"></i></span><h3>{{ copy.benefitTwoTitle }}</h3><p>{{ copy.benefitTwoText }}</p></article>
+        <article class="benefit-card"><span class="benefit-icon"><i class="pi pi-directions"></i></span><h3>{{ copy.benefitThreeTitle }}</h3><p>{{ copy.benefitThreeText }}</p></article>
       </div>
-
+    </section>
+    <section id="how-it-works" class="how-section" aria-labelledby="how-title">
+      <div class="section-heading left-heading"><span class="eyebrow">{{ copy.howEyebrow }}</span><h2 id="how-title">{{ copy.howTitle }}</h2><p>{{ copy.howDescription }}</p></div>
       <div class="steps-grid">
-
-        <div class="step-card">
-          <span class="step-number">1</span>
-
-          <h3>Create your account</h3>
-
-          <p>
-            Register your details and verify your email
-            securely using OTP.
-          </p>
-        </div>
-
-        <div class="step-card">
-          <span class="step-number">2</span>
-
-          <h3>Join a circle</h3>
-
-          <p>
-            Find a suitable savings circle and submit your
-            membership application.
-          </p>
-        </div>
-
-        <div class="step-card">
-          <span class="step-number">3</span>
-
-          <h3>Complete verification</h3>
-
-          <p>
-            Complete the required verification process
-            before receiving your membership agreement.
-          </p>
-        </div>
-
-        <div class="step-card">
-          <span class="step-number">4</span>
-
-          <h3>Start your money loop</h3>
-
-          <p>
-            Accept your agreement, complete onboarding,
-            and begin participating in your circle.
-          </p>
-        </div>
-
+        <article class="step-card"><span class="step-number">01</span><i class="pi pi-search step-icon"></i><h3>{{ copy.howOneTitle }}</h3><p>{{ copy.howOneText }}</p></article>
+        <article class="step-card"><span class="step-number">02</span><i class="pi pi-file-edit step-icon"></i><h3>{{ copy.howTwoTitle }}</h3><p>{{ copy.howTwoText }}</p></article>
+        <article class="step-card"><span class="step-number">03</span><i class="pi pi-user-edit step-icon"></i><h3>{{ copy.howThreeTitle }}</h3><p>{{ copy.howThreeText }}</p></article>
+        <article class="step-card"><span class="step-number">04</span><i class="pi pi-verified step-icon"></i><h3>{{ copy.howFourTitle }}</h3><p>{{ copy.howFourText }}</p></article>
       </div>
-
     </section>
-
+    <section class="guest-section">
+      <div class="guest-illustration" aria-hidden="true"><div class="guest-logo"><img src="/images/MoneyLoop_Logo.png" alt="" /></div><span class="coin coin-one">1</span><span class="coin coin-two">2</span><span class="coin coin-three">3</span></div>
+      <div class="guest-content"><span class="eyebrow">{{ copy.guestEyebrow }}</span><h2>{{ copy.guestTitle }}</h2><p>{{ copy.guestText }}</p><a routerLink="/marketplace" class="text-link">{{ copy.guestAction }} <i class="pi pi-arrow-right"></i></a></div>
+    </section>
     <section class="cta-section">
-      <div>
-        <h2>Ready to get started?</h2>
-
-        <p>
-          Create your Aman Money Loop account today.
-        </p>
-      </div>
-
-      <a routerLink="/register" class="primary-button">
-        Create Account
-      </a>
+      <div><span class="eyebrow">{{ copy.ctaEyebrow }}</span><h2>{{ copy.ctaTitle }}</h2><p>{{ copy.ctaText }}</p></div>
+      <div class="cta-actions"><a routerLink="/marketplace" class="button button-light">{{ copy.ctaPrimary }}</a><a routerLink="/register" class="button button-outline-light">{{ copy.ctaSecondary }}</a></div>
     </section>
-
   </main>
-
   <footer class="landing-footer">
     <div class="footer-brand">
-      <img
-        src="/images/aman-money-loop-logo.png"
-        alt="Aman Money Loop"
-      />
-
-      <span>Aman Money Loop</span>
+      <div class="footer-lockup">
+        <img
+          [src]="language.isArabic()
+            ? '/images/Moneyloop_Arabic_logo_final.png'
+            : '/images/Moneyloop_English_logo_final_v2.png'"
+          [alt]="language.isArabic() ? 'أمان موني لوب' : 'Aman MoneyLoop'"
+        />
+      </div>
+      <p>{{ copy.footerText }}</p>
     </div>
-
-    <span>
-      © 2026 Aman Money Loop
-    </span>
+    <div class="footer-meta"><span><i class="pi pi-eye"></i>{{ copy.privacy }}</span><span><i class="pi pi-globe"></i>{{ copy.guestAccess }}</span><span>{{ copy.copyright }}</span></div>
   </footer>
-
 </div>

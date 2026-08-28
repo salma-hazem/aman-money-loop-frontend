@@ -4,6 +4,13 @@
 :root {
   --ath-font: 'Segoe UI', 'Cairo', Tahoma, Arial, sans-serif;
   --ath-accent: #f26522;
+  /* Aman Talent Hunt is the source of truth for the company palette. */
+  --ath-brand: var(--p-primary-500);
+  --ath-brand-hover: var(--p-primary-600);
+  --ath-brand-active: var(--p-primary-700);
+  --ath-brand-text: var(--p-primary-700);
+  --ath-brand-soft: var(--p-primary-50);
+  --ath-brand-highlight: var(--p-primary-100);
 
   /* Layout constants shared by the console shell, header and sidebar components. */
   --ath-sidebar-width: 264px;
@@ -23,6 +30,16 @@ body {
   font-family: var(--ath-font);
   background: var(--p-surface-50);
   color: var(--p-surface-900);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 html[dir='rtl'] body {
@@ -92,3 +109,16 @@ p {
   font-size: 1.375rem;
   margin: 0;
 }
+
+/* Dashboard dark-theme colors live globally to keep the lazy component stylesheet
+   below Angular's per-component production budget. */
+html[data-theme='dark'] app-dashboard .welcome-section {
+  background: radial-gradient(circle at 88% 20%, color-mix(in srgb, var(--ath-brand), transparent 80%), transparent 32%), linear-gradient(135deg, #172321 0%, #1c302d 100%);
+}
+html[data-theme='dark'] app-dashboard :is(.welcome-copy h1, .welcome-name, .metric-value, .section-heading h2, .next-step-panel h2, .large-stat, .empty-state h3) { color: #eef8f6; }
+html[data-theme='dark'] app-dashboard :is(.welcome-copy p, .metric-label, .metric-detail, .next-step-panel p, .updated-at, .updated-copy) { color: #a9bdb9; }
+html[data-theme='dark'] app-dashboard :is(.refresh-button, .secondary-button, .step-marker) { border-color: #3c5550; color: #c9ded9; background: #1e2e2b; }
+html[data-theme='dark'] app-dashboard :is(.action-card, .circle-card) { border-color: #324743; color: #d8e9e5; background: #1b2927; }
+html[data-theme='dark'] app-dashboard .status-summary > div { background: #1d2c29; }
+html[data-theme='dark'] app-dashboard :is(th, td) { border-color: #30423f; color: #c8d9d5; }
+html[data-theme='dark'] app-dashboard .skeleton { background: linear-gradient(90deg, #22332f 25%, #2b403b 50%, #22332f 75%); background-size: 200% 100%; }

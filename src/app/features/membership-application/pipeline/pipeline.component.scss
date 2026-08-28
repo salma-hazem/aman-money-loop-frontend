@@ -33,7 +33,7 @@
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.12em;
-  color: #087f73;
+  color: var(--ath-brand-text);
 }
 
 .pipeline-board-header {
@@ -84,7 +84,7 @@
 
   &:hover {
     transform: translateY(-2px);
-    border-color: #b7dcd7;
+    border-color: var(--p-primary-200);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
   }
 }
@@ -216,7 +216,7 @@
   padding: 11px 16px;
   border: none;
   border-radius: 8px;
-  background: #087f73;
+  background: var(--ath-brand);
   color: white;
   font-size: 13px;
   font-weight: 700;
@@ -224,7 +224,7 @@
   transition: background 0.15s ease, transform 0.1s ease;
 
   &:hover {
-    background: #066b61;
+    background: var(--ath-brand-hover);
   }
 
   &:active {
@@ -268,7 +268,7 @@
   justify-content: center;
   border-radius: 50%;
   background: #ecfdf5;
-  color: #087f73;
+  color: var(--ath-brand-text);
   font-size: 22px;
 }
 
@@ -392,7 +392,7 @@
   cursor: pointer;
 
   &:hover {
-    color: #087f73;
+    color: var(--ath-brand-text);
     text-decoration: underline;
   }
 }
@@ -437,11 +437,11 @@
 
 .shortlist-button {
   border: none;
-  background: #087f73;
+  background: var(--ath-brand);
   color: white;
 
   &:hover:not(:disabled) {
-    background: #066b61;
+    background: var(--ath-brand-hover);
   }
 }
 
@@ -467,11 +467,11 @@
 
 .generate-agreement-button {
   border: none;
-  background: #087f73;
+  background: var(--ath-brand);
   color: white;
 
   &:hover:not(:disabled) {
-    background: #066b61;
+    background: var(--ath-brand-hover);
   }
 }
 

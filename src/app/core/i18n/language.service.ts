@@ -8,6 +8,15 @@ export type AppLanguage = 'en' | 'ar';
 
 const STORAGE_KEY = 'aml_language';
 const TRANSLATABLE_ATTRIBUTES = ['placeholder', 'title', 'aria-label', 'alt'] as const;
+const DYNAMIC_TRANSLATIONS = Object.entries(ARABIC_TRANSLATIONS)
+  .filter(([source]) => source.includes('{value}'))
+  .map(([source, translation]) => ({
+    pattern: new RegExp(`^${source
+      .split('{value}')
+      .map((part) => part.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+      .join('(.*?)')}$`, 'i'),
+    translation,
+  }));
 
 @Injectable({ providedIn: 'root' })
 export class LanguageService {
@@ -45,10 +54,26 @@ export class LanguageService {
 
   translate(source: string): string {
     if (!this.isArabic()) return source;
-    const exact = ARABIC_TRANSLATIONS[source.trim()];
+    return this.translateToArabic(source);
+  }
+
+  private translateToArabic(source: string): string {
+    const normalized = source.trim();
+    const exact = ARABIC_TRANSLATIONS[normalized];
     if (exact) return exact;
 
-    const months = source.trim().match(/^(\d+)\s+months?$/i);
+    for (const dynamic of DYNAMIC_TRANSLATIONS) {
+      const match = normalized.match(dynamic.pattern);
+      if (!match) continue;
+
+      let captureIndex = 1;
+      return dynamic.translation.replace(
+        /\{value\}/g,
+        () => this.translateToArabic(match[captureIndex++] ?? ''),
+      );
+    }
+
+    const months = normalized.match(/^(\d+)\s+months?$/i);
     if (months) return `${months[1]} شهر`;
 
     const slot = source.trim().match(/^Slot\s+(\d+)$/i);
@@ -141,7 +166,7 @@ export class LanguageService {
 
     const current = node.textContent ?? '';
     const stored = this.originals.get(node);
-    const storedTranslation = stored ? ARABIC_TRANSLATIONS[stored.trim()] : undefined;
+    const storedTranslation = stored ? this.translateToArabic(stored) : undefined;
 
     if (!stored || (current !== stored && current.trim() !== storedTranslation)) {
       this.originals.set(node, current);
@@ -169,7 +194,7 @@ export class LanguageService {
       const current = element.getAttribute(attribute);
       if (current === null) continue;
       const stored = originals.get(attribute);
-      const storedTranslation = stored ? this.translate(stored) : undefined;
+      const storedTranslation = stored ? this.translateToArabic(stored) : undefined;
       if (!stored || (current !== stored && current !== storedTranslation)) {
         originals.set(attribute, current);
       }

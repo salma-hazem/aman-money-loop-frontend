@@ -58,7 +58,7 @@
 
     &:focus {
       outline: none;
-      border-color: #087f73;
+      border-color: var(--ath-brand);
     }
   }
 }
@@ -70,7 +70,7 @@
 
 .search-button {
   border: none;
-  background: #087f73;
+  background: var(--ath-brand);
   color: white;
   border-radius: 6px;
   padding: 9px 18px;
@@ -79,7 +79,7 @@
   cursor: pointer;
 
   &:hover {
-    background: #066b61;
+    background: var(--ath-brand-hover);
   }
 }
 
@@ -142,7 +142,7 @@
 .listing-contribution {
   font-size: 15px;
   font-weight: 600;
-  color: #087f73;
+  color: var(--ath-brand-text);
 }
 
 .listing-meta {
@@ -157,7 +157,7 @@
   font-size: 12px;
   font-weight: 600;
   background: #ecfdf5;
-  color: #087f73;
+  color: var(--ath-brand-text);
   margin: 4px 0 8px;
 }
 

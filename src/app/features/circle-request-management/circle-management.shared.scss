@@ -252,7 +252,7 @@
   &.modificationrequested { background: #fef3c7; color: #a16207; }
   &.approved { background: #ecfdf5; color: #047857; }
   &.rejected, &.cancelled { background: #fef2f2; color: #b91c1c; }
-  &.published, &.open, &.inrecruitment { background: #e6fffb; color: #087f73; }
+  &.published, &.open, &.inrecruitment { background: var(--ath-brand-highlight); color: var(--ath-brand-text); }
   &.filled { background: #eef2ff; color: #4338ca; }
   &.closed, &.assigned, &.locked { background: #f3f4f6; color: #4b5563; }
   &.vacant { background: #ecfdf5; color: #047857; }

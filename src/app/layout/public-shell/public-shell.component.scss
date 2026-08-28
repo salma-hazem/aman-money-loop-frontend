@@ -1,77 +1,64 @@
+:host { display: block; min-height: 100vh; }
+
 .public-header {
-  min-height: 82px;
+  position: relative;
+  z-index: 20;
+  min-height: 74px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 2rem;
-  background: #ffffff;
-  border-bottom: 1px solid #e7eeee;
+  gap: 2rem;
+  padding: .65rem max(1.25rem, calc((100vw - 1320px) / 2));
+  background: rgba(255,255,255,.94);
+  border-bottom: 1px solid #e2ecea;
+  box-shadow: 0 4px 20px rgba(10,60,56,.035);
+  backdrop-filter: blur(14px);
 }
-
 .brand {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.65rem;
+  color: var(--p-primary-950);
+  text-decoration: none;
+}
+.brand-lockup {
+  width: auto;
+  height: 52px;
+  max-width: 190px;
+  object-fit: contain;
+}
+.brand-mark { display: none; width: 42px; height: 42px; object-fit: contain; }
+.public-actions { display: flex; align-items: center; gap: .45rem; }
+.nav-link {
+  padding: .6rem .75rem;
+  border-radius: 9px;
+  color: #315d59;
+  font-size: .85rem;
   font-weight: 700;
-  color: #008f84;
-  text-decoration: none;
-
-  img {
-    width: 34px;
-    height: 34px;
-    object-fit: contain;
-  }
-}
-
-.public-actions {
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-}
-
-.sign-in {
-  color: #087c74;
-  font-weight: 600;
   text-decoration: none;
 }
-
-.sign-in:hover {
-  text-decoration: underline;
-}
-
+.nav-link:hover { background: var(--ath-brand-soft); color: var(--ath-brand-text); }
 .create-account {
-  padding: 0.7rem 1.15rem;
-  border-radius: 8px;
-  background: #08b8ae;
-  color: #ffffff;
-  font-weight: 600;
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  padding: .65rem 1.05rem;
+  border-radius: 10px;
+  background: var(--ath-brand);
+  color: #fff;
+  font-size: .82rem;
+  font-weight: 750;
   text-decoration: none;
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--ath-brand), transparent 85%);
 }
+.create-account:hover { background: var(--ath-brand-hover); }
+.public-content { width: 100%; min-width: 0; }
 
-.create-account:hover {
-  background: #079f97;
-}
-
-.public-content {
-  padding: 2rem;
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-@media (max-width: 600px) {
-  .public-header {
-    padding: 0 1rem;
-  }
-
-  .public-actions {
-    gap: 0.75rem;
-  }
-
-  .create-account {
-    padding: 0.65rem 0.85rem;
-  }
-
-  .public-content {
-    padding: 1rem;
-  }
+@media (max-width: 640px) {
+  .public-header { min-height: 66px; gap: .5rem; padding: .55rem .8rem; }
+  .brand-lockup { display: none; }
+  .brand-mark { display: block; width: 50px; height: 40px; }
+  .public-actions { gap: .2rem; }
+  .nav-link { padding: .55rem .45rem; font-size: .76rem; }
+  .marketplace-link { display: none; }
+  .create-account { min-height: 38px; padding: .55rem .7rem; font-size: .74rem; }
 }

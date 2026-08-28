@@ -1,31 +1,28 @@
 <header class="public-header">
-
-  <a
-    routerLink="/"
-    class="brand"
-  >
+  <a routerLink="/" class="brand" aria-label="Aman Money Loop home">
     <img
-      src="/images/aman-money-loop-logo.png"
-      alt="Aman Money Loop"
+      class="brand-lockup"
+      [src]="language.isArabic()
+        ? '/images/Moneyloop_Arabic_logo_final.png'
+        : '/images/Moneyloop_English_logo_final_v2.png'"
+      [alt]="language.isArabic() ? 'أمان موني لوب' : 'Aman MoneyLoop'"
     />
-
-    <span>Aman Money Loop</span>
+    <img class="brand-mark" src="/images/MoneyLoop_Logo.png" alt="" />
   </a>
 
   <nav class="public-actions">
       <app-language-switcher />
-      <a routerLink="/marketplace" class="sign-in">Marketplace</a>
+      <a routerLink="/marketplace" class="nav-link marketplace-link">Marketplace</a>
 
       @if (auth.isLoggedIn()) {
         <a routerLink="/console" class="create-account">Open Dashboard</a>
       } @else {
-        <a routerLink="/login" class="sign-in">Sign In</a>
+        <a routerLink="/login" class="nav-link sign-in">Sign In</a>
         <a routerLink="/register" class="create-account">Create Account</a>
       }
     </nav>
 
 </header>
-
 <main class="public-content">
   <router-outlet></router-outlet>
 </main>

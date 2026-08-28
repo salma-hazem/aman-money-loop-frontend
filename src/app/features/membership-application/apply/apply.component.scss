@@ -10,7 +10,7 @@
   margin: 0 auto 20px;
   background: none;
   border: none;
-  color: #087f73;
+  color: var(--ath-brand-text);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -39,7 +39,7 @@
   margin: 0 auto 16px;
   border-radius: 50%;
   background: #ecfdf5;
-  color: #087f73;
+  color: var(--ath-brand-text);
   font-size: 28px;
   font-weight: 700;
 }
@@ -104,7 +104,7 @@
 
     &:focus {
       outline: none;
-      border-color: #087f73;
+      border-color: var(--ath-brand);
     }
   }
 
@@ -158,11 +158,11 @@
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  background: #087f73;
+  background: var(--ath-brand);
   color: white;
 
   &:hover {
-    background: #066b61;
+    background: var(--ath-brand-hover);
   }
 
   &:disabled {

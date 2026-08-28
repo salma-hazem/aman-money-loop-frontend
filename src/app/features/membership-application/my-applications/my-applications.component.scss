@@ -34,7 +34,7 @@
   }
 
   a {
-    color: #087f73;
+    color: var(--ath-brand-text);
     font-weight: 600;
 
     &:hover {
@@ -100,7 +100,7 @@
 
   &[data-stage='Confirmed'] {
     background: #ecfdf5;
-    color: #087f73;
+    color: var(--ath-brand-text);
   }
 
   &[data-stage='Rejected'] {

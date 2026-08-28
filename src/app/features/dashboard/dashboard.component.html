@@ -1,113 +1,127 @@
-<div class="dashboard-page">
-
-  <!-- قسم الترحيب -->
-  <section class="welcome-section">
-    <div>
-      <span class="eyebrow">
-        AMAN MONEY LOOP
-      </span>
-
-      <h1>
-        Welcome back,
-        {{ auth.currentUser()?.fullName }}
-      </h1>
-
-      <p>
-        Manage your account and access the Money Loop
-        features available for your role.
-      </p>
+<main class="dashboard-page">
+  <section class="welcome-section" aria-labelledby="dashboard-title">
+    <div class="welcome-copy">
+      <span class="eyebrow">AMAN MONEY LOOP</span>
+      <h1 id="dashboard-title">{{ roleTitle() }}</h1>
+      <p class="welcome-name">Welcome back, {{ auth.currentUser()?.fullName }}</p>
+      <p>{{ roleDescription() }}</p>
     </div>
-
-    <div class="welcome-logo">
-      <img
-        src="/images/aman-money-loop-logo.png"
-        alt="Aman Money Loop"
-      />
+    <div class="welcome-side">
+      @if (lastUpdated()) { <span class="updated-at">Updated {{ lastUpdated() | date:'shortTime' }}</span> }
+      <button type="button" class="refresh-button" (click)="refresh()" [disabled]="isLoading()"><i class="pi pi-refresh" aria-hidden="true"></i> Refresh</button>
     </div>
   </section>
 
-  <!-- كاردات معلومات الحساب + حالة الـ Onboarding -->
-  <section class="account-grid">
+  @if (errorMessage()) {
+    <section class="state-panel error-panel" role="alert">
+      <i class="pi pi-exclamation-circle" aria-hidden="true"></i>
+      <div><h2>Dashboard unavailable</h2><p>{{ errorMessage() }}</p></div>
+      <button type="button" class="secondary-button" (click)="refresh()">Try Again</button>
+    </section>
+  } @else if (isLoading()) {
+    <section class="metric-grid" aria-label="Loading dashboard">
+      @for (placeholder of [1, 2, 3, 4]; track placeholder) {
+        <div class="metric-card skeleton-card" aria-hidden="true"><span class="skeleton skeleton-icon"></span><span class="skeleton skeleton-line short"></span><span class="skeleton skeleton-line value"></span><span class="skeleton skeleton-line"></span></div>
+      }
+    </section>
+    <section class="content-panel skeleton-panel" aria-hidden="true"><span class="skeleton skeleton-line short"></span><span class="skeleton skeleton-line"></span><span class="skeleton skeleton-block"></span></section>
+  } @else {
+    @if (noticeMessage()) { <div class="notice-panel" role="status"><i class="pi pi-info-circle" aria-hidden="true"></i>{{ noticeMessage() }}</div> }
 
-    <!-- Card 1: Account Email -->
-    <p-card styleClass="account-card">
-      <div class="card-content">
-        <span class="card-label">
-          Account
-        </span>
-        <span class="card-value email">
-          {{ auth.currentUser()?.email }}
-        </span>
-      </div>
-    </p-card>
+    @switch (role()) {
+      @case ('Member') {
+        <section class="metric-grid" aria-label="Member summary">
+          @for (metric of memberMetrics(); track metric.label) {
+            <a class="metric-card" [class]="'metric-card tone-' + metric.tone" [routerLink]="metric.route"><span class="metric-icon"><i [class]="metric.icon" aria-hidden="true"></i></span><span class="metric-label">{{ metric.label }}</span><strong class="metric-value">{{ metric.value }}</strong><span class="metric-detail">{{ metric.detail }}</span></a>
+          }
+        </section>
 
-    <!-- Card 2: User Role -->
-    <p-card styleClass="account-card">
-      <div class="card-content">
-        <span class="card-label">
-          Role
-        </span>
-        <span class="card-value">
-          {{ auth.role() }}
-        </span>
-      </div>
-    </p-card>
+        <div class="dashboard-layout">
+          <section class="content-panel journey-panel">
+            <div class="section-heading"><div><span class="section-kicker">CURRENT JOURNEY</span><h2>Application Progress</h2></div><a routerLink="/console/my-applications" class="text-link">View all applications</a></div>
+            @if (currentApplication(); as application) {
+              <div class="journey-summary"><div><span class="muted-label">Circle</span><strong>{{ application.title || 'Money Circle' }}</strong></div><span class="status-badge" [class]="'status-' + application.stage.toLowerCase()">{{ stageLabel(application.stage) }}</span></div>
+              @if (application.stage === 'Rejected') {
+                <div class="rejected-state"><i class="pi pi-times-circle" aria-hidden="true"></i><div><strong>This application was not selected.</strong><span>You can review it or browse another open circle.</span></div></div>
+              } @else {
+                <ol class="progress-steps" aria-label="Application stages">
+                  @for (stage of memberStages; track stage; let index = $index) {
+                    <li [class.complete]="index < currentStageIndex()" [class.current]="index === currentStageIndex()"><span class="step-marker">@if (index < currentStageIndex()) { <i class="pi pi-check" aria-hidden="true"></i> } @else { {{ index + 1 }} }</span><span>{{ stageLabel(stage) }}</span></li>
+                  }
+                </ol>
+              }
+              <p class="updated-copy">Last updated {{ (application.updatedAt || application.createdAt) | date:'mediumDate' }}</p>
+            } @else {
+              <div class="empty-state"><i class="pi pi-compass" aria-hidden="true"></i><h3>Your Money Loop journey starts here</h3><p>Explore open circles and apply for the one that matches your contribution goal.</p><a routerLink="/console/marketplace" class="primary-button">Browse Circles</a></div>
+            }
+          </section>
 
-    <!-- Card 3: Onboarding Status (خاص بالممبر فقط) -->
-    <p-card styleClass="account-card" *ngIf="auth.role() === 'Member'">
-      <div class="card-content">
-        <span class="card-label">
-          Onboarding Status
-        </span>
-        
-        <div *ngIf="isLoadingCase()">
-          <span class="card-value">Loading...</span>
+          <section class="content-panel next-step-panel">
+            <span class="section-kicker">ONBOARDING</span><h2>Your Next Step</h2>
+            @if (memberOnboardingCase(); as onboardingCase) {
+              <div class="next-step-icon"><i class="pi pi-file-check" aria-hidden="true"></i></div><span class="status-badge">{{ onboardingCase.finalStatus }}</span>
+              <p>@if (missingDocumentCount() > 0) { {{ missingDocumentCount() }} required document(s) still need your attention. } @else { Your required documents are complete. Track the review here. }</p>
+              <a routerLink="/console/onboarding/upload" class="primary-button">Manage Documents</a>
+            } @else if (currentApplication()) {
+              <div class="next-step-icon"><i class="pi pi-hourglass" aria-hidden="true"></i></div><p>Keep tracking your application. Onboarding opens after an agreement is accepted.</p><a routerLink="/console/my-applications" class="primary-button">Track Application</a>
+            } @else {
+              <div class="next-step-icon"><i class="pi pi-search" aria-hidden="true"></i></div><p>Choose an open circle and submit your first application.</p><a routerLink="/console/marketplace" class="primary-button">Browse Marketplace</a>
+            }
+          </section>
         </div>
 
-        <div *ngIf="!isLoadingCase()">
-          <span class="status-badge" *ngIf="onboardingCase(); else noCase">
-            {{ onboardingCase()?.finalStatus }}
-          </span>
-          <ng-template #noCase>
-            <span class="card-value" style="color: #e67e22;">Not Started</span>
-          </ng-template>
+        <section class="quick-section" aria-labelledby="member-quick-actions">
+          <div class="section-heading"><div><span class="section-kicker">SHORTCUTS</span><h2 id="member-quick-actions">Quick Actions</h2></div></div>
+          <div class="action-grid">@for (action of memberActions(); track action.label) { <a class="action-card" [class.primary-action]="action.primary" [routerLink]="action.route"><i [class]="action.icon" aria-hidden="true"></i><span><strong>{{ action.label }}</strong><small>{{ action.description }}</small></span><i class="pi pi-arrow-right action-arrow" aria-hidden="true"></i></a> }</div>
+        </section>
+      }
+
+      @case ('Organizer') {
+        <section class="metric-grid" aria-label="Organizer summary">
+          @for (metric of organizerMetrics(); track metric.label) { <a class="metric-card" [class]="'metric-card tone-' + metric.tone" [routerLink]="metric.route"><span class="metric-icon"><i [class]="metric.icon" aria-hidden="true"></i></span><span class="metric-label">{{ metric.label }}</span><strong class="metric-value">{{ metric.value }}</strong><span class="metric-detail">{{ metric.detail }}</span></a> }
+        </section>
+
+        <div class="dashboard-layout organizer-layout">
+          <section class="content-panel table-panel">
+            <div class="section-heading"><div><span class="section-kicker">PRIORITY</span><h2>Requests Requiring Attention</h2></div><a routerLink="/console/circle-requests" class="text-link">View all requests</a></div>
+            @if (organizerAttentionRequests().length) {
+              <div class="responsive-table"><table><thead><tr><th>Circle</th><th>Type</th><th>Status</th><th>Action</th></tr></thead><tbody>
+                @for (request of organizerAttentionRequests(); track request.requestId) { <tr><td data-label="Circle"><strong>{{ request.circleTitle }}</strong><small>#{{ request.requestId.slice(0, 8) }}</small></td><td data-label="Type">{{ request.circleType === 'NewCircle' ? 'New Circle' : 'Replacement' }}</td><td data-label="Status"><span class="status-badge" [class]="'status-' + request.requestStatus.toLowerCase()">{{ requestStatusLabel(request.requestStatus) }}</span></td><td data-label="Action"><a [routerLink]="requestRoute(request)" class="table-action">{{ requestActionLabel(request.requestStatus) }}</a></td></tr> }
+              </tbody></table></div>
+            } @else { <div class="compact-empty"><i class="pi pi-check-circle" aria-hidden="true"></i><span><strong>You are all caught up</strong><small>No requests need changes or publishing.</small></span></div> }
+          </section>
+          <section class="content-panel next-step-panel"><span class="section-kicker">ONBOARDING</span><h2>Assigned Cases</h2><div class="large-stat">{{ organizerOnboardingCount() }}</div><p>Member onboarding cases assigned to you across all statuses.</p><a routerLink="/console/onboarding/review" class="primary-button">Review Onboarding</a></section>
         </div>
-      </div>
-    </p-card>
 
-  </section>
+        <section class="content-panel table-panel">
+          <div class="section-heading"><div><span class="section-kicker">PORTFOLIO</span><h2>My Circle Overview</h2></div><a routerLink="/console/circle-registry" class="text-link">Open registry</a></div>
+          @if (ownedCircles().length) {
+            <div class="circle-grid">@for (circle of ownedCircles().slice(0, 6); track circle.circleId) {
+              <article class="circle-card"><div class="circle-card-header"><strong>{{ circle.circleTitle }}</strong><span class="status-badge">{{ circle.status }}</span></div><div class="circle-terms"><span>{{ formatMoney(circle.amount) }} / month</span><span>{{ circle.duration }} months</span></div><div class="capacity-row"><span>{{ circle.filledCount }} of {{ circle.approvedSlots }} slots filled</span><strong>{{ circle.approvedSlots - circle.filledCount }} available</strong></div><div class="capacity-track"><span [style.width.%]="circleFillPercent(circle)"></span></div>@if (circle.marketplaceListing) { <a [routerLink]="['/console/listings', circle.marketplaceListing.listingId, 'pipeline']" class="table-action">View Pipeline</a> } @else { <a [routerLink]="['/console/circle-requests', circle.requestId]" class="table-action">View Request</a> }</article>
+            }</div>
+          } @else { <div class="empty-state compact"><i class="pi pi-sitemap" aria-hidden="true"></i><h3>No approved circles yet</h3><p>Create a request to begin building your circle portfolio.</p><a routerLink="/console/circle-requests/new" class="primary-button">New Circle Request</a></div> }
+        </section>
 
-  <!-- قسم الوصول السريع والتحكم في المستندات -->
-  <section class="quick-access">
+        <section class="quick-section" aria-labelledby="organizer-quick-actions"><div class="section-heading"><div><span class="section-kicker">SHORTCUTS</span><h2 id="organizer-quick-actions">Quick Actions</h2></div></div><div class="action-grid">@for (action of organizerActions; track action.label) { <a class="action-card" [class.primary-action]="action.primary" [routerLink]="action.route"><i [class]="action.icon" aria-hidden="true"></i><span><strong>{{ action.label }}</strong><small>{{ action.description }}</small></span><i class="pi pi-arrow-right action-arrow" aria-hidden="true"></i></a> }</div></section>
+      }
 
-    <div class="section-heading">
-      <h2>Quick Access</h2>
-      <p>
-        Use the navigation menu to access the features
-        available for your account.
-      </p>
-    </div>
+      @case ('Admin') {
+        <section class="metric-grid" aria-label="Admin summary">@for (metric of adminMetrics(); track metric.label) { <a class="metric-card" [class]="'metric-card tone-' + metric.tone" [routerLink]="metric.route"><span class="metric-icon"><i [class]="metric.icon" aria-hidden="true"></i></span><span class="metric-label">{{ metric.label }}</span><strong class="metric-value">{{ metric.value }}</strong><span class="metric-detail">{{ metric.detail }}</span></a> }</section>
+        <div class="dashboard-layout admin-layout">
+          <section class="content-panel table-panel">
+            <div class="section-heading"><div><span class="section-kicker">OLDEST FIRST</span><h2>Requests Requiring Action</h2></div><a routerLink="/console/admin/circle-requests" class="text-link">Open approval queue</a></div>
+            @if (adminQueue().length) { <div class="responsive-table"><table><thead><tr><th>Request</th><th>Type</th><th>Submitted</th><th>Action</th></tr></thead><tbody>@for (request of adminQueue().slice(0, 5); track request.requestId) { <tr><td data-label="Request"><strong>{{ request.circleTitle }}</strong><small>#{{ request.requestId.slice(0, 8) }}</small></td><td data-label="Type">{{ request.circleType === 'NewCircle' ? 'New Circle' : 'Replacement' }}</td><td data-label="Submitted">{{ (request.submittedAt || request.createdAt) | date:'mediumDate' }}</td><td data-label="Action"><a [routerLink]="['/console/admin/circle-requests', request.requestId]" class="table-action">Review</a></td></tr> }</tbody></table></div> } @else { <div class="compact-empty"><i class="pi pi-check-circle" aria-hidden="true"></i><span><strong>Approval queue is clear</strong><small>New submitted requests will appear here.</small></span></div> }
+          </section>
+          <section class="content-panel next-step-panel"><span class="section-kicker">ACTIVATION</span><h2>Members Ready</h2><div class="large-stat">{{ activationReadyCount() }}</div><p>Approved onboarding cases ready for final ledger activation.</p><a routerLink="/console/onboarding/activation" class="primary-button">Open Activation Queue</a></section>
+        </div>
 
-    <div class="info-panel" *ngIf="auth.role() === 'Member'">
-      <div class="info-icon">
-        📁
-      </div>
+        <section class="content-panel system-panel">
+          <div class="section-heading"><div><span class="section-kicker">SYSTEM SNAPSHOT</span><h2>Circle Status</h2></div><a routerLink="/console/circle-registry" class="text-link">Open registry</a></div>
+          <div class="status-summary"><div><span class="summary-dot open"></span><strong>{{ adminCircleStatus().open }}</strong><small>Open</small></div><div><span class="summary-dot recruitment"></span><strong>{{ adminCircleStatus().recruitment }}</strong><small>In Recruitment</small></div><div><span class="summary-dot filled"></span><strong>{{ adminCircleStatus().filled }}</strong><small>Filled</small></div><div><span class="summary-dot closed"></span><strong>{{ adminCircleStatus().closed }}</strong><small>Closed</small></div><div><span class="summary-dot slots"></span><strong>{{ adminCircleStatus().availableSlots }}</strong><small>Available Slots</small></div></div>
+        </section>
 
-      <div style="flex-grow: 1;">
-        <h3>Document Management & Onboarding</h3>
-        <p>
-          Upload your required verification documents and track your onboarding review progress in real-time.
-        </p>
-      </div>
-
-      <div>
-        <!-- زرار يوجهه لصفحة الرفع بتاعت الفجوة التانية -->
-        <a routerLink="/console/onboarding/upload" class="btn-action" style="padding: 0.6rem 1.2rem; background: #089d93; color: white; border-radius: 8px; text-decoration: none; font-weight: 600;">
-          Manage Documents
-        </a>
-      </div>
-    </div>
-
-  </section>
-
-</div>
+        <section class="quick-section" aria-labelledby="admin-quick-actions"><div class="section-heading"><div><span class="section-kicker">SHORTCUTS</span><h2 id="admin-quick-actions">Quick Actions</h2></div></div><div class="action-grid">@for (action of adminActions; track action.label) { <a class="action-card" [class.primary-action]="action.primary" [routerLink]="action.route"><i [class]="action.icon" aria-hidden="true"></i><span><strong>{{ action.label }}</strong><small>{{ action.description }}</small></span><i class="pi pi-arrow-right action-arrow" aria-hidden="true"></i></a> }</div></section>
+      }
+    }
+  }
+</main>

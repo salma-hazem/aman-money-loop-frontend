@@ -12,6 +12,11 @@ export interface NavGroup {
   items: NavItem[];
 }
 
+/**
+ * Sidebar modules follow the end-to-end SRS lifecycle for every role:
+ * circles -> applications -> verification -> agreements/payment -> onboarding.
+ * Role filtering leaves each workspace with only the stages that user operates.
+ */
 export const NAV_CONFIG: NavGroup[] = [
   {
     label: '',
@@ -25,11 +30,11 @@ export const NAV_CONFIG: NavGroup[] = [
     ],
   },
   {
-    label: 'Marketplace & Membership',
+    label: 'Marketplace & Applications',
     items: [
       {
-        label: 'Marketplace',
-        icon: 'pi pi-shopping-bag',
+        label: 'Browse Circles',
+        icon: 'pi pi-compass',
         route: '/console/marketplace',
         roles: [Role.Member],
       },
@@ -38,23 +43,6 @@ export const NAV_CONFIG: NavGroup[] = [
         icon: 'pi pi-file',
         route: '/console/my-applications',
         roles: [Role.Member],
-      },
-      {
-        label: 'Applicant Pipeline',
-        icon: 'pi pi-list',
-        route: '/console/pipeline',
-        roles: [Role.Organizer, Role.Admin],
-      },
-    ],
-  },
-  {
-    label: 'Account',
-    items: [
-      {
-        label: 'My Profile',
-        icon: 'pi pi-user',
-        route: '/console/profile',
-        roles: [Role.Member, Role.Organizer, Role.Admin],
       },
     ],
   },
@@ -82,6 +70,17 @@ export const NAV_CONFIG: NavGroup[] = [
     ],
   },
   {
+    label: 'Applications',
+    items: [
+      {
+        label: 'Applicant Pipeline',
+        icon: 'pi pi-list-check',
+        route: '/console/pipeline',
+        roles: [Role.Organizer, Role.Admin],
+      },
+    ],
+  },
+  {
     label: 'Verification',
     items: [
       {
@@ -90,17 +89,17 @@ export const NAV_CONFIG: NavGroup[] = [
         route: '/console/verification/schedule',
         roles: [Role.Organizer, Role.Admin],
       },
-      {
-        label: 'Verification Checklist',
-        icon: 'pi pi-check-circle',
-        route: '/console/verification/checklist',
-        roles: [Role.Organizer, Role.Admin],
-      },
     ],
   },
   {
     label: 'Agreement & Payment',
     items: [
+      {
+        label: 'Agreements',
+        icon: 'pi pi-file-edit',
+        route: '/console/agreement-generator',
+        roles: [Role.Organizer, Role.Admin],
+      },
       {
         label: 'Payments & Receipts',
         icon: 'pi pi-wallet',

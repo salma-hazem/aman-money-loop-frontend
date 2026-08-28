@@ -17,27 +17,24 @@
   height: var(--ath-header-height);
   display: flex;
   align-items: center;
-  gap: 0.625rem;
-  padding-inline: 1.25rem;
+  justify-content: flex-start;
+  padding-inline: 1rem;
   border-block-end: 1px solid var(--p-surface-200);
 }
-.brand-logo {
-  width: 28px;
-  height: 28px;
-  flex-shrink: 0;
+.brand-lockup {
+  width: auto;
+  height: 48px;
+  max-width: 170px;
+  object-fit: contain;
 }
-.brand-text {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.1;
+.brand-mark {
+  width: 40px;
+  height: 34px;
+  object-fit: contain;
 }
-.brand-name {
-  font-weight: 700;
-  color: var(--p-primary-700);
-}
-.brand-sub {
-  font-size: 0.7rem;
-  color: var(--p-surface-500);
+.collapsed .brand {
+  justify-content: center;
+  padding-inline: 0;
 }
 
 .nav {
@@ -90,9 +87,28 @@
   border-block-start: 1px solid var(--p-surface-200);
 }
 .user-chip {
+  width: 100%;
   display: flex;
   align-items: center;
   gap: 0.625rem;
+  padding: 0.35rem;
+  border: 0;
+  border-radius: var(--ath-radius);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--p-surface-100);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--p-primary-300);
+    outline-offset: 2px;
+  }
 }
 .avatar {
   width: 34px;
@@ -125,10 +141,15 @@
     font-size: 0.7rem;
     color: var(--p-surface-500);
   }
-  .brand-logo {
-    width: 42px;
-    height: 42px;
-    object-fit: contain;
-    flex-shrink: 0;
-  }
+}
+
+.user-menu-chevron {
+  margin-inline-start: auto;
+  color: var(--p-surface-400);
+  font-size: 0.72rem;
+}
+
+.collapsed .user-chip {
+  justify-content: center;
+  padding-inline: 0;
 }

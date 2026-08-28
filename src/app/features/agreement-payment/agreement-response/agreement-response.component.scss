@@ -38,7 +38,7 @@
   height: 42px;
   margin: 0 auto 1rem;
   border: 4px solid #dceceb;
-  border-top-color: #08a99f;
+  border-top-color: var(--ath-brand);
   border-radius: 50%;
 }
 
@@ -83,7 +83,7 @@
 .eyebrow {
   display: inline-block;
   margin-bottom: 0.5rem;
-  color: #079c92;
+  color: var(--ath-brand-text);
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -174,7 +174,7 @@
     width: 18px;
     height: 18px;
     margin-top: 2px;
-    accent-color: #08a99f;
+    accent-color: var(--ath-brand);
     cursor: pointer;
   }
 }
@@ -202,11 +202,11 @@ button {
 
 .accept-button {
   border: none;
-  background: #08a99f;
+  background: var(--ath-brand);
   color: #ffffff;
 
   &:hover:not(:disabled) {
-    background: #078f87;
+    background: var(--ath-brand-hover);
   }
 }
 
@@ -229,7 +229,7 @@ button {
 }
 
 .success-message {
-  border: 1px solid #bce8da;
+  border: 1px solid var(--p-primary-200);
   background: #ecfbf5;
   color: #087a5b;
 }
@@ -250,7 +250,7 @@ button {
 }
 
 .accepted-state {
-  border: 1px solid #bce8da;
+  border: 1px solid var(--p-primary-200);
   background: #ecfbf5;
   color: #087a5b;
 }

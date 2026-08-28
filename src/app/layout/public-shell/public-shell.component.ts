@@ -6,6 +6,7 @@ import {
 
 import { AuthService } from '../../core/services/auth.service';
 import { LanguageSwitcherComponent } from '../../shared/language-switcher/language-switcher.component';
+import { LanguageService } from '../../core/i18n/language.service';
 
 @Component({
   selector: 'app-public-shell',
@@ -19,5 +20,6 @@ import { LanguageSwitcherComponent } from '../../shared/language-switcher/langua
   styleUrl: './public-shell.component.scss',
 })
 export class PublicShellComponent {
-  auth = inject(AuthService);
+  readonly auth = inject(AuthService);
+  readonly language = inject(LanguageService);
 }

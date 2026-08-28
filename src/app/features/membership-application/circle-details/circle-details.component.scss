@@ -10,7 +10,7 @@
   margin: 0 auto 20px;
   background: none;
   border: none;
-  color: #087f73;
+  color: var(--ath-brand-text);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -68,7 +68,7 @@
   font-size: 12px;
   font-weight: 600;
   background: #ecfdf5;
-  color: #087f73;
+  color: var(--ath-brand-text);
 }
 
 .section {
@@ -134,11 +134,11 @@
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  background: #087f73;
+  background: var(--ath-brand);
   color: white;
 
   &:hover:not(:disabled) {
-    background: #066b61;
+    background: var(--ath-brand-hover);
   }
 
   &:disabled {

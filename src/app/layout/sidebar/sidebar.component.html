@@ -1,15 +1,19 @@
 <aside class="sidebar" [class.collapsed]="collapsed()">
   <div class="brand">
-    <img
-      class="brand-logo"
-      src="/images/aman-money-loop-logo.png"
-      alt="Aman Money Loop"
-    />   
-     @if (!collapsed()) {
-      <div class="brand-text">
-        <span class="brand-name">Aman</span>
-        <span class="brand-sub">Money Loop</span>
-      </div>
+    @if (collapsed()) {
+      <img
+        class="brand-mark"
+        src="/images/MoneyLoop_Logo.png"
+        alt="Aman MoneyLoop"
+      />
+    } @else {
+      <img
+        class="brand-lockup"
+        [src]="language.isArabic()
+          ? '/images/Moneyloop_Arabic_logo_final.png'
+          : '/images/Moneyloop_English_logo_final_v2.png'"
+        [alt]="language.isArabic() ? 'أمان موني لوب' : 'Aman MoneyLoop'"
+      />
     }
   </div>
 
@@ -38,14 +42,23 @@
   </nav>
 
   <div class="sidebar-footer">
-    <div class="user-chip">
+    <button
+      type="button"
+      class="user-chip"
+      (click)="sidebarUserMenu.toggle($event)"
+      [attr.aria-label]="language.translate('Account')"
+      [pTooltip]="collapsed() ? language.translate('Account') : ''"
+      [tooltipPosition]="language.isArabic() ? 'left' : 'right'"
+    >
       <div class="avatar">{{ initials() }}</div>
       @if (!collapsed()) {
         <div class="user-chip-text">
           <span class="name">{{ currentUser()?.fullName }}</span>
           <span class="role">{{ currentUser()?.roles?.[0] }}</span>
         </div>
+        <i class="pi pi-chevron-up user-menu-chevron" aria-hidden="true"></i>
       }
-    </div>
+    </button>
+    <p-menu #sidebarUserMenu [model]="userMenuItems()" [popup]="true" appendTo="body" />
   </div>
 </aside>

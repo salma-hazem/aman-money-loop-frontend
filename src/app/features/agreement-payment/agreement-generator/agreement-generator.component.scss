@@ -35,7 +35,7 @@
 .section-kicker {
   display: inline-block;
   margin-bottom: 0.5rem;
-  color: #079c92;
+  color: var(--ath-brand-text);
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -47,7 +47,7 @@
   border: 1px solid #aedbd7;
   border-radius: 8px;
   background: #ffffff;
-  color: #087c74;
+  color: var(--ath-brand-text);
   font-weight: 600;
   cursor: pointer;
 
@@ -72,7 +72,7 @@
     linear-gradient(
       135deg,
       #ffffff 0%,
-      #effaf8 100%
+      var(--ath-brand-soft) 100%
     );
 }
 
@@ -98,7 +98,7 @@
   padding: 0.4rem 0.8rem;
   border-radius: 999px;
   background: #d9f6f2;
-  color: #087f76;
+  color: var(--ath-brand-text);
   font-size: 0.8rem;
   font-weight: 700;
 }
@@ -169,7 +169,7 @@
     font: inherit;
 
     &:focus {
-      border-color: #08a99f;
+      border-color: var(--ath-brand);
       box-shadow:
         0 0 0 3px rgba(8, 169, 159, 0.1);
     }
@@ -239,7 +239,7 @@
 
 .success-message {
   margin-bottom: 1.25rem;
-  border: 1px solid #bce8da;
+  border: 1px solid var(--p-primary-200);
   background: #ecfbf5;
   color: #087a5b;
 }
