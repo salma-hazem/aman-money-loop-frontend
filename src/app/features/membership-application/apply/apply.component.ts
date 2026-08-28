@@ -118,12 +118,22 @@ export class ApplyComponent {
         error: (error) => {
           this.isSubmitting.set(false);
 
-          if (error.status === 400) {
+          if (error.status === 400 || error.status === 404) {
+            const body = error.error;
+            let message: string | null = null;
+
+            if (body?.errors) {
+              // Validation error shape: { errors: { "Code": ["message"] } }
+              const firstKey = Object.keys(body.errors)[0];
+              message = body.errors[firstKey]?.[0] ?? null;
+            } else if (body?.detail) {
+              // Single error shape: { detail: "message" }
+              message = body.detail;
+            }
+
             this.errorMessage.set(
-              error.error?.message ?? 'Please check the details you entered.'
+              message ?? 'Please check the details you entered.'
             );
-          } else if (error.status === 404) {
-            this.errorMessage.set('This circle listing could not be found.');
           } else {
             this.errorMessage.set(
               'An unexpected error occurred. Please try again.'
@@ -133,12 +143,12 @@ export class ApplyComponent {
       });
   }
   goBack(): void {
-      const isInsideConsole = this.router.url.startsWith('/console/');
+    const isInsideConsole = this.router.url.startsWith('/console/');
 
-      if (isInsideConsole) {
-        this.router.navigate(['/console/marketplace', this.listingId]);
-      } else {
-        this.router.navigate(['/marketplace', this.listingId]);
-      }
+    if (isInsideConsole) {
+      this.router.navigate(['/console/marketplace', this.listingId]);
+    } else {
+      this.router.navigate(['/marketplace', this.listingId]);
     }
+  }
 }

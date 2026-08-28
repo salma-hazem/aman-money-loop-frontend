@@ -13,11 +13,12 @@
       </span>
 
       <h1>
-        Applicant Pipelines
+        Manage Circles
       </h1>
 
       <p>
-        Select a circle to view and manage its applicant pipeline.
+        View each circle's listing status, open or close its listing,
+        and access its applicant pipeline.
       </p>
     </div>
   </div>
@@ -139,7 +140,8 @@
       </div>
 
 
-      <div class="selector-card-actions">
+      <div class="action-section">
+        <span class="action-section-label">Listing</span>
 
         @if (circle.marketplaceListing?.listingStatus === 'Active') {
         <button type="button"
@@ -158,6 +160,12 @@
           Reopen Listing
         </button>
         }
+      </div>
+
+      <div class="action-divider"></div>
+
+      <div class="action-section">
+        <span class="action-section-label">Applicants</span>
 
         <button type="button"
                 class="open-pipeline-button"
@@ -168,7 +176,6 @@
             Open Applicant Pipeline
           </span>
         </button>
-
       </div>
 
     </div>

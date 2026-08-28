@@ -160,10 +160,24 @@
 // Selector Card Actions
 // =====================================================
 
-.selector-card-actions {
+.action-section {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
+}
+
+.action-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9ca3af;
+}
+
+.action-divider {
+  height: 1px;
+  background: #e5e7eb;
+  margin: 2px 0;
 }
 
 .close-listing-button,
