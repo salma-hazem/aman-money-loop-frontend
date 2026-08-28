@@ -50,36 +50,28 @@
     <div class="actions-row">
 
       @if (applicant.stage === 'Submitted') {
-      <button class="primary-button"
-              [disabled]="actionInProgress()"
-              (click)="shortlist()">
+      <button class="primary-button" [disabled]="actionInProgress()" (click)="shortlist()">
         Accept / Shortlist
       </button>
-      <button class="secondary-button reject"
-              [disabled]="actionInProgress()"
-              (click)="reject()">
+      <button class="secondary-button reject" [disabled]="actionInProgress()" (click)="reject()">
         Reject Application
       </button>
       }
 
       @else if (applicant.stage === 'Shortlisted') {
-      <button class="secondary-button reject"
-              [disabled]="actionInProgress()"
-              (click)="reject()">
+      <button class="secondary-button reject" [disabled]="actionInProgress()" (click)="reject()">
         Reject Application
       </button>
       }
 
-      <button class="secondary-button"
-              [disabled]="!!activeSchedule() || applicant.stage !== 'Shortlisted'"
-              (click)="openSchedulePanel()"
-              [title]="applicant.stage !== 'Shortlisted' ? 'Applicant must be shortlisted to schedule verification.' : ''">
+      <button class="secondary-button" [disabled]="!!activeSchedule() || applicant.stage !== 'Shortlisted'"
+        (click)="openSchedulePanel()"
+        [title]="applicant.stage !== 'Shortlisted' ? 'Applicant must be shortlisted to schedule verification.' : ''">
         Schedule Verification
       </button>
 
       <!-- ENABLED: View History toggles evaluation history summary -->
-      <button class="secondary-button"
-              (click)="toggleHistoryPanel()">
+      <button class="secondary-button" (click)="toggleHistoryPanel()">
         {{ historyPanelOpen() ? 'Hide History' : 'View History' }}
       </button>
 
@@ -145,7 +137,8 @@
 
       <h3>Completed Round Details</h3>
       @for (round of summary.roundResults; track round.verificationScheduleId) {
-      <div class="round-card" style="margin-bottom: 1rem; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 6px;">
+      <div class="round-card"
+        style="margin-bottom: 1rem; padding: 0.75rem; border: 1px solid #e0e0e0; border-radius: 6px;">
         <div class="info-row">
           <span class="label">Round Name</span>
           <span class="value"><strong>{{ round.roundName }}</strong></span>

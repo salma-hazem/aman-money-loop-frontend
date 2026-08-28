@@ -52,6 +52,7 @@ export class ApplicantDetailsComponent implements OnInit {
 
   isLoadingHistory = signal(false);
   historyError = signal<string | null>(null);
+  historyPanelOpen = signal(false);
 
   // Added history panel visibility signal state
   historyPanelOpen = signal(false);
@@ -163,6 +164,10 @@ export class ApplicantDetailsComponent implements OnInit {
         this.historyError.set('No evaluation history found or failed to load history.');
       }
     });
+  }
+
+  toggleHistoryPanel(): void {
+    this.historyPanelOpen.update((isOpen) => !isOpen);
   }
 
   shortlist(): void {

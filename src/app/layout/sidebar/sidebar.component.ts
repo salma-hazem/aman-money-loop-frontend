@@ -3,6 +3,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { TooltipModule } from 'primeng/tooltip';
 import { AuthService } from '../../core/services/auth.service';
 import { NAV_CONFIG, NavGroup } from './nav-config';
+import { LanguageService } from '../../core/i18n/language.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -13,6 +14,7 @@ import { NAV_CONFIG, NavGroup } from './nav-config';
 })
 export class SidebarComponent {
   private auth = inject(AuthService);
+  readonly language = inject(LanguageService);
 
   /** Two-way bound from the console shell so the toggle button in the header can drive this too. */
   collapsed = model(false);
