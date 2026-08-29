@@ -3,28 +3,28 @@ import Aura from '@primeng/themes/aura';
 
 /**
  * Aman Way brand, ported from the intranet project's CSS variables into PrimeNG's
- * design-token system. Primary = teal (brand core), secondary use of the brand
+ * design-token system. Primary = Aman light blue (brand core), secondary use of the brand
  * orange is intentionally limited to the "warn" severity + a couple of accent
  * spots (see styles.scss .accent-bar) rather than a full color role — spreading
  * a second saturated hue across every severity reads as noisy in a dense ERP UI.
  *
  * Regenerate the primary/surface ramps at https://primeng.org/theming#colors
- * if the brand teal ever shifts — don't hand-edit only some of the steps.
+ * if the brand blue ever shifts — don't hand-edit only some of the steps.
  */
 export const AmanPreset = definePreset(Aura, {
   semantic: {
     primary: {
-      50: '#eafbfa',
-      100: '#ccf2ef',
-      200: '#99e5e2',
-      300: '#66d3ce',
-      400: '#33c9c2',
-      500: '#00b8b0', // brand core
-      600: '#00a39c',
-      700: '#008f88',
-      800: '#00726c',
-      900: '#005a55',
-      950: '#003b38',
+      50: '#e6f9fc',
+      100: '#c2f1f7',
+      200: '#85e3ef',
+      300: '#47d3e4',
+      400: '#14bfd5',
+      500: '#00aec7', // Aman light blue brand core
+      600: '#0098b0',
+      700: '#007f94',
+      800: '#006777',
+      900: '#005564',
+      950: '#003843',
     },
     colorScheme: {
       light: {
